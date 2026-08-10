@@ -41,7 +41,7 @@ export function StatusQuickChangeMenu({ current, onChange }: StatusQuickChangeMe
                 setOpen(false);
               }}
               className={`block w-full px-3 py-1.5 text-left text-sm hover:bg-bg ${
-                status === current ? "font-semibold text-orange" : "text-ink"
+                status === current ? "font-semibold text-teal" : "text-ink"
               }`}
             >
               {STATUS_LABELS[status]}

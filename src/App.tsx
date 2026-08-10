@@ -4,6 +4,7 @@ import { RequireAuth } from "./features/auth/RequireAuth";
 import { AppShell } from "./features/layout/AppShell";
 import { PlaceholderPage } from "./features/layout/PlaceholderPage";
 import { WorklistPage } from "./features/worklist/WorklistPage";
+import { LeadDetailPage } from "./features/leadDetail/LeadDetailPage";
 import { MENU_NAV, MANAGER_NAV } from "./features/layout/navConfig";
 
 // Every sidebar item beyond Worklist is a placeholder route this phase -
@@ -25,6 +26,7 @@ export default function App() {
         >
           <Route path="/" element={<Navigate to="/worklist" replace />} />
           <Route path="/worklist" element={<WorklistPage />} />
+          <Route path="/leads/:id" element={<LeadDetailPage />} />
           {PLACEHOLDER_ITEMS.map((item) => (
             <Route key={item.path} path={item.path} element={<PlaceholderPage title={item.label} />} />
           ))}

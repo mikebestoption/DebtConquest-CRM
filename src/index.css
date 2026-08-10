@@ -1,24 +1,25 @@
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap");
 @import "tailwindcss";
 
-/* Distinct internal-tool brand from apps/client's customer-facing teal -
-   dark navy sidebar + orange accent, matching the CRM reference design. */
+/* Aligned with apps/client's customer-facing brand (teal/deep) rather than
+   the old internal-tool navy+orange scheme, so the CRM reads as the same
+   product family as the customer wizard. */
 @theme {
   --font-sans: "Inter", sans-serif;
 
-  --color-orange: #f5821f;
-  --color-orange-hover: #dd7419;
-  --color-navy: #1e2530;
-  --color-navy-light: #2a3342;
-  --color-ink: #1f2937;
-  --color-bg: #f4f5f7;
-  --color-border: #e5e7eb;
+  --color-teal: #08bcb6;
+  --color-teal-hover: #06a39d;
+  --color-teal-100: #109793;
+  --color-deep: #106666;
+  --color-ink: #106666;
+  --color-bg: #ebffff;
+  --color-border: #d7ecec;
   --color-error: #b00020;
   --color-muted: #6b7280;
-  --color-ring: rgba(245, 130, 31, 0.35);
+  --color-ring: rgba(79, 182, 163, 0.4);
 
-  --radius-card: 10px;
-  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.08);
+  --radius-card: 14px;
+  --shadow-card: 0 6px 18px rgba(0, 0, 0, 0.06);
 }
 
 :root {

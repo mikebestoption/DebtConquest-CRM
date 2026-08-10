@@ -35,7 +35,7 @@ function DateInput({ value, onChange, placeholder }: { value?: string; onChange:
       // min-w-0 lets it actually shrink inside the flex pair below - native
       // date inputs otherwise refuse to go below their content width and
       // spill into the next grid cell.
-      className="min-w-0 flex-1 rounded-md border border-border bg-white px-2 py-2 text-sm text-ink outline-none focus:border-orange"
+      className="min-w-0 flex-1 rounded-md border border-border bg-white px-2 py-2 text-sm text-ink outline-none focus:border-teal"
     />
   );
 }
@@ -67,7 +67,7 @@ export function FilterBar({ onApply, onExport }: FilterBarProps) {
             value={draft.search ?? ""}
             onChange={(e) => patch({ search: e.target.value || undefined })}
             placeholder="Search by Id or Name"
-            className="w-full rounded-md border border-border bg-white px-3 py-2 text-sm outline-none focus:border-orange"
+            className="w-full rounded-md border border-border bg-white px-3 py-2 text-sm outline-none focus:border-teal"
           />
         </div>
 
@@ -111,7 +111,7 @@ export function FilterBar({ onApply, onExport }: FilterBarProps) {
           <select
             value={draft.enrolled ?? "all"}
             onChange={(e) => patch({ enrolled: e.target.value as YesNoAll })}
-            className="w-full rounded-md border border-border bg-white px-3 py-2 text-sm outline-none focus:border-orange"
+            className="w-full rounded-md border border-border bg-white px-3 py-2 text-sm outline-none focus:border-teal"
           >
             <option value="all">All</option>
             <option value="yes">Yes</option>
@@ -133,7 +133,7 @@ export function FilterBar({ onApply, onExport }: FilterBarProps) {
             <label className="flex items-center gap-1.5 text-sm text-ink">
               <input
                 type="checkbox"
-                className="accent-orange"
+                className="accent-teal"
                 checked={draft.creditPulled === "all" || draft.creditPulled === "yes"}
                 onChange={(e) =>
                   patch({ creditPulled: deriveCreditPulled(e.target.checked, draft.creditPulled === "all" || draft.creditPulled === "no") })
@@ -144,7 +144,7 @@ export function FilterBar({ onApply, onExport }: FilterBarProps) {
             <label className="flex items-center gap-1.5 text-sm text-ink">
               <input
                 type="checkbox"
-                className="accent-orange"
+                className="accent-teal"
                 checked={draft.creditPulled === "all" || draft.creditPulled === "no"}
                 onChange={(e) =>
                   patch({ creditPulled: deriveCreditPulled(draft.creditPulled === "all" || draft.creditPulled === "yes", e.target.checked) })
@@ -165,7 +165,7 @@ export function FilterBar({ onApply, onExport }: FilterBarProps) {
         </button>
         <button
           onClick={() => onApply(draft)}
-          className="flex items-center gap-1.5 rounded-md bg-orange px-3 py-1.5 text-sm font-medium text-white hover:bg-orange-hover"
+          className="flex items-center gap-1.5 rounded-md bg-teal px-3 py-1.5 text-sm font-medium text-white hover:bg-teal-hover"
         >
           <IconFilter width={14} height={14} /> Filter
         </button>

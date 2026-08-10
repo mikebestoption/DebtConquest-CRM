@@ -8,7 +8,7 @@ function NavRow({ item }: { item: NavItem }) {
       to={item.path}
       className={({ isActive }) =>
         `flex items-center gap-3 rounded-md px-3 py-2.5 text-sm font-medium transition-colors ${
-          isActive ? "bg-orange text-white" : "text-gray-300 hover:bg-navy-light hover:text-white"
+          isActive ? "bg-teal text-white" : "text-gray-300 hover:bg-teal-100 hover:text-white"
         }`
       }
     >
@@ -20,9 +20,9 @@ function NavRow({ item }: { item: NavItem }) {
 
 export function Sidebar() {
   return (
-    <aside className="flex h-screen w-60 shrink-0 flex-col bg-navy px-3 py-4">
+    <aside className="flex h-screen w-60 shrink-0 flex-col bg-deep px-3 py-4">
       <div className="mb-5 flex items-center gap-2 px-2">
-        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-orange text-sm font-bold text-white">DC</div>
+        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-teal text-sm font-bold text-white">DC</div>
         <span className="text-sm font-semibold text-white">DebtConquest CRM</span>
       </div>
 
@@ -55,7 +55,7 @@ export function Sidebar() {
 
 function IconSearchInput() {
   return (
-    <div className="flex items-center gap-2 rounded-md border border-white/10 bg-navy-light px-3 py-2 text-gray-400">
+    <div className="flex items-center gap-2 rounded-md border border-white/10 bg-teal-100 px-3 py-2 text-gray-400">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
         <circle cx="11" cy="11" r="7" />
         <path d="m21 21-4.3-4.3" />

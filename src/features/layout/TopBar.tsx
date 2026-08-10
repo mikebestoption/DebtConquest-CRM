@@ -30,7 +30,7 @@ export function TopBar() {
               className="flex items-center gap-2 rounded-md px-2 py-1 hover:bg-bg"
               onClick={() => setMenuOpen((v) => !v)}
             >
-              <div className="flex h-7 w-7 items-center justify-center rounded-full bg-navy text-white">
+              <div className="flex h-7 w-7 items-center justify-center rounded-full bg-deep text-white">
                 <IconUser width={14} height={14} />
               </div>
               <span className="text-sm font-medium text-ink">{displayName}</span>
@@ -56,7 +56,7 @@ export function TopBar() {
         <div className="flex items-center justify-between gap-3 bg-sky-50 px-6 py-2.5 text-sm text-sky-900">
           <span>
             Click on the following link to receive notifications on this device{" "}
-            <button className="font-medium text-orange hover:underline" onClick={() => setBannerDismissed(true)}>
+            <button className="font-medium text-teal hover:underline" onClick={() => setBannerDismissed(true)}>
               Allow
             </button>
           </span>

@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom";
 import { SOURCE_LABELS, type SortBy, type SortDir, type WorklistItem, type WorklistStatus } from "../../api/worklist";
 import { StatusBadge } from "./StatusBadge";
 import { StatusQuickChangeMenu } from "./StatusQuickChangeMenu";
@@ -35,6 +36,7 @@ function formatDateTime(iso: string): string {
 }
 
 export function WorklistTable({ items, loading, sortBy, sortDir, onSort, onStatusChange }: WorklistTableProps) {
+  const navigate = useNavigate();
   return (
     <div className="overflow-x-auto">
       <table className="w-full min-w-[900px] text-left text-sm">
@@ -45,26 +47,26 @@ export function WorklistTable({ items, loading, sortBy, sortDir, onSort, onStatu
               <th key={col.key} className="px-4 py-3">
                 <button className="flex items-center gap-1 hover:text-ink" onClick={() => onSort(col.key)}>
                   {col.label}
-                  <IconChevronUpDown className={sortBy === col.key ? "text-orange" : "text-gray-300"} />
-                  {sortBy === col.key && <span className="text-[10px] text-orange">{sortDir === "asc" ? "▲" : "▼"}</span>}
+                  <IconChevronUpDown className={sortBy === col.key ? "text-teal" : "text-gray-300"} />
+                  {sortBy === col.key && <span className="text-[10px] text-teal">{sortDir === "asc" ? "▲" : "▼"}</span>}
                 </button>
               </th>
             ))}
             <th className="px-4 py-3">Lead Age</th>
             <th className="px-4 py-3">
               <button className="flex items-center gap-1 hover:text-ink" onClick={() => onSort("crmStatus")}>
-                Status <IconChevronUpDown className={sortBy === "crmStatus" ? "text-orange" : "text-gray-300"} />
+                Status <IconChevronUpDown className={sortBy === "crmStatus" ? "text-teal" : "text-gray-300"} />
               </button>
             </th>
             <th className="px-4 py-3">
               <button className="flex items-center gap-1 hover:text-ink" onClick={() => onSort("source")}>
-                Source <IconChevronUpDown className={sortBy === "source" ? "text-orange" : "text-gray-300"} />
+                Source <IconChevronUpDown className={sortBy === "source" ? "text-teal" : "text-gray-300"} />
               </button>
             </th>
             <th className="px-4 py-3">Cell Phone Number</th>
             <th className="px-4 py-3">
               <button className="flex items-center gap-1 hover:text-ink" onClick={() => onSort("state")}>
-                State <IconChevronUpDown className={sortBy === "state" ? "text-orange" : "text-gray-300"} />
+                State <IconChevronUpDown className={sortBy === "state" ? "text-teal" : "text-gray-300"} />
               </button>
             </th>
           </tr>
@@ -89,14 +91,18 @@ export function WorklistTable({ items, loading, sortBy, sortDir, onSort, onStatu
               <tr key={item.id} className="border-b border-border last:border-0 hover:bg-bg/60">
                 <td className="px-4 py-3">
                   <div className="flex items-center gap-2 text-muted">
-                    <button title="View lead" className="rounded p-1 hover:bg-bg hover:text-ink">
+                    <button title="View lead" className="rounded p-1 hover:bg-bg hover:text-ink" onClick={() => navigate(`/leads/${item.id}`)}>
                       <IconLink width={14} height={14} />
                     </button>
                     <StatusQuickChangeMenu current={item.crmStatus} onChange={(status) => onStatusChange(item.id, status)} />
                   </div>
                 </td>
                 <td className="px-4 py-3 font-medium text-ink">{item.leadNumber}</td>
-                <td className="px-4 py-3 text-ink">{item.name}</td>
+                <td className="px-4 py-3 text-ink">
+                  <button className="hover:text-teal hover:underline" onClick={() => navigate(`/leads/${item.id}`)}>
+                    {item.name}
+                  </button>
+                </td>
                 <td className="px-4 py-3 text-muted">{formatDateTime(item.lastActivityAt)}</td>
                 <td className="px-4 py-3 text-muted">{formatDateTime(item.createdAt)}</td>
                 <td className="px-4 py-3 text-muted">{item.leadAgeDays}</td>

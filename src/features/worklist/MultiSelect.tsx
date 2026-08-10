@@ -48,7 +48,7 @@ export function MultiSelect({ label, options, selected, onChange }: MultiSelectP
       {open && (
         <div className="absolute z-20 mt-1 max-h-64 w-56 overflow-y-auto rounded-md border border-border bg-white py-1 shadow-card">
           <div className="flex justify-between border-b border-border px-3 py-1.5 text-xs">
-            <button type="button" className="text-orange hover:underline" onClick={() => onChange(options.map((o) => o.value))}>
+            <button type="button" className="text-teal hover:underline" onClick={() => onChange(options.map((o) => o.value))}>
               Select all
             </button>
             <button type="button" className="text-muted hover:underline" onClick={() => onChange([])}>
@@ -57,7 +57,7 @@ export function MultiSelect({ label, options, selected, onChange }: MultiSelectP
           </div>
           {options.map((opt) => (
             <label key={opt.value} className="flex cursor-pointer items-center gap-2 px-3 py-1.5 text-sm hover:bg-bg">
-              <input type="checkbox" checked={selected.includes(opt.value)} onChange={() => toggle(opt.value)} className="accent-orange" />
+              <input type="checkbox" checked={selected.includes(opt.value)} onChange={() => toggle(opt.value)} className="accent-teal" />
               {opt.label}
             </label>
           ))}

@@ -18,7 +18,7 @@ interface AddLeadModalProps {
   onCreated: () => void;
 }
 
-const INPUT_CLASS = "w-full rounded-md border border-border bg-white px-3 py-2 text-sm outline-none focus:border-orange";
+const INPUT_CLASS = "w-full rounded-md border border-border bg-white px-3 py-2 text-sm outline-none focus:border-teal";
 
 const US_STATES = [
   "AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DE", "FL", "GA", "HI", "ID", "IL", "IN", "IA", "KS", "KY", "LA", "ME", "MD",
@@ -154,7 +154,7 @@ export function AddLeadModal({ onClose, onCreated }: AddLeadModalProps) {
             <button
               type="submit"
               disabled={submitting}
-              className="rounded-md bg-orange px-4 py-2 text-sm font-semibold text-white hover:bg-orange-hover disabled:opacity-60"
+              className="rounded-md bg-teal px-4 py-2 text-sm font-semibold text-white hover:bg-teal-hover disabled:opacity-60"
             >
               {submitting ? "Adding…" : "Add Lead"}
             </button>

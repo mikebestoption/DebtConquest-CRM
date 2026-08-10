@@ -92,7 +92,7 @@ export function WorklistPage() {
                 setAssignedStaffId(e.target.value);
                 setPage(1);
               }}
-              className="rounded-md border border-border bg-white px-3 py-2 text-sm text-ink outline-none focus:border-orange"
+              className="rounded-md border border-border bg-white px-3 py-2 text-sm text-ink outline-none focus:border-teal"
             >
               <option value="">All Users</option>
               {staff.map((s) => (
@@ -104,7 +104,7 @@ export function WorklistPage() {
           </div>
           <button
             onClick={() => setShowAddLead(true)}
-            className="mt-5 flex items-center gap-1.5 rounded-md bg-orange px-4 py-2 text-sm font-semibold text-white hover:bg-orange-hover"
+            className="mt-5 flex items-center gap-1.5 rounded-md bg-teal px-4 py-2 text-sm font-semibold text-white hover:bg-teal-hover"
           >
             <IconPlus width={16} height={16} /> Add New Lead
           </button>
@@ -114,13 +114,13 @@ export function WorklistPage() {
       <div className="flex gap-6 border-b border-border">
         <button
           onClick={() => setActiveTab("worklist")}
-          className={`border-b-2 pb-2 text-sm font-semibold ${activeTab === "worklist" ? "border-orange text-orange" : "border-transparent text-muted"}`}
+          className={`border-b-2 pb-2 text-sm font-semibold ${activeTab === "worklist" ? "border-teal text-teal" : "border-transparent text-muted"}`}
         >
           Worklist
         </button>
         <button
           onClick={() => setActiveTab("search")}
-          className={`border-b-2 pb-2 text-sm font-semibold ${activeTab === "search" ? "border-orange text-orange" : "border-transparent text-muted"}`}
+          className={`border-b-2 pb-2 text-sm font-semibold ${activeTab === "search" ? "border-teal text-teal" : "border-transparent text-muted"}`}
         >
           Search Prospect
         </button>
