@@ -3,6 +3,12 @@ import { apiRequest } from "./client";
 // Mirrors server/prisma/schema.prisma's enums - kept in sync by hand since
 // this app doesn't share a types package with the server (see
 // server/src/routes/crm/worklist.route.ts for the source of truth).
+// The 8 COMPLIANCE_*/DOCS_*/CREDIT_PULLED/SUBMIT_TO_LOAN/DUPLICATE_NEW
+// values were added after seeing the Lead Detail header's real Status
+// dropdown (see server schema.prisma's WorklistStatus comment) - merged
+// alongside the original 13 rather than replacing them. The real dropdown
+// scrolled past "Submit To Loan" before it was captured, so this may still
+// be missing values beyond it.
 export const WORKLIST_STATUSES = [
   "NEW",
   "ATTEMPTED_CONTACT",
@@ -17,6 +23,14 @@ export const WORKLIST_STATUSES = [
   "BAD_NUMBER",
   "CLOSED_LOST",
   "CLOSED_WON",
+  "CREDIT_PULLED",
+  "DOCS_SENT",
+  "DOCS_SENT_CA",
+  "DOCS_RECEIVED",
+  "COMPLIANCE_APPROVED",
+  "COMPLIANCE_RETURNED",
+  "SUBMIT_TO_LOAN",
+  "DUPLICATE_NEW",
 ] as const;
 export type WorklistStatus = (typeof WORKLIST_STATUSES)[number];
 
@@ -40,6 +54,14 @@ export const STATUS_LABELS: Record<WorklistStatus, string> = {
   BAD_NUMBER: "Bad Number",
   CLOSED_LOST: "Closed Lost",
   CLOSED_WON: "Closed Won",
+  CREDIT_PULLED: "Credit Pulled",
+  DOCS_SENT: "Docs Sent",
+  DOCS_SENT_CA: "Docs Sent CA",
+  DOCS_RECEIVED: "Docs Received",
+  COMPLIANCE_APPROVED: "Compliance Approved",
+  COMPLIANCE_RETURNED: "Compliance Returned",
+  SUBMIT_TO_LOAN: "Submit To Loan",
+  DUPLICATE_NEW: "Duplicate-New",
 };
 
 export const PROGRAM_LABELS: Record<LeadProgram, string> = {
