@@ -5,6 +5,7 @@ import { fetchLeadDetail, submitLeadToCompliance, updateLeadDetail, type LeadDet
 import { PROGRAM_LABELS, SOURCE_LABELS, STATUS_LABELS, WORKLIST_STATUSES, LEAD_PROGRAMS, LEAD_SOURCES } from "../../api/worklist";
 import { PillSelect } from "./formFields";
 import { ProfileTab } from "./ProfileTab";
+import { BudgetTab } from "./BudgetTab";
 import { IconChevronLeft } from "../layout/icons";
 
 const TABS = ["Profile", "Budget", "Creditor", "Bank Info", "Docs", "History"] as const;
@@ -141,9 +142,9 @@ export function LeadDetailPage() {
         </div>
       </div>
 
-      {activeTab === "Profile" ? (
-        <ProfileTab lead={lead} onSaved={setLead} />
-      ) : (
+      {activeTab === "Profile" && <ProfileTab lead={lead} onSaved={setLead} />}
+      {activeTab === "Budget" && <BudgetTab leadId={lead.id} />}
+      {activeTab !== "Profile" && activeTab !== "Budget" && (
         <div className="rounded-card border border-dashed border-border bg-white p-10 text-center text-sm text-muted">{activeTab} - coming soon</div>
       )}
     </div>
