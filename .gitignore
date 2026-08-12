@@ -24,7 +24,5 @@ dist-ssr
 *.sw?
 
 # Environment files
-.env
-.env.local
-.env.*
 !.env.example
+config.bat

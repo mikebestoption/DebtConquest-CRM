@@ -13,7 +13,11 @@ type Tab = (typeof TABS)[number];
 
 const STATUS_OPTIONS = WORKLIST_STATUSES.map((s) => ({ value: s, label: STATUS_LABELS[s] }));
 const PROGRAM_OPTIONS = LEAD_PROGRAMS.map((p) => ({ value: p, label: PROGRAM_LABELS[p] }));
-const SOURCE_OPTIONS = LEAD_SOURCES.map((s) => ({ value: s, label: SOURCE_LABELS[s] }));
+// The real Source dropdown only ever showed DebtConquest/Mejor Alivio/Web -
+// OTHER stays a valid value in the shared LeadSource enum/worklist filters
+// (some already-stored lead might have it) but isn't offered as a choice
+// here, matching the reference UI.
+const SOURCE_OPTIONS = LEAD_SOURCES.filter((s) => s !== "OTHER").map((s) => ({ value: s, label: SOURCE_LABELS[s] }));
 
 export function LeadDetailPage() {
   const { id } = useParams<{ id: string }>();

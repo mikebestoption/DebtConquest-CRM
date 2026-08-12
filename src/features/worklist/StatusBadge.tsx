@@ -16,6 +16,14 @@ const COLORS: Record<WorklistStatus, string> = {
   BAD_NUMBER: "bg-gray-100 text-gray-600",
   CLOSED_LOST: "bg-red-50 text-red-700",
   CLOSED_WON: "bg-green-50 text-green-700",
+  CREDIT_PULLED: "bg-blue-50 text-blue-700",
+  DOCS_SENT: "bg-sky-50 text-sky-700",
+  DOCS_SENT_CA: "bg-sky-50 text-sky-700",
+  DOCS_RECEIVED: "bg-sky-50 text-sky-700",
+  COMPLIANCE_APPROVED: "bg-violet-50 text-violet-700",
+  COMPLIANCE_RETURNED: "bg-amber-50 text-amber-700",
+  SUBMIT_TO_LOAN: "bg-green-50 text-green-700",
+  DUPLICATE_NEW: "bg-gray-100 text-gray-600",
 };
 
 export function StatusBadge({ status }: { status: WorklistStatus }) {
