@@ -10,6 +10,7 @@ import { LeadDetailPage } from "./features/leadDetail/LeadDetailPage";
 import { UsersListPage } from "./features/users/UsersListPage";
 import { AddUserPage } from "./features/users/AddUserPage";
 import { UserDetailPage } from "./features/users/UserDetailPage";
+import { ProfilePage } from "./features/profile/ProfilePage";
 import { ALL_NAV_ITEMS } from "./features/layout/navConfig";
 
 // Every sidebar item beyond Worklist and User Management > Users is a
@@ -40,6 +41,7 @@ export default function App() {
           <Route path="/manager/users" element={<UsersListPage />} />
           <Route path="/manager/users/new" element={<AddUserPage />} />
           <Route path="/manager/users/:id" element={<UserDetailPage />} />
+          <Route path="/profile" element={<ProfilePage />} />
           {PLACEHOLDER_ITEMS.map((item) => (
             <Route key={item.path} path={item.path} element={<PlaceholderPage title={item.label} />} />
           ))}

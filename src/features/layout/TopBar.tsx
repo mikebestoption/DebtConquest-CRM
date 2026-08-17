@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "../../state/authStore";
-import { IconBell, IconCalendar, IconSearch, IconUser, IconX } from "./icons";
+import { IconBell, IconCalendar, IconSearch, IconSwitch, IconUser, IconX } from "./icons";
 
 export function TopBar() {
   const staff = useAuthStore((s) => s.staff);
@@ -30,21 +30,37 @@ export function TopBar() {
               className="flex items-center gap-2 rounded-md px-2 py-1 hover:bg-bg"
               onClick={() => setMenuOpen((v) => !v)}
             >
-              <div className="flex h-7 w-7 items-center justify-center rounded-full bg-deep text-white">
-                <IconUser width={14} height={14} />
+              <div className="flex h-7 w-7 items-center justify-center overflow-hidden rounded-full bg-deep text-white">
+                {staff?.avatarUrl ? <img src={staff.avatarUrl} alt="" className="h-full w-full object-cover" /> : <IconUser width={14} height={14} />}
               </div>
               <span className="text-sm font-medium text-ink">{displayName}</span>
             </button>
             {menuOpen && (
-              <div className="absolute right-0 z-10 mt-1 w-40 rounded-md border border-border bg-white py-1 shadow-card">
+              <div className="absolute right-0 z-10 mt-1 w-44 rounded-md border border-border bg-white py-1 shadow-card">
                 <button
-                  className="block w-full px-3 py-2 text-left text-sm text-ink hover:bg-bg"
+                  className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-teal hover:bg-bg"
+                  onClick={() => {
+                    setMenuOpen(false);
+                    navigate("/profile");
+                  }}
+                >
+                  <IconUser width={14} height={14} /> Profile
+                </button>
+                <button
+                  title="No other accounts to switch to yet - single-company setup"
+                  className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-gray-400"
+                  disabled
+                >
+                  <IconSwitch width={14} height={14} /> Switch Account
+                </button>
+                <button
+                  className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-ink hover:bg-bg"
                   onClick={() => {
                     logout();
                     navigate("/login");
                   }}
                 >
-                  Log out
+                  <IconX width={14} height={14} /> Logout
                 </button>
               </div>
             )}

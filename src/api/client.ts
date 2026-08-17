@@ -23,7 +23,12 @@ export class ApiError extends Error {
 export async function apiRequest<T>(path: string, options: RequestInit = {}): Promise<T> {
   const token = useAuthStore.getState().token;
   const headers = new Headers(options.headers);
-  headers.set("Content-Type", "application/json");
+  // FormData bodies (avatar upload) need the browser to set its own
+  // multipart boundary in Content-Type - setting it manually breaks the
+  // request, so only default to JSON when the body isn't FormData.
+  if (!(options.body instanceof FormData)) {
+    headers.set("Content-Type", "application/json");
+  }
   if (token) headers.set("Authorization", `Bearer ${token}`);
 
   const res = await fetch(`${API_BASE}${path}`, { ...options, headers });

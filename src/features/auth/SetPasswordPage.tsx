@@ -20,8 +20,14 @@ export function SetPasswordPage() {
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
     setError(null);
-    if (password.length < 8) {
-      setError("Password must be at least 8 characters.");
+    // Mirrors server staffAuth.route.ts's strongPasswordSchema - same 4
+    // requirements shown on the Profile page's Reset Password tab.
+    if (password.length < 12) {
+      setError("Password must be at least 12 characters.");
+      return;
+    }
+    if (!/[A-Z]/.test(password) || !/[a-z]/.test(password) || !/[^A-Za-z0-9]/.test(password)) {
+      setError("Password must include at least 1 uppercase letter, 1 lowercase letter, and 1 special character.");
       return;
     }
     if (password !== confirm) {
@@ -68,8 +74,15 @@ export function SetPasswordPage() {
               required
               value={confirm}
               onChange={(e) => setConfirm(e.target.value)}
-              className="mb-5 w-full rounded-md border border-border px-3 py-2 text-sm outline-none focus:border-teal focus:ring-2 focus:ring-ring"
+              className="mb-3 w-full rounded-md border border-border px-3 py-2 text-sm outline-none focus:border-teal focus:ring-2 focus:ring-ring"
             />
+
+            <ul className="mb-5 list-disc space-y-0.5 pl-5 text-xs text-muted">
+              <li>Minimum 12 characters</li>
+              <li>At least 1 uppercase letters</li>
+              <li>At least 1 lowercase letters</li>
+              <li>At least 1 special characters</li>
+            </ul>
 
             {error && <p className="mb-4 text-sm text-error">{error}</p>}
 

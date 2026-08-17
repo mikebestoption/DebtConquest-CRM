@@ -129,6 +129,26 @@ export const IconX = (p: SVGProps<SVGSVGElement>) => (
     <path d="M18 6 6 18M6 6l12 12" />
   </Svg>
 );
+export const IconCamera = (p: SVGProps<SVGSVGElement>) => (
+  <Svg {...p}>
+    <path d="M4 8h3l2-2h6l2 2h3v11H4Z" />
+    <circle cx="12" cy="13.5" r="3.5" />
+  </Svg>
+);
+export const IconLock = (p: SVGProps<SVGSVGElement>) => (
+  <Svg {...p}>
+    <rect x="4" y="11" width="16" height="9" rx="2" />
+    <path d="M8 11V7a4 4 0 0 1 8 0v4" />
+  </Svg>
+);
+export const IconSwitch = (p: SVGProps<SVGSVGElement>) => (
+  <Svg {...p}>
+    <path d="M17 2 21 6l-4 4" />
+    <path d="M3 12v-2a4 4 0 0 1 4-4h14" />
+    <path d="M7 22 3 18l4-4" />
+    <path d="M21 12v2a4 4 0 0 1-4 4H3" />
+  </Svg>
+);
 export const IconMail = (p: SVGProps<SVGSVGElement>) => (
   <Svg {...p}>
     <rect x="3" y="5" width="18" height="14" rx="2" />
