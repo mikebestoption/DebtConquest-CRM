@@ -5,7 +5,7 @@ export interface StaffOption {
   firstName: string | null;
   lastName: string | null;
   email: string;
-  role: "ADMIN" | "MANAGER" | "AGENT";
+  roles: string[];
 }
 
 export function fetchStaff(): Promise<{ status: string; staff: StaffOption[] }> {

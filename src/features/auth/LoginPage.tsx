@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation, Link } from "react-router-dom";
 import { login } from "../../api/auth";
 import { useAuthStore } from "../../state/authStore";
 import { ApiError } from "../../api/client";
@@ -47,7 +47,12 @@ export function LoginPage() {
           className="mb-4 w-full rounded-md border border-border px-3 py-2 text-sm outline-none focus:border-teal focus:ring-2 focus:ring-ring"
         />
 
-        <label className="mb-1 block text-sm font-medium text-ink">Password</label>
+        <div className="mb-1 flex items-center justify-between">
+          <label className="block text-sm font-medium text-ink">Password</label>
+          <Link to="/forgot-password" className="text-xs font-medium text-teal hover:underline">
+            Forgot password?
+          </Link>
+        </div>
         <input
           type="password"
           required

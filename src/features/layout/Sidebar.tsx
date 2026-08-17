@@ -1,20 +1,54 @@
-import { NavLink } from "react-router-dom";
+import { useState } from "react";
+import { NavLink, useLocation } from "react-router-dom";
 import { MENU_NAV, MANAGER_NAV, type NavItem } from "./navConfig";
+import { IconChevronDown } from "./icons";
 
-function NavRow({ item }: { item: NavItem }) {
+function NavRow({ item, nested }: { item: Omit<NavItem, "children">; nested?: boolean }) {
   const Icon = item.icon;
   return (
     <NavLink
       to={item.path}
       className={({ isActive }) =>
-        `flex items-center gap-3 rounded-md px-3 py-2.5 text-sm font-medium transition-colors ${
+        `flex items-center gap-3 rounded-md px-3 py-2.5 text-sm font-medium transition-colors ${nested ? "pl-9" : ""} ${
           isActive ? "bg-teal text-white" : "text-gray-300 hover:bg-teal-100 hover:text-white"
         }`
       }
     >
-      <Icon className="shrink-0" />
+      {!nested && <Icon className="shrink-0" />}
       <span className="truncate">{item.label}</span>
     </NavLink>
+  );
+}
+
+function NavGroup({ item }: { item: NavItem }) {
+  const location = useLocation();
+  const childActive = item.children?.some((c) => location.pathname.startsWith(c.path)) ?? false;
+  const [open, setOpen] = useState(childActive);
+  const Icon = item.icon;
+
+  if (!item.children) return <NavRow item={item} />;
+
+  return (
+    <div>
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        className={`flex w-full items-center gap-3 rounded-md px-3 py-2.5 text-sm font-medium transition-colors ${
+          childActive ? "text-white" : "text-gray-300 hover:bg-teal-100 hover:text-white"
+        }`}
+      >
+        <Icon className="shrink-0" />
+        <span className="flex-1 truncate text-left">{item.label}</span>
+        <IconChevronDown width={14} height={14} className={`shrink-0 transition-transform ${open ? "rotate-180" : ""}`} />
+      </button>
+      {open && (
+        <div className="mt-1 space-y-1">
+          {item.children.map((child) => (
+            <NavRow key={child.path} item={child} nested />
+          ))}
+        </div>
+      )}
+    </div>
   );
 }
 
@@ -35,7 +69,7 @@ export function Sidebar() {
           <p className="mb-1 px-3 text-xs font-semibold tracking-wide text-gray-500">MENU</p>
           <div className="space-y-1">
             {MENU_NAV.map((item) => (
-              <NavRow key={item.path} item={item} />
+              <NavGroup key={item.path} item={item} />
             ))}
           </div>
         </div>
@@ -44,7 +78,7 @@ export function Sidebar() {
           <p className="mb-1 px-3 text-xs font-semibold tracking-wide text-gray-500">MANAGER</p>
           <div className="space-y-1">
             {MANAGER_NAV.map((item) => (
-              <NavRow key={item.path} item={item} />
+              <NavGroup key={item.path} item={item} />
             ))}
           </div>
         </div>

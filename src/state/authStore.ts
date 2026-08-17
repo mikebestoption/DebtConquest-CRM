@@ -10,7 +10,7 @@ export interface AuthStaff {
   email: string;
   firstName: string | null;
   lastName: string | null;
-  role: "ADMIN" | "MANAGER" | "AGENT";
+  roles: string[];
 }
 
 export interface StoredAuth {

@@ -129,6 +129,24 @@ export const IconX = (p: SVGProps<SVGSVGElement>) => (
     <path d="M18 6 6 18M6 6l12 12" />
   </Svg>
 );
+export const IconMail = (p: SVGProps<SVGSVGElement>) => (
+  <Svg {...p}>
+    <rect x="3" y="5" width="18" height="14" rx="2" />
+    <path d="m4 7 8 6 8-6" />
+  </Svg>
+);
+export const IconPencil = (p: SVGProps<SVGSVGElement>) => (
+  <Svg {...p}>
+    <path d="M12 20h9" />
+    <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z" />
+  </Svg>
+);
+export const IconBan = (p: SVGProps<SVGSVGElement>) => (
+  <Svg {...p}>
+    <circle cx="12" cy="12" r="9" />
+    <path d="m5.5 5.5 13 13" />
+  </Svg>
+);
 export const IconChevronUpDown = (p: SVGProps<SVGSVGElement>) => (
   <Svg width="12" height="12" {...p}>
     <path d="m7 15 5 5 5-5M7 9l5-5 5 5" />
