@@ -22,12 +22,30 @@ export interface StoredAuth {
   staff: AuthStaff;
 }
 
+// A cached login from before the AuthStaff shape last changed (e.g. the
+// single-enum `role` field this replaced with `roles: string[]`, or any
+// future field addition) would otherwise crash the first component that
+// reads a now-missing field - discard anything that doesn't look like the
+// current shape rather than trusting it blindly. GET /crm/auth/me refetches
+// the real thing right after login anyway (see ProfilePage.tsx).
+function isValidAuthStaff(v: unknown): v is AuthStaff {
+  if (!v || typeof v !== "object") return false;
+  const s = v as Record<string, unknown>;
+  return typeof s.id === "string" && typeof s.email === "string" && Array.isArray(s.roles);
+}
+
 function readStoredAuth(): StoredAuth | null {
   const raw = localStorage.getItem(STORAGE_KEY);
   if (!raw) return null;
   try {
-    return JSON.parse(raw) as StoredAuth;
+    const parsed = JSON.parse(raw) as StoredAuth;
+    if (typeof parsed?.token !== "string" || !isValidAuthStaff(parsed.staff)) {
+      localStorage.removeItem(STORAGE_KEY);
+      return null;
+    }
+    return parsed;
   } catch {
+    localStorage.removeItem(STORAGE_KEY);
     return null;
   }
 }

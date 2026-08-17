@@ -89,7 +89,7 @@ function OverviewTab() {
         <div>
           <label className="mb-1 block text-sm text-ink">Roles</label>
           <div className="flex flex-wrap items-center gap-2 pt-1">
-            {staff.roles.length ? (
+            {staff.roles?.length ? (
               staff.roles.map((r) => (
                 <span key={r} className="rounded-full bg-bg px-3 py-1 text-xs font-medium text-muted">
                   {r}
