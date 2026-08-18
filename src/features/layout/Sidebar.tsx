@@ -168,34 +168,6 @@ export function Sidebar() {
         </div>
       )}
 
-      {/* No walkthrough tour / training script content exists yet - these
-          are inert placeholders (see SidebarUserMenu's "Switch Account" for
-          the same pattern) until there's something real for them to open. */}
-      {(walkthroughVisible || scriptTrainingVisible) && (
-        <div className="space-y-0.5 border-b border-white/10 pb-3">
-          {walkthroughVisible && (
-            <button
-              type="button"
-              title="No walkthrough content yet"
-              className={`flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-gray-300 ${collapsed ? "justify-center" : ""}`}
-            >
-              <IconPlayCircle className="shrink-0" />
-              {!collapsed && <span className="truncate">Walkthrough</span>}
-            </button>
-          )}
-          {scriptTrainingVisible && (
-            <button
-              type="button"
-              title="No training script yet"
-              className={`flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-gray-300 ${collapsed ? "justify-center" : ""}`}
-            >
-              <IconScript className="shrink-0" />
-              {!collapsed && <span className="truncate">Script Training</span>}
-            </button>
-          )}
-        </div>
-      )}
-
       <nav className="sidebar-scroll flex-1 overflow-y-auto">
         {noResults && !collapsed && <p className="px-3 py-4 text-sm text-white/50">No matching menu items.</p>}
 
@@ -218,6 +190,35 @@ export function Sidebar() {
                 <NavGroup key={item.path} item={item} collapsed={collapsed} query={q} />
               ))}
             </div>
+          </div>
+        )}
+
+        {/* No walkthrough tour / training script content exists yet - these
+            are inert placeholders (see SidebarUserMenu's "Switch Account"
+            for the same pattern) until there's something real for them to
+            open. */}
+        {(walkthroughVisible || scriptTrainingVisible) && (
+          <div className="space-y-0.5 border-t border-white/10 py-3">
+            {walkthroughVisible && (
+              <button
+                type="button"
+                title="No walkthrough content yet"
+                className={`flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-gray-300 ${collapsed ? "justify-center" : ""}`}
+              >
+                <IconPlayCircle className="shrink-0" />
+                {!collapsed && <span className="truncate">Walkthrough</span>}
+              </button>
+            )}
+            {scriptTrainingVisible && (
+              <button
+                type="button"
+                title="No training script yet"
+                className={`flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-gray-300 ${collapsed ? "justify-center" : ""}`}
+              >
+                <IconScript className="shrink-0" />
+                {!collapsed && <span className="truncate">Script Training</span>}
+              </button>
+            )}
           </div>
         )}
       </nav>

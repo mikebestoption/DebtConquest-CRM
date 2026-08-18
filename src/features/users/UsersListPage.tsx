@@ -77,10 +77,6 @@ export function UsersListPage() {
 
       <div className="flex flex-wrap items-center justify-between gap-3 rounded-card border border-border bg-white p-4">
         <div className="flex flex-wrap items-center gap-3">
-          {/* Cosmetic only - single fixed company, no data scoping (see server schema.prisma's Staff.serviceCompany comment). */}
-          <select className="rounded-md border border-border bg-white px-3 py-2 text-sm text-ink outline-none" defaultValue="DebtConquest INC" disabled>
-            <option>DebtConquest INC</option>
-          </select>
           <input
             type="text"
             placeholder="Search by Id or Name"

@@ -25,8 +25,11 @@ export async function apiRequest<T>(path: string, options: RequestInit = {}): Pr
   const headers = new Headers(options.headers);
   // FormData bodies (avatar upload) need the browser to set its own
   // multipart boundary in Content-Type - setting it manually breaks the
-  // request, so only default to JSON when the body isn't FormData.
-  if (!(options.body instanceof FormData)) {
+  // request, so only default to JSON when there's an actual JSON body.
+  // Body-less calls (submit-compliance, send-invite, ...) must NOT get this
+  // header either - Fastify's JSON body parser rejects Content-Type:
+  // application/json paired with an empty body (FST_ERR_CTP_EMPTY_JSON_BODY).
+  if (options.body !== undefined && !(options.body instanceof FormData)) {
     headers.set("Content-Type", "application/json");
   }
   if (token) headers.set("Authorization", `Bearer ${token}`);
