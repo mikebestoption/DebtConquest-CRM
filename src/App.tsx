@@ -11,13 +11,15 @@ import { UsersListPage } from "./features/users/UsersListPage";
 import { AddUserPage } from "./features/users/AddUserPage";
 import { UserDetailPage } from "./features/users/UserDetailPage";
 import { ProfilePage } from "./features/profile/ProfilePage";
+import { SourcesListPage } from "./features/sources/SourcesListPage";
+import { SourceFormPage } from "./features/sources/SourceFormPage";
 import { ALL_NAV_ITEMS } from "./features/layout/navConfig";
 
-// Every sidebar item beyond Worklist and User Management > Users is a
-// placeholder route this phase. Generated from the same navConfig the
-// sidebar renders from (children flattened), so a new nav entry always has
-// a route.
-const BUILT_PATHS = ["/worklist", "/manager/users"];
+// Every sidebar item beyond Worklist, User Management > Users, and Lead
+// Management > Sources is a placeholder route this phase. Generated from
+// the same navConfig the sidebar renders from (children flattened), so a
+// new nav entry always has a route.
+const BUILT_PATHS = ["/worklist", "/manager/users", "/manager/leads/sources"];
 const PLACEHOLDER_ITEMS = ALL_NAV_ITEMS.filter((item) => !BUILT_PATHS.includes(item.path));
 
 export default function App() {
@@ -42,6 +44,9 @@ export default function App() {
           <Route path="/manager/users/new" element={<AddUserPage />} />
           <Route path="/manager/users/:id" element={<UserDetailPage />} />
           <Route path="/profile" element={<ProfilePage />} />
+          <Route path="/manager/leads/sources" element={<SourcesListPage />} />
+          <Route path="/manager/leads/sources/new" element={<SourceFormPage />} />
+          <Route path="/manager/leads/sources/:id" element={<SourceFormPage />} />
           {PLACEHOLDER_ITEMS.map((item) => (
             <Route key={item.path} path={item.path} element={<PlaceholderPage title={item.label} />} />
           ))}

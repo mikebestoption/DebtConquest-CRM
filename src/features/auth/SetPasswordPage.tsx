@@ -3,6 +3,7 @@ import { useNavigate, useSearchParams, Link } from "react-router-dom";
 import { setPassword } from "../../api/auth";
 import { useAuthStore } from "../../state/authStore";
 import { ApiError } from "../../api/client";
+import sidebarLogo from "../../assets/sidebarLogo.svg";
 
 // Backs both /set-password (invite link) and /reset-password (forgot-
 // password link) - same action server-side, see api/auth.ts's setPassword.
@@ -50,8 +51,7 @@ export function SetPasswordPage() {
     <div className="flex min-h-screen items-center justify-center bg-deep px-4">
       <div className="w-full max-w-sm rounded-card bg-white p-8 shadow-card">
         <div className="mb-6 flex items-center gap-2">
-          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-teal text-sm font-bold text-white">DC</div>
-          <span className="text-base font-semibold text-ink">DebtConquest CRM</span>
+          <img src={sidebarLogo} alt="DebtConquest" className="h-9 w-auto" />
         </div>
 
         {!token ? (

@@ -2,6 +2,7 @@ import { useState, type FormEvent } from "react";
 import { Link } from "react-router-dom";
 import { forgotPassword } from "../../api/auth";
 import { ApiError } from "../../api/client";
+import sidebarLogo from "../../assets/sidebarLogo.svg";
 
 export function ForgotPasswordPage() {
   const [email, setEmail] = useState("");
@@ -30,8 +31,7 @@ export function ForgotPasswordPage() {
     <div className="flex min-h-screen items-center justify-center bg-deep px-4">
       <div className="w-full max-w-sm rounded-card bg-white p-8 shadow-card">
         <div className="mb-6 flex items-center gap-2">
-          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-teal text-sm font-bold text-white">DC</div>
-          <span className="text-base font-semibold text-ink">DebtConquest CRM</span>
+          <img src={sidebarLogo} alt="DebtConquest" className="h-9 w-auto" />
         </div>
 
         {sent ? (

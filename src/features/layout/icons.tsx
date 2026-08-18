@@ -167,6 +167,33 @@ export const IconBan = (p: SVGProps<SVGSVGElement>) => (
     <path d="m5.5 5.5 13 13" />
   </Svg>
 );
+export const IconPlayCircle = (p: SVGProps<SVGSVGElement>) => (
+  <Svg {...p}>
+    <circle cx="12" cy="12" r="9" />
+    <path d="M10 8.5v7l6-3.5Z" fill="currentColor" stroke="none" />
+  </Svg>
+);
+export const IconScript = (p: SVGProps<SVGSVGElement>) => (
+  <Svg {...p}>
+    <path d="M7 3h8l4 4v13a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z" />
+    <path d="M15 3v4h4" />
+    <path d="M9 12h6M9 15.5h6M9 8.5h2" />
+  </Svg>
+);
+export const IconGrid = (p: SVGProps<SVGSVGElement>) => (
+  <Svg {...p}>
+    <rect x="3" y="3" width="7" height="7" rx="1" />
+    <rect x="14" y="3" width="7" height="7" rx="1" />
+    <rect x="3" y="14" width="7" height="7" rx="1" />
+    <rect x="14" y="14" width="7" height="7" rx="1" />
+  </Svg>
+);
+export const IconFlag = (p: SVGProps<SVGSVGElement>) => (
+  <Svg {...p}>
+    <path d="M5 3v18" />
+    <path d="M5 4h13l-3 4 3 4H5" />
+  </Svg>
+);
 export const IconChevronUpDown = (p: SVGProps<SVGSVGElement>) => (
   <Svg width="12" height="12" {...p}>
     <path d="m7 15 5 5 5-5M7 9l5-5 5 5" />

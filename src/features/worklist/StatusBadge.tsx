@@ -24,6 +24,8 @@ const COLORS: Record<WorklistStatus, string> = {
   COMPLIANCE_RETURNED: "bg-amber-50 text-amber-700",
   SUBMIT_TO_LOAN: "bg-green-50 text-green-700",
   DUPLICATE_NEW: "bg-gray-100 text-gray-600",
+  SENT_TO_DEBTMANAGER: "bg-sky-50 text-sky-700",
+  TRANSFERRED_TO_COMPLIANCE: "bg-violet-50 text-violet-700",
 };
 
 export function StatusBadge({ status }: { status: WorklistStatus }) {

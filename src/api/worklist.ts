@@ -31,6 +31,8 @@ export const WORKLIST_STATUSES = [
   "COMPLIANCE_RETURNED",
   "SUBMIT_TO_LOAN",
   "DUPLICATE_NEW",
+  "SENT_TO_DEBTMANAGER",
+  "TRANSFERRED_TO_COMPLIANCE",
 ] as const;
 export type WorklistStatus = (typeof WORKLIST_STATUSES)[number];
 
@@ -62,6 +64,8 @@ export const STATUS_LABELS: Record<WorklistStatus, string> = {
   COMPLIANCE_RETURNED: "Compliance Returned",
   SUBMIT_TO_LOAN: "Submit To Loan",
   DUPLICATE_NEW: "Duplicate-New",
+  SENT_TO_DEBTMANAGER: "Sent to Debtmanager",
+  TRANSFERRED_TO_COMPLIANCE: "Transferred to Compliance",
 };
 
 export const PROGRAM_LABELS: Record<LeadProgram, string> = {

@@ -1,5 +1,5 @@
 import type { ComponentType, SVGProps } from "react";
-import { IconSearch, IconHome, IconList, IconCalendar, IconUpload, IconUsers, IconTag, IconFileText } from "./icons";
+import { IconSearch, IconHome, IconList, IconCalendar, IconUpload, IconUsers, IconTag, IconFileText, IconFlag, IconGrid, IconX, IconBell } from "./icons";
 
 export interface NavItem {
   label: string;
@@ -32,7 +32,18 @@ export const MANAGER_NAV: NavItem[] = [
       { label: "Teams", path: "/manager/teams", icon: IconUsers },
     ],
   },
-  { label: "Lead Management", path: "/manager/leads", icon: IconTag },
+  {
+    label: "Lead Management",
+    path: "/manager/leads/sources",
+    icon: IconTag,
+    children: [
+      { label: "Sources", path: "/manager/leads/sources", icon: IconTag },
+      { label: "Client Status", path: "/manager/leads/client-status", icon: IconFlag },
+      { label: "Programs States", path: "/manager/leads/programs-states", icon: IconGrid },
+      { label: "Reject Reasons", path: "/manager/leads/reject-reasons", icon: IconX },
+      { label: "Campaigns", path: "/manager/leads/campaigns", icon: IconBell },
+    ],
+  },
   { label: "Templates", path: "/manager/templates", icon: IconFileText },
   { label: "Reports", path: "/manager/reports", icon: IconFileText },
 ];

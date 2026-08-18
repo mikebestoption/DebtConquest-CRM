@@ -1,16 +1,8 @@
-import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuthStore } from "../../state/authStore";
-import { IconBell, IconCalendar, IconSearch, IconSwitch, IconUser, IconX } from "./icons";
+import { IconBell, IconCalendar, IconSearch } from "./icons";
 
 export function TopBar() {
-  const staff = useAuthStore((s) => s.staff);
-  const logout = useAuthStore((s) => s.logout);
   const navigate = useNavigate();
-  const [menuOpen, setMenuOpen] = useState(false);
-  const [bannerDismissed, setBannerDismissed] = useState(false);
-
-  const displayName = staff ? [staff.firstName, staff.lastName].filter(Boolean).join(" ") || staff.email : "";
 
   return (
     <div className="border-b border-border bg-white">
@@ -21,66 +13,16 @@ export function TopBar() {
           </svg>
         </button>
 
+        {/* Account menu (Profile/Switch Account/Logout) moved to the
+            Sidebar's bottom section - see Sidebar.tsx's SidebarUserMenu.
+            The notification banner that used to live here moved to
+            AppShell.tsx as an inset card - see NotificationBanner.tsx. */}
         <div className="flex items-center gap-4">
           <IconSearch className="text-gray-500" />
           <IconBell className="text-gray-500" />
           <IconCalendar className="text-gray-500" />
-          <div className="relative">
-            <button
-              className="flex items-center gap-2 rounded-md px-2 py-1 hover:bg-bg"
-              onClick={() => setMenuOpen((v) => !v)}
-            >
-              <div className="flex h-7 w-7 items-center justify-center overflow-hidden rounded-full bg-deep text-white">
-                {staff?.avatarUrl ? <img src={staff.avatarUrl} alt="" className="h-full w-full object-cover" /> : <IconUser width={14} height={14} />}
-              </div>
-              <span className="text-sm font-medium text-ink">{displayName}</span>
-            </button>
-            {menuOpen && (
-              <div className="absolute right-0 z-10 mt-1 w-44 rounded-md border border-border bg-white py-1 shadow-card">
-                <button
-                  className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-teal hover:bg-bg"
-                  onClick={() => {
-                    setMenuOpen(false);
-                    navigate("/profile");
-                  }}
-                >
-                  <IconUser width={14} height={14} /> Profile
-                </button>
-                <button
-                  title="No other accounts to switch to yet - single-company setup"
-                  className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-gray-400"
-                  disabled
-                >
-                  <IconSwitch width={14} height={14} /> Switch Account
-                </button>
-                <button
-                  className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-ink hover:bg-bg"
-                  onClick={() => {
-                    logout();
-                    navigate("/login");
-                  }}
-                >
-                  <IconX width={14} height={14} /> Logout
-                </button>
-              </div>
-            )}
-          </div>
         </div>
       </div>
-
-      {!bannerDismissed && (
-        <div className="flex items-center justify-between gap-3 bg-sky-50 px-6 py-2.5 text-sm text-sky-900">
-          <span>
-            Click on the following link to receive notifications on this device{" "}
-            <button className="font-medium text-teal hover:underline" onClick={() => setBannerDismissed(true)}>
-              Allow
-            </button>
-          </span>
-          <button aria-label="Dismiss" onClick={() => setBannerDismissed(true)} className="text-sky-700 hover:text-sky-900">
-            <IconX width={16} height={16} />
-          </button>
-        </div>
-      )}
     </div>
   );
 }
