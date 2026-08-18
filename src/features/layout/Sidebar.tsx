@@ -164,9 +164,9 @@ export function Sidebar() {
         </button>
       </div>
 
-      <nav className="flex-1 overflow-y-auto">
+      <nav className="sidebar-scroll flex-1 overflow-y-auto">
         <div className="border-b border-white/10 py-3">
-          {!collapsed && <p className="mb-1 px-3 text-xs font-semibold tracking-wide text-gray-500">MENU</p>}
+          {!collapsed && <p className="mb-1 px-3 text-xs font-semibold tracking-wide text-white/60">MENU</p>}
           <div className="space-y-0.5">
             {MENU_NAV.map((item) => (
               <NavGroup key={item.path} item={item} collapsed={collapsed} />
@@ -175,7 +175,7 @@ export function Sidebar() {
         </div>
 
         <div className="py-3">
-          {!collapsed && <p className="mb-1 px-3 text-xs font-semibold tracking-wide text-gray-500">MANAGER</p>}
+          {!collapsed && <p className="mb-1 px-3 text-xs font-semibold tracking-wide text-white/60">MANAGER</p>}
           <div className="space-y-0.5">
             {MANAGER_NAV.map((item) => (
               <NavGroup key={item.path} item={item} collapsed={collapsed} />

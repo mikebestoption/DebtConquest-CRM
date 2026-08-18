@@ -9,7 +9,7 @@ export function AppShell() {
       <Sidebar />
       <div className="flex min-w-0 flex-1 flex-col">
         <TopBar />
-        <main className="flex-1 overflow-y-auto px-10 py-7">
+        <main className="flex-1 overflow-y-auto px-14 py-7">
           <NotificationBanner />
           <Outlet />
         </main>
