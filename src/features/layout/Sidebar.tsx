@@ -5,6 +5,16 @@ import { useAuthStore } from "../../state/authStore";
 import { IconChevronDown, IconChevronLeft, IconPlayCircle, IconScript, IconSwitch, IconUser, IconX } from "./icons";
 import logo from "../../assets/logo.svg";
 
+// Used both to decide whether a top-level item survives the search filter
+// (label match on itself or on any child) and, inside NavGroup, which of
+// its children to actually render.
+function itemMatches(item: NavItem, q: string): boolean {
+  if (!q) return true;
+  const query = q.toLowerCase();
+  if (item.label.toLowerCase().includes(query)) return true;
+  return item.children?.some((c) => c.label.toLowerCase().includes(query)) ?? false;
+}
+
 function NavRow({ item, nested, collapsed }: { item: Omit<NavItem, "children">; nested?: boolean; collapsed: boolean }) {
   const Icon = item.icon;
   return (
@@ -23,14 +33,22 @@ function NavRow({ item, nested, collapsed }: { item: Omit<NavItem, "children">; 
   );
 }
 
-function NavGroup({ item, collapsed }: { item: NavItem; collapsed: boolean }) {
+function NavGroup({ item, collapsed, query }: { item: NavItem; collapsed: boolean; query: string }) {
   const location = useLocation();
   const navigate = useNavigate();
   const childActive = item.children?.some((c) => location.pathname.startsWith(c.path)) ?? false;
-  const [open, setOpen] = useState(childActive);
+  const [manualOpen, setManualOpen] = useState(childActive);
   const Icon = item.icon;
 
   if (!item.children) return <NavRow item={item} collapsed={collapsed} />;
+
+  const q = query.trim().toLowerCase();
+  const hasQuery = q.length > 0;
+  const ownMatches = hasQuery && item.label.toLowerCase().includes(q);
+  // Query present and only children matched (not the group's own label) -
+  // show just those children, forced open, instead of the full list.
+  const visibleChildren = !hasQuery || ownMatches ? item.children : item.children.filter((c) => c.label.toLowerCase().includes(q));
+  const open = hasQuery ? visibleChildren.length > 0 : manualOpen;
 
   // Collapsed sidebars have no room for a flyout submenu this pass -
   // clicking the icon jumps straight to the group's first child instead.
@@ -53,7 +71,7 @@ function NavGroup({ item, collapsed }: { item: NavItem; collapsed: boolean }) {
     <div>
       <button
         type="button"
-        onClick={() => setOpen((v) => !v)}
+        onClick={() => setManualOpen((v) => !v)}
         className={`flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors ${
           childActive ? "text-white" : "text-gray-300 hover:bg-teal-100 hover:text-white"
         }`}
@@ -64,7 +82,7 @@ function NavGroup({ item, collapsed }: { item: NavItem; collapsed: boolean }) {
       </button>
       {open && (
         <div className="mt-0.5 space-y-0.5">
-          {item.children.map((child) => (
+          {visibleChildren.map((child) => (
             <NavRow key={child.path} item={child} nested collapsed={false} />
           ))}
         </div>
@@ -128,6 +146,14 @@ function SidebarUserMenu({ collapsed }: { collapsed: boolean }) {
 
 export function Sidebar() {
   const [collapsed, setCollapsed] = useState(false);
+  const [query, setQuery] = useState("");
+
+  const q = query.trim().toLowerCase();
+  const menuItems = MENU_NAV.filter((item) => itemMatches(item, q));
+  const managerItems = MANAGER_NAV.filter((item) => itemMatches(item, q));
+  const walkthroughVisible = !q || "walkthrough".includes(q);
+  const scriptTrainingVisible = !q || "script training".includes(q);
+  const noResults = q.length > 0 && menuItems.length === 0 && managerItems.length === 0 && !walkthroughVisible && !scriptTrainingVisible;
 
   return (
     <aside className={`flex h-screen shrink-0 flex-col bg-deep py-4 transition-all ${collapsed ? "w-20 px-2" : "w-60 px-3"}`}>
@@ -138,50 +164,62 @@ export function Sidebar() {
 
       {!collapsed && (
         <div className="relative mb-3 px-1">
-          <IconSearchInput />
+          <IconSearchInput value={query} onChange={setQuery} />
         </div>
       )}
 
       {/* No walkthrough tour / training script content exists yet - these
           are inert placeholders (see SidebarUserMenu's "Switch Account" for
           the same pattern) until there's something real for them to open. */}
-      <div className="space-y-0.5 border-b border-white/10 pb-3">
-        <button
-          type="button"
-          title="No walkthrough content yet"
-          className={`flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-gray-300 ${collapsed ? "justify-center" : ""}`}
-        >
-          <IconPlayCircle className="shrink-0" />
-          {!collapsed && <span className="truncate">Walkthrough</span>}
-        </button>
-        <button
-          type="button"
-          title="No training script yet"
-          className={`flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-gray-300 ${collapsed ? "justify-center" : ""}`}
-        >
-          <IconScript className="shrink-0" />
-          {!collapsed && <span className="truncate">Script Training</span>}
-        </button>
-      </div>
+      {(walkthroughVisible || scriptTrainingVisible) && (
+        <div className="space-y-0.5 border-b border-white/10 pb-3">
+          {walkthroughVisible && (
+            <button
+              type="button"
+              title="No walkthrough content yet"
+              className={`flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-gray-300 ${collapsed ? "justify-center" : ""}`}
+            >
+              <IconPlayCircle className="shrink-0" />
+              {!collapsed && <span className="truncate">Walkthrough</span>}
+            </button>
+          )}
+          {scriptTrainingVisible && (
+            <button
+              type="button"
+              title="No training script yet"
+              className={`flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-gray-300 ${collapsed ? "justify-center" : ""}`}
+            >
+              <IconScript className="shrink-0" />
+              {!collapsed && <span className="truncate">Script Training</span>}
+            </button>
+          )}
+        </div>
+      )}
 
       <nav className="sidebar-scroll flex-1 overflow-y-auto">
-        <div className="border-b border-white/10 py-3">
-          {!collapsed && <p className="mb-1 px-3 text-xs font-semibold tracking-wide text-white/60">MENU</p>}
-          <div className="space-y-0.5">
-            {MENU_NAV.map((item) => (
-              <NavGroup key={item.path} item={item} collapsed={collapsed} />
-            ))}
-          </div>
-        </div>
+        {noResults && !collapsed && <p className="px-3 py-4 text-sm text-white/50">No matching menu items.</p>}
 
-        <div className="py-3">
-          {!collapsed && <p className="mb-1 px-3 text-xs font-semibold tracking-wide text-white/60">MANAGER</p>}
-          <div className="space-y-0.5">
-            {MANAGER_NAV.map((item) => (
-              <NavGroup key={item.path} item={item} collapsed={collapsed} />
-            ))}
+        {menuItems.length > 0 && (
+          <div className="border-b border-white/10 py-3">
+            {!collapsed && <p className="mb-1 px-3 text-xs font-semibold tracking-wide text-white/60">MENU</p>}
+            <div className="space-y-0.5">
+              {menuItems.map((item) => (
+                <NavGroup key={item.path} item={item} collapsed={collapsed} query={q} />
+              ))}
+            </div>
           </div>
-        </div>
+        )}
+
+        {managerItems.length > 0 && (
+          <div className="py-3">
+            {!collapsed && <p className="mb-1 px-3 text-xs font-semibold tracking-wide text-white/60">MANAGER</p>}
+            <div className="space-y-0.5">
+              {managerItems.map((item) => (
+                <NavGroup key={item.path} item={item} collapsed={collapsed} query={q} />
+              ))}
+            </div>
+          </div>
+        )}
       </nav>
 
       <div className="mt-3 space-y-1 border-t border-white/10 pt-3">
@@ -202,18 +240,19 @@ export function Sidebar() {
   );
 }
 
-function IconSearchInput() {
+function IconSearchInput({ value, onChange }: { value: string; onChange: (v: string) => void }) {
   return (
-    <div className="flex items-center gap-2 rounded-md border border-white/10 bg-teal-100 px-3 py-2 text-gray-400">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <div className="flex items-center gap-2 rounded-md border border-white/10 bg-teal-100 px-3 py-2 text-white/70">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="shrink-0">
         <circle cx="11" cy="11" r="7" />
         <path d="m21 21-4.3-4.3" />
       </svg>
       <input
         type="text"
         placeholder="Search menu items"
-        className="w-full bg-transparent text-sm text-gray-200 outline-none placeholder:text-gray-500"
-        disabled
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        className="w-full bg-transparent text-sm text-white outline-none placeholder:text-white/50"
       />
     </div>
   );
