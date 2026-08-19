@@ -11,6 +11,7 @@ import {
 } from "../../api/leadBudget";
 import { Section, INPUT_CLASS } from "./formFields";
 import { IconChevronLeft, IconChevronDown } from "../layout/icons";
+import { Select } from "../../components/controls";
 
 const CURRENCY = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", minimumFractionDigits: 2 });
 const PERCENT = new Intl.NumberFormat("en-US", { style: "percent", minimumFractionDigits: 0, maximumFractionDigits: 1 });
@@ -84,14 +85,14 @@ function HardshipCard({ id, initial, onSaved }: { id: string; initial: BudgetHar
       <div className="space-y-4">
         <div>
           <label className="mb-1 block text-sm text-ink">Hardship Reason</label>
-          <select className={INPUT_CLASS} value={draft.reason ?? ""} onChange={(e) => setDraft((p) => ({ ...p, reason: e.target.value }))}>
+          <Select value={draft.reason ?? ""} onChange={(e) => setDraft((p) => ({ ...p, reason: e.target.value }))}>
             <option value="">Hardship Reason</option>
             {HARDSHIP_REASON_OPTIONS.map((o) => (
               <option key={o} value={o}>
                 {o}
               </option>
             ))}
-          </select>
+          </Select>
         </div>
         <div>
           <label className="mb-1 block text-sm text-ink">Describe Hardship Reason</label>
@@ -216,14 +217,14 @@ function IncomeExpensesCard({
             ))}
             <div>
               <label className="mb-1 block text-sm text-ink">Income Frequency</label>
-              <select className={INPUT_CLASS} value={income.frequency ?? ""} onChange={(e) => setIncome((p) => ({ ...p, frequency: e.target.value }))}>
+              <Select value={income.frequency ?? ""} onChange={(e) => setIncome((p) => ({ ...p, frequency: e.target.value }))}>
                 <option value="">Income Frequency</option>
                 {INCOME_FREQUENCY_OPTIONS.map((o) => (
                   <option key={o} value={o}>
                     {o}
                   </option>
                 ))}
-              </select>
+              </Select>
             </div>
           </div>
           <div className="mt-4">
@@ -239,11 +240,11 @@ function IncomeExpensesCard({
                 {section.title === "Housing" && (
                   <div>
                     <label className="mb-1 block text-sm text-ink">Housing</label>
-                    <select className={INPUT_CLASS} value={housingType} onChange={(e) => setHousingType(e.target.value as "RENT" | "OWN" | "")}>
+                    <Select value={housingType} onChange={(e) => setHousingType(e.target.value as "RENT" | "OWN" | "")}>
                       <option value="">Housing</option>
                       <option value="RENT">Rent</option>
                       <option value="OWN">Own</option>
-                    </select>
+                    </Select>
                   </div>
                 )}
                 {section.fields.map((key) => (

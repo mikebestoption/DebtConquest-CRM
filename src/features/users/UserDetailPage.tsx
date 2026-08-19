@@ -2,8 +2,8 @@ import { useCallback, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { assignRoles, fetchUser, resendInvite, updateUser, updateUserSettings, unassignRole, type UserDetail, type UserSettings } from "../../api/users";
 import { RoleAssignModal } from "./RoleAssignModal";
-import { Toggle } from "../leadDetail/formFields";
 import { IconChevronLeft, IconMail, IconPlus, IconTrash, IconUser } from "../layout/icons";
+import { Radio, Select, Switch } from "../../components/controls";
 
 const INPUT_CLASS = "w-full rounded-md border border-border bg-white px-3 py-2 text-sm text-ink outline-none focus:border-teal";
 const LANGUAGE_OPTIONS = ["English", "Spanish"];
@@ -81,27 +81,21 @@ function DetailsTab({ user, onSaved }: { user: UserDetail; onSaved: (u: UserDeta
           </div>
           <div>
             <label className="mb-1 block text-xs text-muted">Languages Spoken</label>
-            <select className={INPUT_CLASS} value={form.languagesSpoken} onChange={(e) => setForm((p) => ({ ...p, languagesSpoken: e.target.value }))}>
+            <Select value={form.languagesSpoken} onChange={(e) => setForm((p) => ({ ...p, languagesSpoken: e.target.value }))}>
               {LANGUAGE_OPTIONS.map((l) => (
                 <option key={l} value={l}>
                   {l}
                 </option>
               ))}
-            </select>
+            </Select>
           </div>
         </div>
 
         <div className="mt-4">
           <span className="mb-1 block text-xs text-muted">Login</span>
           <div className="flex gap-6">
-            <label className="flex items-center gap-2 text-sm text-ink">
-              <input type="radio" className="accent-teal" checked={form.isActive} onChange={() => setForm((p) => ({ ...p, isActive: true }))} />
-              Active
-            </label>
-            <label className="flex items-center gap-2 text-sm text-ink">
-              <input type="radio" className="accent-teal" checked={!form.isActive} onChange={() => setForm((p) => ({ ...p, isActive: false }))} />
-              Inactive
-            </label>
+            <Radio name="user-active" label="Active" checked={form.isActive} onChange={() => setForm((p) => ({ ...p, isActive: true }))} />
+            <Radio name="user-active" label="Inactive" checked={!form.isActive} onChange={() => setForm((p) => ({ ...p, isActive: false }))} />
           </div>
         </div>
       </div>
@@ -122,9 +116,9 @@ function DetailsTab({ user, onSaved }: { user: UserDetail; onSaved: (u: UserDeta
 
       <div className="rounded-card border border-border bg-white p-5">
         <h3 className="mb-4 font-semibold text-ink">Service Company Selection</h3>
-        <select className={INPUT_CLASS} defaultValue={user.serviceCompany ?? "DebtConquest INC"} disabled>
+        <Select defaultValue={user.serviceCompany ?? "DebtConquest INC"} disabled>
           <option>{user.serviceCompany ?? "DebtConquest INC"}</option>
-        </select>
+        </Select>
       </div>
 
       <div className="flex justify-end gap-3">
@@ -253,7 +247,7 @@ function SettingsTab({ user, onSaved }: { user: UserDetail; onSaved: (u: UserDet
         <h3 className="mb-4 font-semibold text-ink">Get Lead Configuration</h3>
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
           <div className="space-y-2">
-            <Toggle label="New User" checked={settings.newUserLeadRouting} onChange={(v) => setSettings((p) => ({ ...p, newUserLeadRouting: v }))} />
+            <Switch label="New User" checked={settings.newUserLeadRouting} onChange={(v) => setSettings((p) => ({ ...p, newUserLeadRouting: v }))} />
             <div className="max-w-xs">
               <label className="mb-1 block text-xs text-muted">Get Lead Daily Max</label>
               <input
@@ -264,7 +258,7 @@ function SettingsTab({ user, onSaved }: { user: UserDetail; onSaved: (u: UserDet
               />
             </div>
           </div>
-          <Toggle
+          <Switch
             label="Include the Leads in Bouncing Pool"
             checked={settings.includeInBouncingPool}
             onChange={(v) => setSettings((p) => ({ ...p, includeInBouncingPool: v }))}

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { fetchRoles, type Role } from "../../api/roles";
 import { IconSearch, IconX } from "../layout/icons";
+import { Checkbox, Select } from "../../components/controls";
 
 interface RoleAssignModalProps {
   // Roles already assigned (or already staged in step 2 of Add User) - kept
@@ -39,18 +40,18 @@ export function RoleAssignModal({ excludeRoleIds, onClose, onAssign }: RoleAssig
         </div>
 
         <label className="mb-1 block text-sm text-ink">Subscriber</label>
-        <select className="mb-4 w-full rounded-md border border-border bg-white px-3 py-2 text-sm text-ink outline-none" defaultValue="DebtConquest INC" disabled>
-          <option>DebtConquest INC</option>
-        </select>
+        <div className="mb-4">
+          <Select defaultValue="DebtConquest INC" disabled>
+            <option>DebtConquest INC</option>
+          </Select>
+        </div>
 
         <label className="mb-1 block text-sm text-ink">Roles</label>
         <div className="rounded-md border border-border">
-          <div className="flex items-center gap-2 border-b border-border px-2 py-2">
-            <input
-              type="checkbox"
-              className="accent-teal"
+          <div className="flex items-center gap-2 border-b border-border px-3 py-2">
+            <Checkbox
               checked={selected.length > 0 && selected.length === filtered.length}
-              onChange={(e) => setSelected(e.target.checked ? filtered.map((r) => r.id) : [])}
+              onChange={(checked) => setSelected(checked ? filtered.map((r) => r.id) : [])}
             />
             <IconSearch width={14} height={14} className="text-muted" />
             <input
@@ -64,10 +65,9 @@ export function RoleAssignModal({ excludeRoleIds, onClose, onAssign }: RoleAssig
           <div className="max-h-56 overflow-y-auto py-1">
             {filtered.length === 0 && <p className="px-3 py-3 text-sm text-muted">No roles found.</p>}
             {filtered.map((r) => (
-              <label key={r.id} className="flex cursor-pointer items-center gap-2 px-3 py-2 text-sm text-ink hover:bg-bg">
-                <input type="checkbox" className="accent-teal" checked={selected.includes(r.id)} onChange={() => toggle(r.id)} />
-                {r.name}
-              </label>
+              <div key={r.id} className="px-3 py-2 hover:bg-bg">
+                <Checkbox checked={selected.includes(r.id)} onChange={() => toggle(r.id)} label={r.name} className="w-full" />
+              </div>
             ))}
           </div>
         </div>

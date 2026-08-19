@@ -4,6 +4,7 @@ import { createUser } from "../../api/users";
 import type { Role } from "../../api/roles";
 import { RoleAssignModal } from "./RoleAssignModal";
 import { IconPlus, IconTrash } from "../layout/icons";
+import { Select } from "../../components/controls";
 
 const INPUT_CLASS = "w-full rounded-md border border-border bg-white px-3 py-2 text-sm text-ink outline-none focus:border-teal";
 const LANGUAGE_OPTIONS = ["English", "Spanish"];
@@ -106,13 +107,13 @@ export function AddUserPage() {
               </div>
               <div>
                 <label className="mb-1 block text-xs text-muted">Languages Spoken</label>
-                <select className={INPUT_CLASS} value={form.languagesSpoken} onChange={(e) => set("languagesSpoken", e.target.value)}>
+                <Select value={form.languagesSpoken} onChange={(e) => set("languagesSpoken", e.target.value)}>
                   {LANGUAGE_OPTIONS.map((l) => (
                     <option key={l} value={l}>
                       {l}
                     </option>
                   ))}
-                </select>
+                </Select>
               </div>
               <div>
                 <input className={INPUT_CLASS} placeholder="Phone Number" value={form.phone} onChange={(e) => set("phone", e.target.value)} />
@@ -136,9 +137,9 @@ export function AddUserPage() {
           <div className="rounded-card border border-border bg-white p-5">
             <h3 className="mb-4 font-semibold text-ink">Service Company Selection</h3>
             {/* Cosmetic only - single fixed company, see server schema.prisma's Staff.serviceCompany comment. */}
-            <select className={INPUT_CLASS} defaultValue="DebtConquest INC" disabled>
+            <Select defaultValue="DebtConquest INC" disabled>
               <option>DebtConquest INC</option>
-            </select>
+            </Select>
           </div>
 
           <div className="flex justify-end gap-3">

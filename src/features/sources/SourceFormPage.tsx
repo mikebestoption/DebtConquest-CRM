@@ -4,6 +4,7 @@ import { createSource, fetchSource, updateSource, type SourceInput } from "../..
 import { fetchRoles, type Role } from "../../api/roles";
 import { LEAD_PROGRAMS, PROGRAM_LABELS, WORKLIST_STATUSES, STATUS_LABELS } from "../../api/worklist";
 import { ApiError } from "../../api/client";
+import { Checkbox, Radio, Select } from "../../components/controls";
 
 const INPUT_CLASS = "w-full rounded-md border border-border bg-white px-3 py-2 text-sm text-ink outline-none focus:border-teal";
 
@@ -139,9 +140,9 @@ export function SourceFormPage() {
           <div>
             <label className="mb-1 block text-sm text-ink">Company Name</label>
             {/* Cosmetic only - single fixed company, see server schema.prisma's SourceDefinition.companyName comment. */}
-            <select className={INPUT_CLASS} defaultValue="DebtConquest INC" disabled>
+            <Select defaultValue="DebtConquest INC" disabled>
               <option>DebtConquest INC</option>
-            </select>
+            </Select>
           </div>
 
           <div>
@@ -156,14 +157,14 @@ export function SourceFormPage() {
             <label className="mb-1 block text-sm text-ink">
               Default Program <span className="text-error">*</span>
             </label>
-            <select className={INPUT_CLASS} value={form.defaultProgram} onChange={(e) => setForm((p) => ({ ...p, defaultProgram: e.target.value }))}>
+            <Select value={form.defaultProgram} onChange={(e) => setForm((p) => ({ ...p, defaultProgram: e.target.value }))}>
               <option value="">—</option>
               {LEAD_PROGRAMS.map((p) => (
                 <option key={p} value={p}>
                   {PROGRAM_LABELS[p]}
                 </option>
               ))}
-            </select>
+            </Select>
             {errors.defaultProgram && <p className="mt-1 text-xs text-error">{errors.defaultProgram}</p>}
           </div>
 
@@ -176,14 +177,14 @@ export function SourceFormPage() {
             <label className="mb-1 block text-sm text-ink">
               Default Poststatus <span className="text-error">*</span>
             </label>
-            <select className={INPUT_CLASS} value={form.defaultPostStatus} onChange={(e) => setForm((p) => ({ ...p, defaultPostStatus: e.target.value }))}>
+            <Select value={form.defaultPostStatus} onChange={(e) => setForm((p) => ({ ...p, defaultPostStatus: e.target.value }))}>
               <option value="">—</option>
               {WORKLIST_STATUSES.map((s) => (
                 <option key={s} value={s}>
                   {STATUS_LABELS[s]}
                 </option>
               ))}
-            </select>
+            </Select>
             {errors.defaultPostStatus && <p className="mt-1 text-xs text-error">{errors.defaultPostStatus}</p>}
           </div>
 
@@ -191,27 +192,15 @@ export function SourceFormPage() {
             <div>
               <span className="mb-1 block text-sm text-ink">Allow To Enrol</span>
               <div className="flex gap-6">
-                <label className="flex items-center gap-2 text-sm text-ink">
-                  <input type="radio" className="accent-teal" checked={form.allowToEnrol} onChange={() => setForm((p) => ({ ...p, allowToEnrol: true }))} />
-                  Yes
-                </label>
-                <label className="flex items-center gap-2 text-sm text-ink">
-                  <input type="radio" className="accent-teal" checked={!form.allowToEnrol} onChange={() => setForm((p) => ({ ...p, allowToEnrol: false }))} />
-                  No
-                </label>
+                <Radio name="allow-to-enrol" label="Yes" checked={form.allowToEnrol} onChange={() => setForm((p) => ({ ...p, allowToEnrol: true }))} />
+                <Radio name="allow-to-enrol" label="No" checked={!form.allowToEnrol} onChange={() => setForm((p) => ({ ...p, allowToEnrol: false }))} />
               </div>
             </div>
             <div>
               <span className="mb-1 block text-sm text-ink">Active</span>
               <div className="flex gap-6">
-                <label className="flex items-center gap-2 text-sm text-ink">
-                  <input type="radio" className="accent-teal" checked={form.isActive} onChange={() => setForm((p) => ({ ...p, isActive: true }))} />
-                  Yes
-                </label>
-                <label className="flex items-center gap-2 text-sm text-ink">
-                  <input type="radio" className="accent-teal" checked={!form.isActive} onChange={() => setForm((p) => ({ ...p, isActive: false }))} />
-                  No
-                </label>
+                <Radio name="source-active" label="Yes" checked={form.isActive} onChange={() => setForm((p) => ({ ...p, isActive: true }))} />
+                <Radio name="source-active" label="No" checked={!form.isActive} onChange={() => setForm((p) => ({ ...p, isActive: false }))} />
               </div>
             </div>
           </div>
@@ -221,10 +210,7 @@ export function SourceFormPage() {
             <div className="flex flex-wrap gap-3 rounded-md border border-border p-3">
               {roles.length === 0 && <span className="text-sm text-muted">No roles found.</span>}
               {roles.map((r) => (
-                <label key={r.id} className="flex items-center gap-1.5 text-sm text-ink">
-                  <input type="checkbox" className="accent-teal" checked={form.visibleToRoleIds.includes(r.id)} onChange={() => toggleRole(r.id)} />
-                  {r.name}
-                </label>
+                <Checkbox key={r.id} checked={form.visibleToRoleIds.includes(r.id)} onChange={() => toggleRole(r.id)} label={r.name} />
               ))}
             </div>
             <p className="mt-1 text-xs text-muted">Leave all unchecked for visible to everyone.</p>

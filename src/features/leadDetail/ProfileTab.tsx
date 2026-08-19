@@ -8,8 +8,9 @@ import {
   type LeadPersonal,
   type LeadPhone,
 } from "../../api/leadDetail";
-import { CheckboxLabel, FieldGrid, Section, StateSelect, TextInput, Toggle, type FieldDef } from "./formFields";
+import { CheckboxLabel, FieldGrid, Section, StateSelect, TextInput, type FieldDef } from "./formFields";
 import { SummarySection } from "./SummarySection";
+import { Radio, Switch } from "../../components/controls";
 
 const YES_NO = ["Yes", "No"] as const;
 const EMPLOYMENT_STATUS_OPTIONS = ["Employed", "Self-Employed", "Unemployed", "Retired", "Disabled"] as const;
@@ -322,7 +323,7 @@ export function ProfileTab({ lead, onSaved }: { lead: LeadDetail; onSaved: (lead
       </Section>
 
       <div className="rounded-card border border-border bg-white px-5 py-4">
-        <Toggle
+        <Switch
           label="Do you have a Co-Applicant"
           checked={coApplicant.hasCoApplicant ?? false}
           onChange={(v) => setCoApplicant((p) => ({ ...p, hasCoApplicant: v }))}
@@ -380,24 +381,18 @@ export function ProfileTab({ lead, onSaved }: { lead: LeadDetail; onSaved: (lead
                   Other Details
                   <span className="flex items-center gap-3 text-xs font-normal text-muted">
                     Rent or Own
-                    <label className="flex items-center gap-1">
-                      <input
-                        type="radio"
-                        className="accent-teal"
-                        checked={coApplicant.rentOrOwn === "OWN"}
-                        onChange={() => setCoApplicant((p) => ({ ...p, rentOrOwn: "OWN" }))}
-                      />
-                      Own
-                    </label>
-                    <label className="flex items-center gap-1">
-                      <input
-                        type="radio"
-                        className="accent-teal"
-                        checked={coApplicant.rentOrOwn === "RENT"}
-                        onChange={() => setCoApplicant((p) => ({ ...p, rentOrOwn: "RENT" }))}
-                      />
-                      Rent
-                    </label>
+                    <Radio
+                      name="co-applicant-rent-or-own"
+                      label="Own"
+                      checked={coApplicant.rentOrOwn === "OWN"}
+                      onChange={() => setCoApplicant((p) => ({ ...p, rentOrOwn: "OWN" }))}
+                    />
+                    <Radio
+                      name="co-applicant-rent-or-own"
+                      label="Rent"
+                      checked={coApplicant.rentOrOwn === "RENT"}
+                      onChange={() => setCoApplicant((p) => ({ ...p, rentOrOwn: "RENT" }))}
+                    />
                   </span>
                 </h4>
                 <FieldGrid fields={CO_OTHER_FIELDS} values={coApplicant as JsonBucket} onChange={(k, v) => setCoApplicant((p) => ({ ...p, [k]: v }))} />

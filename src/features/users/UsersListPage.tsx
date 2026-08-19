@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { fetchUsers, resendInvite, updateUser, type ActiveFilter, type UserListItem } from "../../api/users";
 import { Pagination } from "../worklist/Pagination";
 import { IconBan, IconMail, IconPencil, IconPlus } from "../layout/icons";
+import { Checkbox } from "../../components/controls";
 
 const PAGE_SIZE = 25;
 
@@ -89,30 +90,22 @@ export function UsersListPage() {
           />
           <div className="flex items-center gap-3 text-sm text-ink">
             <span className="font-medium">Active</span>
-            <label className="flex items-center gap-1.5">
-              <input
-                type="checkbox"
-                className="accent-teal"
-                checked={includeActive}
-                onChange={(e) => {
-                  setIncludeActive(e.target.checked);
-                  setPage(1);
-                }}
-              />
-              Yes
-            </label>
-            <label className="flex items-center gap-1.5">
-              <input
-                type="checkbox"
-                className="accent-teal"
-                checked={includeInactive}
-                onChange={(e) => {
-                  setIncludeInactive(e.target.checked);
-                  setPage(1);
-                }}
-              />
-              No
-            </label>
+            <Checkbox
+              label="Yes"
+              checked={includeActive}
+              onChange={(v) => {
+                setIncludeActive(v);
+                setPage(1);
+              }}
+            />
+            <Checkbox
+              label="No"
+              checked={includeInactive}
+              onChange={(v) => {
+                setIncludeInactive(v);
+                setPage(1);
+              }}
+            />
           </div>
         </div>
         <button onClick={handleClear} className="rounded-md border border-teal px-3 py-2 text-sm font-medium text-teal hover:bg-bg">

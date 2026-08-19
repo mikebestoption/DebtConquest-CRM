@@ -4,6 +4,7 @@ import { fetchSources, type ActiveFilter, type SourceDefinition } from "../../ap
 import { PROGRAM_LABELS, STATUS_LABELS } from "../../api/worklist";
 import { Pagination } from "../worklist/Pagination";
 import { IconFileText, IconPencil, IconPlus } from "../layout/icons";
+import { Checkbox, Select } from "../../components/controls";
 
 const PAGE_SIZE = 20;
 
@@ -63,9 +64,9 @@ export function SourcesListPage() {
       <div className="flex flex-wrap items-center justify-between gap-3 rounded-card border border-border bg-white p-4">
         <div className="flex flex-wrap items-center gap-3">
           {/* Cosmetic only - single fixed company, see server schema.prisma's SourceDefinition.companyName comment. */}
-          <select className="rounded-md border border-border bg-white px-3 py-2 text-sm text-ink outline-none" defaultValue="DebtConquest INC" disabled>
+          <Select fitContent defaultValue="DebtConquest INC" disabled>
             <option>DebtConquest INC</option>
-          </select>
+          </Select>
           <input
             type="text"
             placeholder="Search By Source"
@@ -78,30 +79,22 @@ export function SourcesListPage() {
           />
           <div className="flex items-center gap-3 text-sm text-ink">
             <span className="font-medium">Active</span>
-            <label className="flex items-center gap-1.5">
-              <input
-                type="checkbox"
-                className="accent-teal"
-                checked={includeActive}
-                onChange={(e) => {
-                  setIncludeActive(e.target.checked);
-                  setPage(1);
-                }}
-              />
-              Yes
-            </label>
-            <label className="flex items-center gap-1.5">
-              <input
-                type="checkbox"
-                className="accent-teal"
-                checked={includeInactive}
-                onChange={(e) => {
-                  setIncludeInactive(e.target.checked);
-                  setPage(1);
-                }}
-              />
-              No
-            </label>
+            <Checkbox
+              label="Yes"
+              checked={includeActive}
+              onChange={(v) => {
+                setIncludeActive(v);
+                setPage(1);
+              }}
+            />
+            <Checkbox
+              label="No"
+              checked={includeInactive}
+              onChange={(v) => {
+                setIncludeInactive(v);
+                setPage(1);
+              }}
+            />
           </div>
         </div>
         <button onClick={handleClear} className="rounded-md border border-teal px-3 py-2 text-sm font-medium text-teal hover:bg-bg">

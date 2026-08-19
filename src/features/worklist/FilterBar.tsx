@@ -15,6 +15,7 @@ import {
 } from "../../api/worklist";
 import { MultiSelect } from "./MultiSelect";
 import { IconDownload, IconFilter, IconTrash } from "../layout/icons";
+import { Checkbox, Select } from "../../components/controls";
 
 const STATUS_OPTIONS = WORKLIST_STATUSES.map((v) => ({ value: v, label: STATUS_LABELS[v] }));
 const PROGRAM_OPTIONS = LEAD_PROGRAMS.map((v) => ({ value: v, label: PROGRAM_LABELS[v] }));
@@ -108,15 +109,11 @@ export function FilterBar({ onApply, onExport }: FilterBarProps) {
 
         <div>
           <label className="mb-1 block text-xs font-medium text-muted">Enrolled</label>
-          <select
-            value={draft.enrolled ?? "all"}
-            onChange={(e) => patch({ enrolled: e.target.value as YesNoAll })}
-            className="w-full rounded-md border border-border bg-white px-3 py-2 text-sm outline-none focus:border-teal"
-          >
+          <Select value={draft.enrolled ?? "all"} onChange={(e) => patch({ enrolled: e.target.value as YesNoAll })}>
             <option value="all">All</option>
             <option value="yes">Yes</option>
             <option value="no">No</option>
-          </select>
+          </Select>
         </div>
 
         <div>
@@ -130,28 +127,16 @@ export function FilterBar({ onApply, onExport }: FilterBarProps) {
         <div>
           <span className="mb-1 block text-xs font-medium text-muted">Credit Pulled</span>
           <div className="flex items-center gap-4 pt-2">
-            <label className="flex items-center gap-1.5 text-sm text-ink">
-              <input
-                type="checkbox"
-                className="accent-teal"
-                checked={draft.creditPulled === "all" || draft.creditPulled === "yes"}
-                onChange={(e) =>
-                  patch({ creditPulled: deriveCreditPulled(e.target.checked, draft.creditPulled === "all" || draft.creditPulled === "no") })
-                }
-              />
-              Yes
-            </label>
-            <label className="flex items-center gap-1.5 text-sm text-ink">
-              <input
-                type="checkbox"
-                className="accent-teal"
-                checked={draft.creditPulled === "all" || draft.creditPulled === "no"}
-                onChange={(e) =>
-                  patch({ creditPulled: deriveCreditPulled(draft.creditPulled === "all" || draft.creditPulled === "yes", e.target.checked) })
-                }
-              />
-              No
-            </label>
+            <Checkbox
+              label="Yes"
+              checked={draft.creditPulled === "all" || draft.creditPulled === "yes"}
+              onChange={(checked) => patch({ creditPulled: deriveCreditPulled(checked, draft.creditPulled === "all" || draft.creditPulled === "no") })}
+            />
+            <Checkbox
+              label="No"
+              checked={draft.creditPulled === "all" || draft.creditPulled === "no"}
+              onChange={(checked) => patch({ creditPulled: deriveCreditPulled(draft.creditPulled === "all" || draft.creditPulled === "yes", checked) })}
+            />
           </div>
         </div>
       </div>

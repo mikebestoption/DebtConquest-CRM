@@ -16,6 +16,7 @@ import { WorklistTable } from "./WorklistTable";
 import { Pagination } from "./Pagination";
 import { AddLeadModal } from "./AddLeadModal";
 import { IconPlus } from "../layout/icons";
+import { Select } from "../../components/controls";
 
 const PAGE_SIZE = 25;
 
@@ -86,13 +87,13 @@ export function WorklistPage() {
         <div className="flex items-center gap-3">
           <div>
             <label className="mb-1 block text-xs font-medium text-muted">User</label>
-            <select
+            <Select
+              fitContent
               value={assignedStaffId}
               onChange={(e) => {
                 setAssignedStaffId(e.target.value);
                 setPage(1);
               }}
-              className="rounded-md border border-border bg-white px-3 py-2 text-sm text-ink outline-none focus:border-teal"
             >
               <option value="">All Users</option>
               {staff.map((s) => (
@@ -100,7 +101,7 @@ export function WorklistPage() {
                   {[s.firstName, s.lastName].filter(Boolean).join(" ") || s.email}
                 </option>
               ))}
-            </select>
+            </Select>
           </div>
           <button
             onClick={() => setShowAddLead(true)}

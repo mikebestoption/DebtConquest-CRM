@@ -1,5 +1,6 @@
 import { useState, type ReactNode } from "react";
 import { IconChevronDown } from "../layout/icons";
+import { Checkbox, Select } from "../../components/controls";
 import { US_STATES } from "./usStates";
 
 const INPUT_CLASS =
@@ -79,14 +80,14 @@ function FieldInput({ field, value, onChange }: { field: FieldDef; value: string
   }
   if (field.type === "select") {
     return (
-      <select className={INPUT_CLASS} value={strValue} onChange={(e) => onChange(e.target.value)}>
+      <Select value={strValue} onChange={(e) => onChange(e.target.value)}>
         <option value="">—</option>
         {field.options?.map((opt) => (
           <option key={opt} value={opt}>
             {opt}
           </option>
         ))}
-      </select>
+      </Select>
     );
   }
   return (
@@ -130,12 +131,7 @@ export function TextInput({
 }
 
 export function CheckboxLabel({ checked, onChange, label }: { checked: boolean; onChange: (v: boolean) => void; label: string }) {
-  return (
-    <label className="flex items-center gap-1.5 whitespace-nowrap text-sm text-muted">
-      <input type="checkbox" className="accent-teal" checked={checked} onChange={(e) => onChange(e.target.checked)} />
-      {label}
-    </label>
-  );
+  return <Checkbox checked={checked} onChange={onChange} label={label} className="whitespace-nowrap text-muted" />;
 }
 
 export function StateSelect({ label, value, onChange, required }: { label: string; value: string; onChange: (v: string) => void; required?: boolean }) {
@@ -145,33 +141,15 @@ export function StateSelect({ label, value, onChange, required }: { label: strin
         {label}
         {required && <span className="text-error"> *</span>}
       </label>
-      <select className={INPUT_CLASS} value={value} onChange={(e) => onChange(e.target.value)}>
+      <Select value={value} onChange={(e) => onChange(e.target.value)}>
         <option value="">—</option>
         {US_STATES.map((s) => (
           <option key={s.code} value={s.code}>
             {s.name}
           </option>
         ))}
-      </select>
+      </Select>
     </div>
-  );
-}
-
-export function Toggle({ checked, onChange, label }: { checked: boolean; onChange: (v: boolean) => void; label: string }) {
-  return (
-    <label className="flex items-center gap-2 text-sm font-semibold text-ink">
-      {label}
-      <button
-        type="button"
-        role="switch"
-        aria-checked={checked}
-        onClick={() => onChange(!checked)}
-        className={`relative h-5 w-9 rounded-full transition-colors ${checked ? "bg-teal" : "bg-gray-300"}`}
-      >
-        <span className={`absolute top-0.5 h-4 w-4 rounded-full bg-white transition-transform ${checked ? "translate-x-4" : "translate-x-0.5"}`} />
-      </button>
-      <span className="font-normal text-muted">{checked ? "Yes" : "No"}</span>
-    </label>
   );
 }
 

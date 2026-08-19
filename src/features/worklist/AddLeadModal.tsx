@@ -12,6 +12,7 @@ import {
 import { fetchStaff, type StaffOption } from "../../api/staff";
 import { ApiError } from "../../api/client";
 import { IconX } from "../layout/icons";
+import { Select } from "../../components/controls";
 
 interface AddLeadModalProps {
   onClose: () => void;
@@ -92,57 +93,45 @@ export function AddLeadModal({ onClose, onCreated }: AddLeadModalProps) {
 
           <div className="grid grid-cols-3 gap-3">
             <Field label="State">
-              <select value={form.state ?? ""} onChange={(e) => patch({ state: e.target.value || undefined })} className={INPUT_CLASS}>
+              <Select value={form.state ?? ""} onChange={(e) => patch({ state: e.target.value || undefined })}>
                 <option value="">—</option>
                 {US_STATES.map((s) => (
                   <option key={s} value={s}>
                     {s}
                   </option>
                 ))}
-              </select>
+              </Select>
             </Field>
             <Field label="Program">
-              <select
-                value={form.program ?? ""}
-                onChange={(e) => patch({ program: (e.target.value || undefined) as LeadProgram | undefined })}
-                className={INPUT_CLASS}
-              >
+              <Select value={form.program ?? ""} onChange={(e) => patch({ program: (e.target.value || undefined) as LeadProgram | undefined })}>
                 <option value="">—</option>
                 {LEAD_PROGRAMS.map((p) => (
                   <option key={p} value={p}>
                     {PROGRAM_LABELS[p]}
                   </option>
                 ))}
-              </select>
+              </Select>
             </Field>
             <Field label="Source">
-              <select
-                value={form.source ?? "WEB"}
-                onChange={(e) => patch({ source: e.target.value as LeadSource })}
-                className={INPUT_CLASS}
-              >
+              <Select value={form.source ?? "WEB"} onChange={(e) => patch({ source: e.target.value as LeadSource })}>
                 {LEAD_SOURCES.map((s) => (
                   <option key={s} value={s}>
                     {SOURCE_LABELS[s]}
                   </option>
                 ))}
-              </select>
+              </Select>
             </Field>
           </div>
 
           <Field label="Assign To">
-            <select
-              value={form.assignedStaffId ?? ""}
-              onChange={(e) => patch({ assignedStaffId: e.target.value || undefined })}
-              className={INPUT_CLASS}
-            >
+            <Select value={form.assignedStaffId ?? ""} onChange={(e) => patch({ assignedStaffId: e.target.value || undefined })}>
               <option value="">Unassigned</option>
               {staff.map((s) => (
                 <option key={s.id} value={s.id}>
                   {[s.firstName, s.lastName].filter(Boolean).join(" ") || s.email}
                 </option>
               ))}
-            </select>
+            </Select>
           </Field>
 
           {error && <p className="text-sm text-error">{error}</p>}

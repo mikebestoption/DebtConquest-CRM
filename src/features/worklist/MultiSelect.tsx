@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { IconChevronDown } from "../layout/icons";
+import { Checkbox } from "../../components/controls";
 
 interface Option {
   value: string;
@@ -56,10 +57,9 @@ export function MultiSelect({ label, options, selected, onChange }: MultiSelectP
             </button>
           </div>
           {options.map((opt) => (
-            <label key={opt.value} className="flex cursor-pointer items-center gap-2 px-3 py-1.5 text-sm hover:bg-bg">
-              <input type="checkbox" checked={selected.includes(opt.value)} onChange={() => toggle(opt.value)} className="accent-teal" />
-              {opt.label}
-            </label>
+            <div key={opt.value} className="px-3 py-1.5 hover:bg-bg">
+              <Checkbox checked={selected.includes(opt.value)} onChange={() => toggle(opt.value)} label={opt.label} className="w-full" />
+            </div>
           ))}
         </div>
       )}
