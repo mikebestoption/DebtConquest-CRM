@@ -213,19 +213,30 @@ export function AddUserPage() {
         </p>
       </div>
 
-      <div className="flex items-center justify-center gap-16 border-b border-border pb-4">
-        {STEPS.map((label, i) => (
-          <div key={label} className="flex flex-col items-center gap-1">
-            <div
-              className={`flex h-7 w-7 items-center justify-center rounded-full text-sm font-semibold ${
-                step === i + 1 ? "bg-teal text-white" : step > i + 1 ? "bg-teal/15 text-teal" : "bg-bg text-muted"
-              }`}
-            >
-              {i + 1}
-            </div>
-            <span className={`text-sm ${step === i + 1 ? "font-semibold text-ink" : "text-muted"}`}>{label}</span>
-          </div>
-        ))}
+      <div className="rounded-card border border-border bg-bg px-6 py-6">
+        <div className="relative grid grid-cols-4">
+          <div className="absolute top-4 right-[12.5%] left-[12.5%] h-px bg-border" />
+          {STEPS.map((label, i) => {
+            const isActive = step === i + 1;
+            const isDone = step > i + 1;
+            return (
+              <div key={label} className="relative z-10 flex flex-col items-center gap-2 text-center">
+                <div
+                  className={`flex h-8 w-8 items-center justify-center rounded-full text-sm font-bold transition-colors ${
+                    isActive
+                      ? "bg-teal text-white shadow-[0_0_0_4px_rgba(8,188,182,0.15)]"
+                      : isDone
+                        ? "border-2 border-teal bg-white text-teal"
+                        : "border-2 border-border bg-white text-muted"
+                  }`}
+                >
+                  {i + 1}
+                </div>
+                <span className={`text-sm ${isActive ? "font-semibold text-teal" : isDone ? "font-medium text-ink" : "text-muted"}`}>{label}</span>
+              </div>
+            );
+          })}
+        </div>
       </div>
 
       {step === 1 && (
