@@ -199,3 +199,28 @@ export const IconChevronUpDown = (p: SVGProps<SVGSVGElement>) => (
     <path d="m7 15 5 5 5-5M7 9l5-5 5 5" />
   </Svg>
 );
+export const IconShield = (p: SVGProps<SVGSVGElement>) => (
+  <Svg {...p}>
+    <path d="M12 3 5 6v6c0 4.5 3 7.8 7 9 4-1.2 7-4.5 7-9V6l-7-3Z" />
+    <path d="m9 12 2 2 4-4" />
+  </Svg>
+);
+export const IconBook = (p: SVGProps<SVGSVGElement>) => (
+  <Svg {...p}>
+    <path d="M4 4.5A2.5 2.5 0 0 1 6.5 2H20v17H6.5A2.5 2.5 0 0 0 4 21.5Z" />
+    <path d="M4 16.5A2.5 2.5 0 0 1 6.5 19H20" />
+  </Svg>
+);
+export const IconHistory = (p: SVGProps<SVGSVGElement>) => (
+  <Svg {...p}>
+    <path d="M3 12a9 9 0 1 0 9-9" />
+    <path d="M3 4v5h5" />
+    <path d="M12 7v5l3.5 2" />
+  </Svg>
+);
+export const IconBuilding = (p: SVGProps<SVGSVGElement>) => (
+  <Svg {...p}>
+    <rect x="4" y="3" width="10" height="18" rx="1" />
+    <path d="M14 8h6v13h-6M7 7h.01M11 7h.01M7 11h.01M11 11h.01M7 15h.01M11 15h.01" />
+  </Svg>
+);

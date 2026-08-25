@@ -1,4 +1,10 @@
 import { apiRequest } from "./client";
+import type { AccessPreview } from "./accessProfile";
+
+export type EmploymentStatus = "ACTIVE" | "INACTIVE" | "LEAVE";
+export type EmploymentType = "EMPLOYEE" | "CONTRACTOR";
+export type WorkLocation = "REMOTE" | "OFFICE" | "HYBRID";
+export type ServiceCompany = "DEBTCONQUEST" | "MEJOR_ALIVIO";
 
 export interface UserListItem {
   id: string;
@@ -6,17 +12,16 @@ export interface UserListItem {
   name: string;
   firstName: string | null;
   lastName: string | null;
-  roles: string[];
   email: string;
   phone: string | null;
   lastLoginAt: string | null;
   isActive: boolean;
-}
-
-export interface UserRoleAssignment {
-  roleId: number;
-  name: string;
-  description: string | null;
+  employmentStatus: EmploymentStatus;
+  department: string | null;
+  jobTitle: string | null;
+  orgUnit: string | null;
+  team: string | null;
+  reportsTo: string | null;
 }
 
 export interface UserSettings {
@@ -27,12 +32,24 @@ export interface UserSettings {
 }
 
 export interface UserDetail extends UserListItem {
+  preferredName: string | null;
+  timeZone: string | null;
   languagesSpoken: string | null;
   calendarLink: string | null;
-  jobTitle: string | null;
-  serviceCompany: string | null;
+  serviceCompany: ServiceCompany | null;
+  employmentType: EmploymentType | null;
+  workLocation: WorkLocation | null;
+  hireDate: string | null;
   hasPassword: boolean;
-  roleAssignments: UserRoleAssignment[];
+  departmentId: number | null;
+  jobTitleId: number | null;
+  orgUnitId: number | null;
+  teamId: number | null;
+  reportsToStaffId: string | null;
+  assignedOrgUnitIds: number[];
+  assignedOrgUnitNames: string[];
+  accessProfile: { code: string; version: number } | null;
+  accessPreview: AccessPreview | null;
   settings: UserSettings;
   createdAt: string;
 }
@@ -42,6 +59,7 @@ export type ActiveFilter = "yes" | "no" | "all";
 export interface UserListQuery {
   search?: string;
   active?: ActiveFilter;
+  departmentId?: number;
   page?: number;
   pageSize?: number;
 }
@@ -71,16 +89,33 @@ export function fetchUser(id: string): Promise<{ status: string; user: UserDetai
   return apiRequest(`/users/${id}`);
 }
 
+export function fetchUserAccessPreview(id: string): Promise<{ status: string; preview: AccessPreview | null }> {
+  return apiRequest(`/users/${id}/access-preview`);
+}
+
+// Add User wizard's Step 1 (Basic + Employment) and Step 2 (Organization)
+// fields, submitted together on Create - there is no separate roles step
+// any more, see AddUserPage.
 export interface CreateUserInput {
   firstName: string;
   lastName: string;
+  preferredName?: string;
   phone: string;
   email: string;
-  languagesSpoken?: string;
+  languagesSpoken?: string[];
+  timeZone?: string;
+  employmentStatus?: EmploymentStatus;
+  employmentType?: EmploymentType;
+  workLocation?: WorkLocation;
+  hireDate?: string;
   calendarLink?: string;
-  jobTitle?: string;
-  serviceCompany?: string;
-  roleIds?: number[];
+  serviceCompany?: ServiceCompany;
+  departmentId: number;
+  jobTitleId: number;
+  orgUnitId?: number;
+  teamId?: number;
+  assignedOrgUnitIds?: number[];
+  reportsToStaffId?: string;
 }
 
 export function createUser(input: CreateUserInput): Promise<{ status: string; user: UserDetail }> {
@@ -90,13 +125,24 @@ export function createUser(input: CreateUserInput): Promise<{ status: string; us
 export interface UpdateUserInput {
   firstName?: string;
   lastName?: string;
+  preferredName?: string | null;
   phone?: string | null;
   email?: string;
-  languagesSpoken?: string | null;
-  calendarLink?: string | null;
-  jobTitle?: string | null;
-  serviceCompany?: string | null;
+  languagesSpoken?: string[];
+  timeZone?: string | null;
   isActive?: boolean;
+  employmentStatus?: EmploymentStatus;
+  employmentType?: EmploymentType | null;
+  workLocation?: WorkLocation | null;
+  hireDate?: string | null;
+  calendarLink?: string | null;
+  serviceCompany?: ServiceCompany | null;
+  departmentId?: number;
+  jobTitleId?: number;
+  orgUnitId?: number | null;
+  teamId?: number | null;
+  assignedOrgUnitIds?: number[];
+  reportsToStaffId?: string | null;
 }
 
 export function updateUser(id: string, patch: UpdateUserInput): Promise<{ status: string; user: UserDetail }> {
@@ -105,14 +151,6 @@ export function updateUser(id: string, patch: UpdateUserInput): Promise<{ status
 
 export function updateUserSettings(id: string, patch: Partial<UserSettings>): Promise<{ status: string; user: UserDetail }> {
   return apiRequest(`/users/${id}/settings`, { method: "PATCH", body: JSON.stringify(patch) });
-}
-
-export function assignRoles(id: string, roleIds: number[]): Promise<{ status: string; user: UserDetail }> {
-  return apiRequest(`/users/${id}/roles`, { method: "POST", body: JSON.stringify({ roleIds }) });
-}
-
-export function unassignRole(id: string, roleId: number): Promise<{ status: string; user: UserDetail }> {
-  return apiRequest(`/users/${id}/roles/${roleId}`, { method: "DELETE" });
 }
 
 // "Resend Invite" - covers the invite email bouncing/expiring/never having

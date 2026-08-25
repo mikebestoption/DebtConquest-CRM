@@ -1,5 +1,22 @@
 import type { ComponentType, SVGProps } from "react";
-import { IconSearch, IconHome, IconList, IconCalendar, IconUpload, IconUsers, IconTag, IconFileText, IconFlag, IconGrid, IconX, IconBell } from "./icons";
+import {
+  IconSearch,
+  IconHome,
+  IconList,
+  IconCalendar,
+  IconUpload,
+  IconUsers,
+  IconTag,
+  IconFileText,
+  IconFlag,
+  IconGrid,
+  IconX,
+  IconBell,
+  IconBuilding,
+  IconShield,
+  IconBook,
+  IconHistory,
+} from "./icons";
 
 export interface NavItem {
   label: string;
@@ -30,6 +47,22 @@ export const MANAGER_NAV: NavItem[] = [
     children: [
       { label: "Users", path: "/manager/users", icon: IconUsers },
       { label: "Teams", path: "/manager/teams", icon: IconUsers },
+      { label: "Organization", path: "/manager/organization", icon: IconBuilding },
+    ],
+  },
+  {
+    // Department + Job Title -> Access Profile engine's admin surface -
+    // see accessProfile.service.ts. Kept as its own top-level group (not
+    // nested under User Management) since it's meant to be visible only to
+    // access administrators, not every manager.
+    label: "Access Management",
+    path: "/manager/access/profiles",
+    icon: IconShield,
+    children: [
+      { label: "Access Profiles", path: "/manager/access/profiles", icon: IconShield },
+      { label: "Permission Catalog", path: "/manager/access/permissions", icon: IconBook },
+      { label: "Policy Versions", path: "/manager/access/versions", icon: IconHistory },
+      { label: "Access Audit Log", path: "/manager/access/audit-log", icon: IconFileText },
     ],
   },
   {

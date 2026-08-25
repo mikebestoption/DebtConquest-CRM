@@ -1,9 +1,10 @@
 import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { fetchUsers, resendInvite, updateUser, type ActiveFilter, type UserListItem } from "../../api/users";
+import { fetchDepartments, type Department } from "../../api/orgHierarchy";
 import { Pagination } from "../worklist/Pagination";
 import { IconBan, IconMail, IconPencil, IconPlus } from "../layout/icons";
-import { Checkbox } from "../../components/controls";
+import { Checkbox, Select } from "../../components/controls";
 
 const PAGE_SIZE = 25;
 
@@ -12,11 +13,19 @@ function formatDateTime(iso: string | null): string {
   return new Date(iso).toLocaleString(undefined, { month: "2-digit", day: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" });
 }
 
+const STATUS_PILL: Record<UserListItem["employmentStatus"], string> = {
+  ACTIVE: "bg-green-50 text-green-700",
+  LEAVE: "bg-amber-50 text-amber-700",
+  INACTIVE: "bg-gray-100 text-gray-600",
+};
+
 export function UsersListPage() {
   const navigate = useNavigate();
   const [search, setSearch] = useState("");
   const [includeActive, setIncludeActive] = useState(true);
   const [includeInactive, setIncludeInactive] = useState(true);
+  const [departments, setDepartments] = useState<Department[]>([]);
+  const [departmentId, setDepartmentId] = useState<number | "">("");
   const [page, setPage] = useState(1);
   const [items, setItems] = useState<UserListItem[]>([]);
   const [total, setTotal] = useState(0);
@@ -24,15 +33,19 @@ export function UsersListPage() {
 
   const activeFilter: ActiveFilter = includeActive && includeInactive ? "all" : includeActive ? "yes" : includeInactive ? "no" : "all";
 
+  useEffect(() => {
+    fetchDepartments().then((res) => setDepartments(res.departments));
+  }, []);
+
   const load = useCallback(() => {
     setLoading(true);
-    fetchUsers({ search: search || undefined, active: activeFilter, page, pageSize: PAGE_SIZE })
+    fetchUsers({ search: search || undefined, active: activeFilter, departmentId: departmentId || undefined, page, pageSize: PAGE_SIZE })
       .then((res) => {
         setItems(res.items);
         setTotal(res.total);
       })
       .finally(() => setLoading(false));
-  }, [search, activeFilter, page]);
+  }, [search, activeFilter, departmentId, page]);
 
   useEffect(() => {
     load();
@@ -42,6 +55,7 @@ export function UsersListPage() {
     setSearch("");
     setIncludeActive(true);
     setIncludeInactive(true);
+    setDepartmentId("");
     setPage(1);
   }
 
@@ -67,7 +81,10 @@ export function UsersListPage() {
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h1 className="text-2xl font-bold text-ink">Users</h1>
+        <div>
+          <h1 className="text-2xl font-bold text-ink">Users</h1>
+          <p className="mt-0.5 text-sm text-muted">Access is inherited from Department + Job Title - there's no per-user permission list here.</p>
+        </div>
         <button
           onClick={() => navigate("/manager/users/new")}
           className="flex items-center gap-1.5 rounded-md bg-teal px-4 py-2 text-sm font-semibold text-white hover:bg-teal-hover"
@@ -88,6 +105,21 @@ export function UsersListPage() {
             }}
             className="w-56 rounded-md border border-border bg-white px-3 py-2 text-sm text-ink outline-none focus:border-teal"
           />
+          <Select
+            fitContent
+            value={departmentId}
+            onChange={(e) => {
+              setDepartmentId(e.target.value ? Number(e.target.value) : "");
+              setPage(1);
+            }}
+          >
+            <option value="">All Departments</option>
+            {departments.map((d) => (
+              <option key={d.id} value={d.id}>
+                {d.name}
+              </option>
+            ))}
+          </Select>
           <div className="flex items-center gap-3 text-sm text-ink">
             <span className="font-medium">Active</span>
             <Checkbox
@@ -117,30 +149,31 @@ export function UsersListPage() {
 
       <div className="overflow-hidden rounded-card border border-border bg-white">
         <div className="overflow-x-auto">
-          <table className="w-full min-w-[900px] text-left text-sm">
+          <table className="w-full min-w-270 text-left text-sm">
             <thead>
               <tr className="border-b border-border text-xs font-semibold text-muted">
                 <th className="px-4 py-3">Id</th>
                 <th className="px-4 py-3">Name</th>
-                <th className="px-4 py-3">Role</th>
-                <th className="px-4 py-3">Email</th>
-                <th className="px-4 py-3">Phone Number</th>
+                <th className="px-4 py-3">Department</th>
+                <th className="px-4 py-3">Job Title</th>
+                <th className="px-4 py-3">Team / Unit</th>
+                <th className="px-4 py-3">Reports To</th>
                 <th className="px-4 py-3">Last Login</th>
-                <th className="px-4 py-3">Active</th>
+                <th className="px-4 py-3">Status</th>
                 <th className="px-4 py-3">Actions</th>
               </tr>
             </thead>
             <tbody>
               {loading && (
                 <tr>
-                  <td colSpan={8} className="px-4 py-10 text-center text-muted">
+                  <td colSpan={9} className="px-4 py-10 text-center text-muted">
                     Loading…
                   </td>
                 </tr>
               )}
               {!loading && items.length === 0 && (
                 <tr>
-                  <td colSpan={8} className="px-4 py-10 text-center text-muted">
+                  <td colSpan={9} className="px-4 py-10 text-center text-muted">
                     No users match these filters.
                   </td>
                 </tr>
@@ -153,15 +186,15 @@ export function UsersListPage() {
                       <button className="font-medium text-ink hover:text-teal hover:underline" onClick={() => navigate(`/manager/users/${u.id}`)}>
                         {u.name}
                       </button>
+                      <div className="text-xs text-teal">{u.email}</div>
                     </td>
-                    <td className="px-4 py-3 text-muted">{u.roles.join(", ") || "—"}</td>
-                    <td className="px-4 py-3 text-teal">{u.email}</td>
-                    <td className="px-4 py-3 text-teal">{u.phone ?? "—"}</td>
+                    <td className="px-4 py-3 text-ink">{u.department ?? "—"}</td>
+                    <td className="px-4 py-3 text-ink">{u.jobTitle ?? "—"}</td>
+                    <td className="px-4 py-3 text-muted">{u.team ?? u.orgUnit ?? "—"}</td>
+                    <td className="px-4 py-3 text-muted">{u.reportsTo ?? "—"}</td>
                     <td className="px-4 py-3 text-muted">{formatDateTime(u.lastLoginAt)}</td>
                     <td className="px-4 py-3">
-                      <span className={`rounded px-2 py-0.5 text-xs font-semibold ${u.isActive ? "bg-green-50 text-green-700" : "bg-gray-100 text-gray-600"}`}>
-                        {u.isActive ? "ACTIVE" : "INACTIVE"}
-                      </span>
+                      <span className={`rounded px-2 py-0.5 text-xs font-semibold ${STATUS_PILL[u.employmentStatus]}`}>{u.employmentStatus}</span>
                     </td>
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-2 text-muted">
