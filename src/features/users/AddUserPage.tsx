@@ -34,7 +34,6 @@ interface BasicForm {
   workLocation: "REMOTE" | "OFFICE" | "HYBRID";
   hireDate: string;
   calendarLink: string;
-  serviceCompany: "DEBTCONQUEST" | "MEJOR_ALIVIO";
 }
 
 const EMPTY_BASIC: BasicForm = {
@@ -50,7 +49,6 @@ const EMPTY_BASIC: BasicForm = {
   workLocation: "OFFICE",
   hireDate: "",
   calendarLink: "",
-  serviceCompany: "DEBTCONQUEST",
 };
 
 export function AddUserPage() {
@@ -186,7 +184,6 @@ export function AddUserPage() {
         workLocation: basic.workLocation,
         hireDate: basic.hireDate || undefined,
         calendarLink: basic.calendarLink || undefined,
-        serviceCompany: basic.serviceCompany,
         departmentId,
         jobTitleId,
         orgUnitId: org.orgUnitId,
@@ -298,13 +295,6 @@ export function AddUserPage() {
             <h3 className="mb-1 font-semibold text-ink">Employment Information</h3>
             <p className="mb-4 text-sm text-muted">Contract and logistics - this does not affect access.</p>
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              <div>
-                <label className="mb-1 block text-xs text-muted">Service Company</label>
-                <Select value={basic.serviceCompany} onChange={(e) => setBasicField("serviceCompany", e.target.value as BasicForm["serviceCompany"])}>
-                  <option value="DEBTCONQUEST">DebtConquest, Inc.</option>
-                  <option value="MEJOR_ALIVIO">Mejor Alivio</option>
-                </Select>
-              </div>
               <div>
                 <label className="mb-1 block text-xs text-muted">Employment Type</label>
                 <Select value={basic.employmentType} onChange={(e) => setBasicField("employmentType", e.target.value as BasicForm["employmentType"])}>

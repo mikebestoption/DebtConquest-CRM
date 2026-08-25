@@ -60,7 +60,7 @@ export function OrganizationPage() {
   return (
     <div className="space-y-4">
       <div>
-        <h1 className="text-2xl font-bold text-ink">Organization</h1>
+        <h1 className="text-2xl font-bold text-ink">Departments</h1>
         <p className="mt-0.5 text-sm text-muted">One hierarchy engine for every department - the labels change, the structure underneath doesn't.</p>
       </div>
 

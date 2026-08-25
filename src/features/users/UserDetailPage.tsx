@@ -10,7 +10,6 @@ import {
   type EmploymentStatus,
   type EmploymentType,
   type WorkLocation,
-  type ServiceCompany,
 } from "../../api/users";
 import {
   fetchDepartments,
@@ -51,7 +50,6 @@ function DetailsTab({ user, onSaved }: { user: UserDetail; onSaved: (u: UserDeta
     employmentStatus: user.employmentStatus,
     isActive: user.isActive,
     calendarLink: user.calendarLink ?? "",
-    serviceCompany: user.serviceCompany ?? "DEBTCONQUEST",
     employmentType: user.employmentType ?? "EMPLOYEE",
     workLocation: user.workLocation ?? "OFFICE",
     hireDate: user.hireDate ? user.hireDate.slice(0, 10) : "",
@@ -70,7 +68,6 @@ function DetailsTab({ user, onSaved }: { user: UserDetail; onSaved: (u: UserDeta
       employmentStatus: user.employmentStatus,
       isActive: user.isActive,
       calendarLink: user.calendarLink ?? "",
-      serviceCompany: user.serviceCompany ?? "DEBTCONQUEST",
       employmentType: user.employmentType ?? "EMPLOYEE",
       workLocation: user.workLocation ?? "OFFICE",
       hireDate: user.hireDate ? user.hireDate.slice(0, 10) : "",
@@ -95,7 +92,6 @@ function DetailsTab({ user, onSaved }: { user: UserDetail; onSaved: (u: UserDeta
         employmentStatus: form.employmentStatus,
         isActive: form.isActive,
         calendarLink: form.calendarLink || null,
-        serviceCompany: form.serviceCompany,
         employmentType: form.employmentType,
         workLocation: form.workLocation,
         hireDate: form.hireDate || null,
@@ -171,13 +167,6 @@ function DetailsTab({ user, onSaved }: { user: UserDetail; onSaved: (u: UserDeta
       <div className="rounded-card border border-border bg-white p-5">
         <h3 className="mb-4 font-semibold text-ink">Employment Information</h3>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          <div>
-            <label className="mb-1 block text-xs text-muted">Service Company</label>
-            <Select value={form.serviceCompany} onChange={(e) => setForm((p) => ({ ...p, serviceCompany: e.target.value as ServiceCompany }))}>
-              <option value="DEBTCONQUEST">DebtConquest, Inc.</option>
-              <option value="MEJOR_ALIVIO">Mejor Alivio</option>
-            </Select>
-          </div>
           <div>
             <label className="mb-1 block text-xs text-muted">Employment Type</label>
             <Select value={form.employmentType} onChange={(e) => setForm((p) => ({ ...p, employmentType: e.target.value as EmploymentType }))}>

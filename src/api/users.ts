@@ -6,6 +6,15 @@ export type EmploymentType = "EMPLOYEE" | "CONTRACTOR";
 export type WorkLocation = "REMOTE" | "OFFICE" | "HYBRID";
 export type ServiceCompany = "DEBTCONQUEST" | "MEJOR_ALIVIO";
 
+// Every account today is DebtConquest - this only exists so the enum
+// column reads as a name instead of a raw DEBTCONQUEST/MEJOR_ALIVIO
+// wherever it's displayed (e.g. ProfilePage), not because there's a
+// company picker anywhere any more.
+export const SERVICE_COMPANY_LABEL: Record<ServiceCompany, string> = {
+  DEBTCONQUEST: "DebtConquest, Inc.",
+  MEJOR_ALIVIO: "Mejor Alivio",
+};
+
 export interface UserListItem {
   id: string;
   staffNumber: number;

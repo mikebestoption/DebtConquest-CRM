@@ -45,9 +45,9 @@ export const MANAGER_NAV: NavItem[] = [
     path: "/manager/users",
     icon: IconUsers,
     children: [
-      { label: "Users", path: "/manager/users", icon: IconUsers },
+      { label: "Departments", path: "/manager/organization", icon: IconBuilding },
       { label: "Teams", path: "/manager/teams", icon: IconUsers },
-      { label: "Organization", path: "/manager/organization", icon: IconBuilding },
+      { label: "Users", path: "/manager/users", icon: IconUsers },
     ],
   },
   {
