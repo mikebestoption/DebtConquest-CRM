@@ -6,6 +6,7 @@ import { PROGRAM_LABELS, SOURCE_LABELS, STATUS_LABELS, WORKLIST_STATUSES, LEAD_P
 import { PillSelect } from "./formFields";
 import { ProfileTab } from "./ProfileTab";
 import { BudgetTab } from "./BudgetTab";
+import { CreditorTab } from "./CreditorTab";
 import { IconChevronLeft } from "../layout/icons";
 
 const TABS = ["Profile", "Budget", "Creditor", "Bank Info", "Docs", "History"] as const;
@@ -148,7 +149,8 @@ export function LeadDetailPage() {
 
       {activeTab === "Profile" && <ProfileTab lead={lead} onSaved={setLead} />}
       {activeTab === "Budget" && <BudgetTab leadId={lead.id} />}
-      {activeTab !== "Profile" && activeTab !== "Budget" && (
+      {activeTab === "Creditor" && <CreditorTab leadId={lead.id} />}
+      {activeTab !== "Profile" && activeTab !== "Budget" && activeTab !== "Creditor" && (
         <div className="rounded-card border border-dashed border-border bg-white p-10 text-center text-sm text-muted">{activeTab} - coming soon</div>
       )}
     </div>

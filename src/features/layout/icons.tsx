@@ -218,6 +218,23 @@ export const IconHistory = (p: SVGProps<SVGSVGElement>) => (
     <path d="M12 7v5l3.5 2" />
   </Svg>
 );
+export const IconInfo = (p: SVGProps<SVGSVGElement>) => (
+  <Svg {...p}>
+    <circle cx="12" cy="12" r="9" />
+    <path d="M12 11v6M12 7.5h.01" />
+  </Svg>
+);
+export const IconAlertTriangle = (p: SVGProps<SVGSVGElement>) => (
+  <Svg {...p}>
+    <path d="M10.6 3.9 2.4 18a1.7 1.7 0 0 0 1.5 2.5h16.2a1.7 1.7 0 0 0 1.5-2.5L13.4 3.9a1.7 1.7 0 0 0-2.8 0Z" />
+    <path d="M12 9.5v4.5M12 17h.01" />
+  </Svg>
+);
+export const IconCloud = (p: SVGProps<SVGSVGElement>) => (
+  <Svg {...p}>
+    <path d="M7 18h11a4 4 0 0 0 .4-8 5.5 5.5 0 0 0-10.6-1.8A4.5 4.5 0 0 0 7 18Z" />
+  </Svg>
+);
 export const IconBuilding = (p: SVGProps<SVGSVGElement>) => (
   <Svg {...p}>
     <rect x="4" y="3" width="10" height="18" rx="1" />
