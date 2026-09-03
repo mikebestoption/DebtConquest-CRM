@@ -59,7 +59,7 @@ function sortValue(c: Creditor, key: SortKey): string | number {
   return v as string | number;
 }
 
-export function CreditorTab({ leadId }: { leadId: string }) {
+export function CreditorTab({ leadId, onOpenAdditionalInfo }: { leadId: string; onOpenAdditionalInfo?: () => void }) {
   const [data, setData] = useState<CreditorListResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [selected, setSelected] = useState<Set<string>>(new Set());
@@ -216,6 +216,14 @@ export function CreditorTab({ leadId }: { leadId: string }) {
           <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-teal text-white">$</div>
           <span className="font-semibold text-ink">Creditor Details</span>
           <IconInfo width={15} height={15} className="text-muted" />
+          {onOpenAdditionalInfo && (
+            <button
+              onClick={onOpenAdditionalInfo}
+              className="ml-auto rounded-md border border-teal px-4 py-1.5 text-sm font-semibold text-teal hover:bg-teal hover:text-white"
+            >
+              Additional Info
+            </button>
+          )}
         </div>
 
         <div className="flex items-center justify-between px-5 py-3">

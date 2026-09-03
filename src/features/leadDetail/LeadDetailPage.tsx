@@ -7,9 +7,10 @@ import { PillSelect } from "./formFields";
 import { ProfileTab } from "./ProfileTab";
 import { BudgetTab } from "./BudgetTab";
 import { CreditorTab } from "./CreditorTab";
+import { AdditionalInfoTab } from "./AdditionalInfoTab";
 import { IconChevronLeft } from "../layout/icons";
 
-const TABS = ["Profile", "Budget", "Creditor", "Bank Info", "Docs", "History"] as const;
+const TABS = ["Profile", "Budget", "Creditor", "Bank Info", "Additional Info", "Docs", "History"] as const;
 type Tab = (typeof TABS)[number];
 
 const STATUS_OPTIONS = WORKLIST_STATUSES.map((s) => ({ value: s, label: STATUS_LABELS[s] }));
@@ -149,8 +150,9 @@ export function LeadDetailPage() {
 
       {activeTab === "Profile" && <ProfileTab lead={lead} onSaved={setLead} />}
       {activeTab === "Budget" && <BudgetTab leadId={lead.id} />}
-      {activeTab === "Creditor" && <CreditorTab leadId={lead.id} />}
-      {activeTab !== "Profile" && activeTab !== "Budget" && activeTab !== "Creditor" && (
+      {activeTab === "Creditor" && <CreditorTab leadId={lead.id} onOpenAdditionalInfo={() => setActiveTab("Additional Info")} />}
+      {activeTab === "Additional Info" && <AdditionalInfoTab leadId={lead.id} />}
+      {activeTab !== "Profile" && activeTab !== "Budget" && activeTab !== "Creditor" && activeTab !== "Additional Info" && (
         <div className="rounded-card border border-dashed border-border bg-white p-10 text-center text-sm text-muted">{activeTab} - coming soon</div>
       )}
     </div>
