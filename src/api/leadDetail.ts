@@ -229,3 +229,9 @@ export function updateProfileDetail(id: string, patch: ProfileDetailPatch): Prom
 export function submitLeadToCompliance(id: string): Promise<{ status: string }> {
   return apiRequest(`/leads/${id}/submit-compliance`, { method: "POST" });
 }
+
+// Permanently deletes a lead and everything under it. Irreversible - meant
+// for cleaning up orphaned/duplicate test leads, not routine use.
+export function deleteLead(id: string): Promise<{ status: string }> {
+  return apiRequest(`/leads/${id}`, { method: "DELETE" });
+}

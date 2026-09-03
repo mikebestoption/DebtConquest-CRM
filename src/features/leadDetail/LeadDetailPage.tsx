@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { fetchStaff, type StaffOption } from "../../api/staff";
-import { fetchLeadDetail, submitLeadToCompliance, updateLeadDetail, type LeadDetail } from "../../api/leadDetail";
+import { fetchLeadDetail, submitLeadToCompliance, updateLeadDetail, deleteLead, type LeadDetail } from "../../api/leadDetail";
 import { PROGRAM_LABELS, SOURCE_LABELS, STATUS_LABELS, WORKLIST_STATUSES, LEAD_PROGRAMS, LEAD_SOURCES } from "../../api/worklist";
 import { PillSelect } from "./formFields";
 import { ProfileTab } from "./ProfileTab";
@@ -56,6 +56,14 @@ export function LeadDetailPage() {
     await load();
   }
 
+  async function handleDeleteLead() {
+    if (!id || !lead) return;
+    const name = [lead.applicant.firstName, lead.applicant.lastName].filter(Boolean).join(" ") || `ID-${lead.leadNumber}`;
+    if (!window.confirm(`Permanently delete ${name} and all of their data (debts, creditors, credit reports, documents)? This cannot be undone.`)) return;
+    await deleteLead(id);
+    navigate("/worklist");
+  }
+
   if (error) {
     return <p className="p-6 text-sm text-error">{error}</p>;
   }
@@ -100,6 +108,13 @@ export function LeadDetailPage() {
               className={`rounded-full px-3 py-1 text-xs font-semibold ${lead.rejected ? "bg-error text-white" : "bg-gray-200 text-gray-500"}`}
             >
               Reject Lead
+            </button>
+            <button
+              onClick={handleDeleteLead}
+              title="Permanently delete this lead and all of its data"
+              className="rounded-md border border-error px-3 py-1.5 text-xs font-semibold text-error hover:bg-error hover:text-white"
+            >
+              Delete Lead
             </button>
           </div>
         </div>
