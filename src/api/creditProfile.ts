@@ -139,6 +139,7 @@ export interface CreditProfileView {
   reportProvider: string | null;
   bureausCovered: string[];
   extractionConfidence: number | null;
+  warnings: string[];
   score: ScoreSummary;
   revolving: RevolvingSummary;
   loans: LoanSummary;
