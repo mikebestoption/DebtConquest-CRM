@@ -26,6 +26,25 @@
   color-scheme: light;
 }
 
+/* AppShell (Sidebar + main) is built as a fixed-height h-screen row with its
+   own internal overflow-y-auto panels - the document itself should never
+   scroll. Without an explicit height chain here, html/body/#root default to
+   auto (sized to content) and any stray overflow (e.g. a wide unwrapped
+   table, a momentarily-taller loading state) can push body past one
+   viewport, revealing its bg-bg background as blank space below the shell
+   once that outer scrollbar gets used. Pinning the chain to 100% and hiding
+   body's own overflow keeps scrolling confined to the panels that are
+   actually meant to scroll. */
+html,
+body {
+  height: 100%;
+  overflow: hidden;
+}
+
+#root {
+  height: 100%;
+}
+
 body {
   margin: 0;
   font-family: var(--font-sans);

@@ -7,7 +7,8 @@ import {
   type CreditProfileView,
 } from "../../api/creditProfile";
 import { Select } from "../../components/controls";
-import { IconChevronDown, IconInfo } from "../layout/icons";
+import { IconChevronDown, IconInfo, IconUpload } from "../layout/icons";
+import { UploadCreditReportModal } from "./UploadCreditReportModal";
 
 const CURRENCY = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 });
 const PERIOD_LABELS: Record<ComparePeriod, string> = { "30": "30 Days", "60": "60 Days", "90": "90 Days", all: "All History" };
@@ -145,6 +146,7 @@ export function AdditionalInfoTab({ leadId }: { leadId: string }) {
   const [profile, setProfile] = useState<CreditProfileView | null | undefined>(undefined);
   const [error, setError] = useState<string | null>(null);
   const [closedSections, setClosedSections] = useState<Set<string>>(DEFAULT_OPEN);
+  const [showUpload, setShowUpload] = useState(false);
 
   const load = useCallback(async () => {
     try {
@@ -182,10 +184,32 @@ export function AdditionalInfoTab({ leadId }: { leadId: string }) {
 
   if (profile === null) {
     return (
-      <div className="rounded-card border border-dashed border-border bg-white p-10 text-center">
-        <p className="text-sm font-semibold text-ink">No credit report on file yet</p>
-        <p className="mt-1 text-xs text-muted">Once a credit report is uploaded for this applicant (via the client calculator's "Upload Credit Report" step), the current profile, historical snapshots and trends will appear here.</p>
-      </div>
+      <>
+        <div className="rounded-card border border-dashed border-border bg-white p-10 text-center">
+          <p className="text-sm font-semibold text-ink">No credit report on file yet</p>
+          <p className="mt-1 text-xs text-muted">
+            Upload one below, or wait for the applicant to upload one from their own wizard's "Upload Credit Report" step - either way, the current
+            profile, historical snapshots and trends will appear here.
+          </p>
+          <button
+            type="button"
+            onClick={() => setShowUpload(true)}
+            className="mt-4 inline-flex items-center gap-1.5 rounded-md bg-teal px-4 py-2 text-sm font-semibold text-white hover:bg-teal-hover"
+          >
+            <IconUpload width={16} height={16} /> Upload Credit Report
+          </button>
+        </div>
+        {showUpload && (
+          <UploadCreditReportModal
+            leadId={leadId}
+            onClose={() => setShowUpload(false)}
+            onUploaded={() => {
+              setShowUpload(false);
+              load();
+            }}
+          />
+        )}
+      </>
     );
   }
 
@@ -193,6 +217,7 @@ export function AdditionalInfoTab({ leadId }: { leadId: string }) {
   const score = profile.score;
 
   return (
+    <>
     <div className="space-y-3">
       <div className="flex flex-wrap items-center justify-between gap-3 rounded-card border border-border bg-white px-4 py-2.5">
         <div className="flex flex-wrap gap-6">
@@ -220,6 +245,13 @@ export function AdditionalInfoTab({ leadId }: { leadId: string }) {
           </Select>
           <button type="button" onClick={() => setSelectedSnapshotId(undefined)} className="rounded-md border border-border px-3 py-2 text-xs font-semibold text-ink hover:border-teal">
             Current
+          </button>
+          <button
+            type="button"
+            onClick={() => setShowUpload(true)}
+            className="flex items-center gap-1.5 rounded-md bg-teal px-3 py-2 text-xs font-semibold text-white hover:bg-teal-hover"
+          >
+            <IconUpload width={14} height={14} /> Upload Credit Report
           </button>
         </div>
       </div>
@@ -552,5 +584,16 @@ export function AdditionalInfoTab({ leadId }: { leadId: string }) {
 
       <p className="px-1 text-[10px] text-muted">Values shown are calculated by DebtConquest from the normalized credit report data and update automatically when a new report is uploaded.</p>
     </div>
+    {showUpload && (
+      <UploadCreditReportModal
+        leadId={leadId}
+        onClose={() => setShowUpload(false)}
+        onUploaded={() => {
+          setShowUpload(false);
+          load();
+        }}
+      />
+    )}
+    </>
   );
 }

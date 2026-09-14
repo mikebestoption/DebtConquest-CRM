@@ -161,3 +161,16 @@ export function fetchCreditProfile(leadId: string, opts: { snapshotId?: string; 
   if (opts.snapshotId) params.set("snapshotId", opts.snapshotId);
   return apiRequest(`/leads/${leadId}/credit-profile?${params.toString()}`);
 }
+
+// Additional Info tab's own "Upload Credit Report" action - lets a staff
+// member attach a report by hand (a phone-collected PDF, a report the
+// customer never uploaded through their own wizard step, a corrected
+// re-upload, etc.) instead of only ever waiting on the customer-facing
+// flow. Same AI extraction pipeline as that wizard step - see server's
+// services/creditReportUpload.service.ts. Runs the same GPT extraction as
+// the wizard's own upload, so this can take a while on a long report.
+export function uploadCreditReport(leadId: string, file: File): Promise<{ status: string; creditReportId: string }> {
+  const form = new FormData();
+  form.append("file", file);
+  return apiRequest(`/leads/${leadId}/credit-report`, { method: "POST", body: form });
+}
