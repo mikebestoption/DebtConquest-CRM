@@ -235,3 +235,9 @@ export function submitLeadToCompliance(id: string): Promise<{ status: string }> 
 export function deleteLead(id: string): Promise<{ status: string }> {
   return apiRequest(`/leads/${id}`, { method: "DELETE" });
 }
+
+// Worklist "select rows > Delete" bulk action - same cascade as deleteLead
+// above, fanned out over a set of ids in one request.
+export function bulkDeleteLeads(ids: string[]): Promise<{ status: string; deletedCount: number }> {
+  return apiRequest(`/leads/bulk-delete`, { method: "POST", body: JSON.stringify({ ids }) });
+}

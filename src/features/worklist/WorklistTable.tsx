@@ -23,6 +23,9 @@ interface WorklistTableProps {
   sortDir: SortDir;
   onSort: (col: SortBy) => void;
   onStatusChange: (id: string, status: WorklistStatus) => void;
+  selectedIds: ReadonlySet<string>;
+  onToggleSelect: (id: string) => void;
+  onToggleSelectAll: (checked: boolean) => void;
 }
 
 function formatDateTime(iso: string): string {
@@ -35,13 +38,33 @@ function formatDateTime(iso: string): string {
   });
 }
 
-export function WorklistTable({ items, loading, sortBy, sortDir, onSort, onStatusChange }: WorklistTableProps) {
+export function WorklistTable({
+  items,
+  loading,
+  sortBy,
+  sortDir,
+  onSort,
+  onStatusChange,
+  selectedIds,
+  onToggleSelect,
+  onToggleSelectAll,
+}: WorklistTableProps) {
   const navigate = useNavigate();
+  const allSelected = items.length > 0 && items.every((it) => selectedIds.has(it.id));
   return (
     <div className="overflow-x-auto">
       <table className="w-full min-w-[900px] text-left text-sm">
         <thead>
           <tr className="border-b border-border text-xs font-semibold text-muted">
+            <th className="w-10 px-4 py-3">
+              <input
+                type="checkbox"
+                aria-label="Select all leads on this page"
+                checked={allSelected}
+                onChange={(e) => onToggleSelectAll(e.target.checked)}
+                className="h-4 w-4 rounded border-border accent-teal"
+              />
+            </th>
             <th className="px-4 py-3">Actions</th>
             {COLUMNS.map((col) => (
               <th key={col.key} className="px-4 py-3">
@@ -74,21 +97,30 @@ export function WorklistTable({ items, loading, sortBy, sortDir, onSort, onStatu
         <tbody>
           {loading && (
             <tr>
-              <td colSpan={10} className="px-4 py-10 text-center text-muted">
+              <td colSpan={11} className="px-4 py-10 text-center text-muted">
                 Loading…
               </td>
             </tr>
           )}
           {!loading && items.length === 0 && (
             <tr>
-              <td colSpan={10} className="px-4 py-10 text-center text-muted">
+              <td colSpan={11} className="px-4 py-10 text-center text-muted">
                 No leads match these filters.
               </td>
             </tr>
           )}
           {!loading &&
             items.map((item) => (
-              <tr key={item.id} className="border-b border-border last:border-0 hover:bg-bg/60">
+              <tr key={item.id} className={`border-b border-border last:border-0 hover:bg-bg/60 ${selectedIds.has(item.id) ? "bg-teal/5" : ""}`}>
+                <td className="px-4 py-3">
+                  <input
+                    type="checkbox"
+                    aria-label={`Select ${item.name}`}
+                    checked={selectedIds.has(item.id)}
+                    onChange={() => onToggleSelect(item.id)}
+                    className="h-4 w-4 rounded border-border accent-teal"
+                  />
+                </td>
                 <td className="px-4 py-3">
                   <div className="flex items-center gap-2 text-muted">
                     <button title="View lead" className="rounded p-1 hover:bg-bg hover:text-ink" onClick={() => navigate(`/leads/${item.id}`)}>
