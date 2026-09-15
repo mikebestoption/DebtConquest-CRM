@@ -44,7 +44,7 @@ export interface CalendarEventInput {
 
 export type CalendarEventPatch = Partial<CalendarEventInput>;
 
-function toSearchParams(q: Record<string, string | undefined>): string {
+function toSearchParams(q: CalendarEventsQuery): string {
   const params = new URLSearchParams();
   for (const [key, value] of Object.entries(q)) {
     if (value) params.set(key, value);
