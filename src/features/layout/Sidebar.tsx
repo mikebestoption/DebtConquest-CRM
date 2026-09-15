@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
-import { MENU_NAV, MANAGER_NAV, type NavItem } from "./navConfig";
+import { MENU_NAV, MANAGER_NAV, TRAINING_NAV, type NavItem } from "./navConfig";
 import { useAuthStore } from "../../state/authStore";
-import { IconChevronDown, IconChevronLeft, IconPlayCircle, IconScript, IconSwitch, IconUser, IconX } from "./icons";
+import { IconChevronDown, IconChevronLeft, IconSettings, IconSwitch, IconUser, IconX } from "./icons";
 import logo from "../../assets/logo.svg";
 
 // Used both to decide whether a top-level item survives the search filter
@@ -151,9 +151,8 @@ export function Sidebar() {
   const q = query.trim().toLowerCase();
   const menuItems = MENU_NAV.filter((item) => itemMatches(item, q));
   const managerItems = MANAGER_NAV.filter((item) => itemMatches(item, q));
-  const walkthroughVisible = !q || "walkthrough".includes(q);
-  const scriptTrainingVisible = !q || "script training".includes(q);
-  const noResults = q.length > 0 && menuItems.length === 0 && managerItems.length === 0 && !walkthroughVisible && !scriptTrainingVisible;
+  const trainingItems = TRAINING_NAV.filter((item) => itemMatches(item, q));
+  const noResults = q.length > 0 && menuItems.length === 0 && managerItems.length === 0 && trainingItems.length === 0;
 
   return (
     <aside className={`flex h-screen shrink-0 flex-col bg-deep py-4 transition-all ${collapsed ? "w-20 px-2" : "w-60 px-3"}`}>
@@ -184,7 +183,6 @@ export function Sidebar() {
 
         {managerItems.length > 0 && (
           <div className="py-3">
-            {!collapsed && <p className="mb-1 px-3 text-xs font-semibold tracking-wide text-white/60">MANAGER</p>}
             <div className="space-y-0.5">
               {managerItems.map((item) => (
                 <NavGroup key={item.path} item={item} collapsed={collapsed} query={q} />
@@ -193,37 +191,17 @@ export function Sidebar() {
           </div>
         )}
 
-        {/* No walkthrough tour / training script content exists yet - these
-            are inert placeholders (see SidebarUserMenu's "Switch Account"
-            for the same pattern) until there's something real for them to
-            open. */}
-        {(walkthroughVisible || scriptTrainingVisible) && (
+        {trainingItems.length > 0 && (
           <div className="space-y-0.5 border-t border-white/10 py-3">
-            {walkthroughVisible && (
-              <button
-                type="button"
-                title="No walkthrough content yet"
-                className={`flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-gray-300 ${collapsed ? "justify-center" : ""}`}
-              >
-                <IconPlayCircle className="shrink-0" />
-                {!collapsed && <span className="truncate">Walkthrough</span>}
-              </button>
-            )}
-            {scriptTrainingVisible && (
-              <button
-                type="button"
-                title="No training script yet"
-                className={`flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-gray-300 ${collapsed ? "justify-center" : ""}`}
-              >
-                <IconScript className="shrink-0" />
-                {!collapsed && <span className="truncate">Script Training</span>}
-              </button>
-            )}
+            {trainingItems.map((item) => (
+              <NavGroup key={item.path} item={item} collapsed={collapsed} query={q} />
+            ))}
           </div>
         )}
       </nav>
 
       <div className="mt-3 space-y-1 border-t border-white/10 pt-3">
+        <NavRow item={{ label: "Settings", path: "/settings", icon: IconSettings }} collapsed={collapsed} />
         <SidebarUserMenu collapsed={collapsed} />
         <button
           type="button"

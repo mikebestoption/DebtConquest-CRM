@@ -7,6 +7,7 @@ import { AppShell } from "./features/layout/AppShell";
 import { PlaceholderPage } from "./features/layout/PlaceholderPage";
 import { WorklistPage } from "./features/worklist/WorklistPage";
 import { LeadDetailPage } from "./features/leadDetail/LeadDetailPage";
+import { CalendarPage } from "./features/calendar/CalendarPage";
 import { UsersListPage } from "./features/users/UsersListPage";
 import { AddUserPage } from "./features/users/AddUserPage";
 import { UserDetailPage } from "./features/users/UserDetailPage";
@@ -29,6 +30,7 @@ import { ALL_NAV_ITEMS } from "./features/layout/navConfig";
 // a route.
 const BUILT_PATHS = [
   "/worklist",
+  "/calendar",
   "/manager/users",
   "/manager/teams",
   "/manager/organization",
@@ -57,6 +59,7 @@ export default function App() {
         >
           <Route path="/" element={<Navigate to="/worklist" replace />} />
           <Route path="/worklist" element={<WorklistPage />} />
+          <Route path="/calendar" element={<CalendarPage />} />
           <Route path="/leads/:id" element={<LeadDetailPage />} />
           <Route path="/manager/users" element={<UsersListPage />} />
           <Route path="/manager/users/new" element={<AddUserPage />} />
@@ -69,6 +72,7 @@ export default function App() {
           <Route path="/manager/access/versions" element={<PolicyVersionsPage />} />
           <Route path="/manager/access/audit-log" element={<AccessAuditLogPage />} />
           <Route path="/profile" element={<ProfilePage />} />
+          <Route path="/settings" element={<PlaceholderPage title="Settings" />} />
           <Route path="/manager/leads/sources" element={<SourcesListPage />} />
           <Route path="/manager/leads/sources/new" element={<SourceFormPage />} />
           <Route path="/manager/leads/sources/:id" element={<SourceFormPage />} />

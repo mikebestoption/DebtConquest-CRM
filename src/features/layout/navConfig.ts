@@ -1,21 +1,22 @@
 import type { ComponentType, SVGProps } from "react";
 import {
-  IconSearch,
   IconHome,
   IconList,
   IconCalendar,
-  IconUpload,
   IconUsers,
   IconTag,
   IconFileText,
-  IconFlag,
-  IconGrid,
-  IconX,
   IconBell,
   IconBuilding,
   IconShield,
   IconBook,
   IconHistory,
+  IconBan,
+  IconTarget,
+  IconCamera,
+  IconPlayCircle,
+  IconInfo,
+  IconScript,
 } from "./icons";
 
 export interface NavItem {
@@ -32,11 +33,48 @@ export interface NavItem {
 // screens - all placeholders except User Management > Users, see
 // PlaceholderPage).
 export const MENU_NAV: NavItem[] = [
-  { label: "Search", path: "/search", icon: IconSearch },
-  { label: "Dashboard", path: "/dashboard", icon: IconHome },
-  { label: "Worklist", path: "/worklist", icon: IconList },
+  {
+    label: "Dashboard",
+    path: "/dashboard",
+    icon: IconHome,
+    children: [
+      { label: "Dashboard", path: "/dashboard", icon: IconHome },
+      { label: "Reports", path: "/manager/reports", icon: IconFileText },
+    ],
+  },
+  {
+    label: "Worklist",
+    path: "/worklist",
+    icon: IconList,
+    // Deals/Cancelled deliberately don't nest under /worklist (e.g.
+    // /worklist/deals) - NavLink's default active-matching treats any path
+    // sharing that prefix as "active" too (relied on elsewhere, e.g. Users
+    // staying highlighted on a user's own detail page), which would wrongly
+    // highlight Leads whenever Deals/Cancelled is open.
+    children: [
+      { label: "Leads", path: "/worklist", icon: IconList },
+      { label: "Deals", path: "/deals", icon: IconTag },
+      { label: "Cancelled", path: "/cancelled", icon: IconBan },
+    ],
+  },
+  { label: "Opportunities", path: "/opportunities", icon: IconTarget },
   { label: "Calendar", path: "/calendar", icon: IconCalendar },
-  { label: "Prospect Data Upload", path: "/prospect-upload", icon: IconUpload },
+  {
+    // Distinct from the existing org-structure "Teams" under User
+    // Management (department/team-capacity admin) - this is a live-
+    // collaboration module (huddle rooms, meetings, support sessions and
+    // their recordings), so it gets its own top-level entry rather than
+    // sharing that one.
+    label: "Teams",
+    path: "/teams/huddle-room",
+    icon: IconCamera,
+    children: [
+      { label: "Huddle Room", path: "/teams/huddle-room", icon: IconUsers },
+      { label: "Meeting", path: "/teams/meeting", icon: IconCalendar },
+      { label: "Support Session", path: "/teams/support-session", icon: IconInfo },
+      { label: "Recordings", path: "/teams/recordings", icon: IconPlayCircle },
+    ],
+  },
 ];
 
 export const MANAGER_NAV: NavItem[] = [
@@ -66,24 +104,37 @@ export const MANAGER_NAV: NavItem[] = [
     ],
   },
   {
-    label: "Lead Management",
-    path: "/manager/leads/sources",
-    icon: IconTag,
+    label: "Marketing",
+    path: "/manager/leads/campaigns",
+    icon: IconBell,
     children: [
-      { label: "Sources", path: "/manager/leads/sources", icon: IconTag },
-      { label: "Client Status", path: "/manager/leads/client-status", icon: IconFlag },
-      { label: "Programs States", path: "/manager/leads/programs-states", icon: IconGrid },
-      { label: "Reject Reasons", path: "/manager/leads/reject-reasons", icon: IconX },
       { label: "Campaigns", path: "/manager/leads/campaigns", icon: IconBell },
+      { label: "Templates", path: "/manager/templates", icon: IconFileText },
+      { label: "Marketing Agents", path: "/manager/marketing/agents", icon: IconUsers },
     ],
   },
-  { label: "Templates", path: "/manager/templates", icon: IconFileText },
-  { label: "Reports", path: "/manager/reports", icon: IconFileText },
+];
+
+// Its own section below MANAGER (see Sidebar.tsx's border-t divider) rather
+// than folded into either list above - was two inert, non-navigable
+// placeholder buttons; now a real dropdown like every other grouped item,
+// just kept visually and structurally separate the way the reference
+// sidebar had it.
+export const TRAINING_NAV: NavItem[] = [
+  {
+    label: "Training",
+    path: "/training/walkthrough",
+    icon: IconPlayCircle,
+    children: [
+      { label: "Walkthrough", path: "/training/walkthrough", icon: IconPlayCircle },
+      { label: "Script Training", path: "/training/script-training", icon: IconScript },
+    ],
+  },
 ];
 
 // Every route this sidebar can navigate to, parents and children flattened
 // - App.tsx uses this to generate placeholder routes for anything not built
 // out yet, and to know which paths exist at all.
-export const ALL_NAV_ITEMS: Omit<NavItem, "children">[] = [...MENU_NAV, ...MANAGER_NAV].flatMap((item) =>
+export const ALL_NAV_ITEMS: Omit<NavItem, "children">[] = [...MENU_NAV, ...MANAGER_NAV, ...TRAINING_NAV].flatMap((item) =>
   item.children ? item.children : [item],
 );
