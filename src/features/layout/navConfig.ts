@@ -12,7 +12,6 @@ import {
   IconBook,
   IconHistory,
   IconBan,
-  IconTarget,
   IconCamera,
   IconPlayCircle,
   IconInfo,
@@ -43,7 +42,10 @@ export const MENU_NAV: NavItem[] = [
     ],
   },
   {
-    label: "Worklist",
+    // Renamed from "Worklist" - the standalone "Opportunities" placeholder
+    // this replaced is gone, so this group (still the real Worklist page
+    // under the hood) is now the only "Opportunities" entry.
+    label: "Opportunities",
     path: "/worklist",
     icon: IconList,
     // Deals/Cancelled deliberately don't nest under /worklist (e.g.
@@ -57,7 +59,6 @@ export const MENU_NAV: NavItem[] = [
       { label: "Cancelled", path: "/cancelled", icon: IconBan },
     ],
   },
-  { label: "Opportunities", path: "/opportunities", icon: IconTarget },
   { label: "Calendar", path: "/calendar", icon: IconCalendar },
   {
     // Distinct from the existing org-structure "Teams" under User
