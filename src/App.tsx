@@ -21,10 +21,14 @@ import { AccessAuditLogPage } from "./features/access/AccessAuditLogPage";
 import { ProfilePage } from "./features/profile/ProfilePage";
 import { SourcesListPage } from "./features/sources/SourcesListPage";
 import { SourceFormPage } from "./features/sources/SourceFormPage";
+import { HuddleRoomPage, MeetingPage, SupportSessionPage } from "./features/collab/SessionsPage";
+import { RoomPage } from "./features/collab/RoomPage";
+import { RecordingsPage } from "./features/collab/RecordingsPage";
 import { ALL_NAV_ITEMS } from "./features/layout/navConfig";
 
-// Every sidebar item beyond Worklist, User Management (Users/Teams/
-// Organization), Access Management, and Lead Management > Sources is a
+// Every sidebar item beyond Worklist, Calendar, User Management (Users/Teams/
+// Organization), Access Management, Lead Management > Sources, and the Teams
+// collaboration module (Huddle Room/Meeting/Support Session/Recordings) is a
 // placeholder route this phase. Generated from the same navConfig the
 // sidebar renders from (children flattened), so a new nav entry always has
 // a route.
@@ -39,6 +43,10 @@ const BUILT_PATHS = [
   "/manager/access/versions",
   "/manager/access/audit-log",
   "/manager/leads/sources",
+  "/teams/huddle-room",
+  "/teams/meeting",
+  "/teams/support-session",
+  "/teams/recordings",
 ];
 const PLACEHOLDER_ITEMS = ALL_NAV_ITEMS.filter((item) => !BUILT_PATHS.includes(item.path));
 
@@ -71,6 +79,11 @@ export default function App() {
           <Route path="/manager/access/permissions" element={<PermissionCatalogPage />} />
           <Route path="/manager/access/versions" element={<PolicyVersionsPage />} />
           <Route path="/manager/access/audit-log" element={<AccessAuditLogPage />} />
+          <Route path="/teams/huddle-room" element={<HuddleRoomPage />} />
+          <Route path="/teams/meeting" element={<MeetingPage />} />
+          <Route path="/teams/support-session" element={<SupportSessionPage />} />
+          <Route path="/teams/recordings" element={<RecordingsPage />} />
+          <Route path="/teams/room/:id" element={<RoomPage />} />
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/settings" element={<PlaceholderPage title="Settings" />} />
           <Route path="/manager/leads/sources" element={<SourcesListPage />} />

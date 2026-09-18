@@ -254,3 +254,66 @@ export const IconSettings = (p: SVGProps<SVGSVGElement>) => (
     <path d="M19.4 15a1.7 1.7 0 0 0 .34 1.87l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.7 1.7 0 0 0-1.87-.34 1.7 1.7 0 0 0-1.04 1.56V21a2 2 0 1 1-4 0v-.09A1.7 1.7 0 0 0 9 19.35a1.7 1.7 0 0 0-1.87.34l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.7 1.7 0 0 0 .34-1.87 1.7 1.7 0 0 0-1.56-1.04H3a2 2 0 1 1 0-4h.09A1.7 1.7 0 0 0 4.65 9a1.7 1.7 0 0 0-.34-1.87l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.7 1.7 0 0 0 9 4.65 1.7 1.7 0 0 0 10.04 3.1V3a2 2 0 1 1 4 0v.09A1.7 1.7 0 0 0 15 4.65a1.7 1.7 0 0 0 1.87-.34l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.7 1.7 0 0 0 19.35 9a1.7 1.7 0 0 0 1.56 1.04H21a2 2 0 1 1 0 4h-.09a1.7 1.7 0 0 0-1.51 1.04Z" />
   </Svg>
 );
+
+// Teams rooms (huddle / meeting / support) call controls.
+export const IconMic = (p: SVGProps<SVGSVGElement>) => (
+  <Svg {...p}>
+    <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z" />
+    <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
+    <path d="M12 19v4" />
+  </Svg>
+);
+export const IconMicOff = (p: SVGProps<SVGSVGElement>) => (
+  <Svg {...p}>
+    <path d="m1 1 22 22" />
+    <path d="M9 9v3a3 3 0 0 0 5.12 2.12M15 9.34V4a3 3 0 0 0-5.94-.6" />
+    <path d="M17 16.95A7 7 0 0 1 5 12v-2m14 0v2a7 7 0 0 1-.11 1.23" />
+    <path d="M12 19v4" />
+  </Svg>
+);
+export const IconVideo = (p: SVGProps<SVGSVGElement>) => (
+  <Svg {...p}>
+    <path d="m23 7-7 5 7 5V7z" />
+    <rect x="1" y="5" width="15" height="14" rx="2" />
+  </Svg>
+);
+export const IconVideoOff = (p: SVGProps<SVGSVGElement>) => (
+  <Svg {...p}>
+    <path d="M16 16v1a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h2m5.66 0H14a2 2 0 0 1 2 2v3.34l1 1L23 7v10" />
+    <path d="m1 1 22 22" />
+  </Svg>
+);
+export const IconMonitor = (p: SVGProps<SVGSVGElement>) => (
+  <Svg {...p}>
+    <rect x="2" y="3" width="20" height="14" rx="2" />
+    <path d="M8 21h8M12 17v4" />
+  </Svg>
+);
+export const IconLogOut = (p: SVGProps<SVGSVGElement>) => (
+  <Svg {...p}>
+    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+    <path d="m16 17 5-5-5-5M21 12H9" />
+  </Svg>
+);
+export const IconMessage = (p: SVGProps<SVGSVGElement>) => (
+  <Svg {...p}>
+    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+  </Svg>
+);
+export const IconRecord = (p: SVGProps<SVGSVGElement>) => (
+  <Svg {...p}>
+    <circle cx="12" cy="12" r="10" />
+    <circle cx="12" cy="12" r="4" fill="currentColor" />
+  </Svg>
+);
+export const IconStop = (p: SVGProps<SVGSVGElement>) => (
+  <Svg {...p}>
+    <rect x="5" y="5" width="14" height="14" rx="2" fill="currentColor" />
+  </Svg>
+);
+export const IconSend = (p: SVGProps<SVGSVGElement>) => (
+  <Svg {...p}>
+    <path d="m22 2-7 20-4-9-9-4 20-7z" />
+    <path d="M22 2 11 13" />
+  </Svg>
+);
