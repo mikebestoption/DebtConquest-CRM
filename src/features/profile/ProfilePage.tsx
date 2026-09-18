@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, type FormEvent } from "react";
+import { confirmAction, notifyAction } from "../../state/confirmStore";
 import { useAuthStore } from "../../state/authStore";
 import { fetchMe, updateMe, changePassword, uploadAvatar } from "../../api/auth";
 import { ApiError } from "../../api/client";
@@ -77,7 +78,7 @@ function OverviewTab() {
 
   return (
     <div className="rounded-card border border-border bg-white p-5">
-      <div className="mb-4 flex items-center justify-between">
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-1">
         <h3 className="font-semibold text-ink">Profile Overview</h3>
         <span className="text-sm text-muted">Last Login: {formatDateTime(staff.lastLoginAt)}</span>
       </div>
@@ -155,6 +156,12 @@ function ResetPasswordTab() {
       setError("Passwords don't match.");
       return;
     }
+    const ok = await confirmAction({
+      title: "Change your password?",
+      message: "Your new password takes effect immediately.",
+      confirmLabel: "Change password",
+    });
+    if (!ok) return;
     setSaving(true);
     try {
       await changePassword(newPassword);
@@ -265,7 +272,7 @@ export function ProfilePage() {
       const res = await uploadAvatar(file);
       updateStaff(res.staff);
     } catch {
-      alert("Failed to upload photo.");
+      await notifyAction({ title: "Couldn't upload photo", message: "Failed to upload your photo. Try a smaller image.", tone: "danger" });
     } finally {
       setUploading(false);
     }

@@ -123,6 +123,15 @@ export class LocalMedia {
     this.emit();
   }
 
+  // Used when the host mutes us - never the other way round; only the person
+  // themselves can switch a microphone back on.
+  muteMic(): void {
+    if (!this.audioTrack || !this.micOn) return;
+    this.micOn = false;
+    this.audioTrack.enabled = false;
+    this.emit();
+  }
+
   async toggleCamera(): Promise<void> {
     if (this.camOn) {
       this.cameraTrack?.stop();

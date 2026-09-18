@@ -44,7 +44,7 @@ export function AccessAuditLogPage() {
           placeholder="Search user or permission"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="w-64 rounded-md border border-border bg-white px-3 py-2 text-sm text-ink outline-none focus:border-teal"
+          className="w-full rounded-md sm:w-64 border border-border bg-white px-3 py-2 text-sm text-ink outline-none focus:border-teal"
         />
         <Select fitContent value={eventType} onChange={(e) => setEventType(e.target.value)}>
           {EVENT_OPTIONS.map((e) => (
@@ -57,7 +57,7 @@ export function AccessAuditLogPage() {
 
       <div className="overflow-hidden rounded-card border border-border bg-white">
         <div className="overflow-x-auto">
-          <table className="w-full text-left text-sm">
+          <table className="w-full min-w-[720px] text-left text-sm">
             <thead>
               <tr className="border-b border-border text-xs font-semibold text-muted">
                 <th className="px-4 py-3">Date / Time</th>

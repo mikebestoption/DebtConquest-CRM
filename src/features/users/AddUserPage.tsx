@@ -461,7 +461,7 @@ export function AddUserPage() {
           <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
             <div className="rounded-card border border-border bg-white p-5">
               <h3 className="mb-4 font-semibold text-ink">User Summary</h3>
-              <dl className="grid grid-cols-2 gap-x-4 gap-y-3 text-sm">
+              <dl className="grid grid-cols-1 gap-x-4 gap-y-3 text-sm sm:grid-cols-2">
                 <ReviewItem label="Name" value={`${basic.firstName} ${basic.lastName}`} />
                 <ReviewItem label="Email" value={basic.email} />
                 <ReviewItem label="Department" value={department?.name ?? "—"} />

@@ -186,16 +186,16 @@ function IncomeExpensesCard({
 
   return (
     <div className="space-y-4">
-      <div className="flex gap-6 border-b border-border">
+      <div className="flex gap-6 overflow-x-auto border-b border-border">
         <button
           onClick={() => setSubTab("income")}
-          className={`border-b-2 pb-2 text-sm font-semibold ${subTab === "income" ? "border-teal text-teal" : "border-transparent text-muted"}`}
+          className={`shrink-0 whitespace-nowrap border-b-2 pb-2 text-sm font-semibold ${subTab === "income" ? "border-teal text-teal" : "border-transparent text-muted"}`}
         >
           Income
         </button>
         <button
           onClick={() => setSubTab("expenses")}
-          className={`border-b-2 pb-2 text-sm font-semibold ${subTab === "expenses" ? "border-teal text-teal" : "border-transparent text-muted"}`}
+          className={`shrink-0 whitespace-nowrap border-b-2 pb-2 text-sm font-semibold ${subTab === "expenses" ? "border-teal text-teal" : "border-transparent text-muted"}`}
         >
           Monthly Expenses
         </button>

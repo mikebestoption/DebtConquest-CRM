@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState, type ReactNode } from "react";
+import { confirmAction } from "../../state/confirmStore";
 import { Link } from "react-router-dom";
 import {
   deleteCollabRecording,
@@ -93,7 +94,13 @@ export function RecordingsPage() {
   }
 
   async function handleDelete(r: CollabRecording) {
-    if (!window.confirm(`Delete the recording of "${r.sessionTitle}"? This cannot be undone.`)) return;
+    const ok = await confirmAction({
+      title: "Delete this recording?",
+      message: `The recording of "${r.sessionTitle}" will be permanently deleted for everyone who can see it. This can't be undone.`,
+      confirmLabel: "Delete recording",
+      tone: "danger",
+    });
+    if (!ok) return;
     setBusyId(r.id);
     setError(null);
     try {
@@ -135,13 +142,15 @@ export function RecordingsPage() {
             </option>
           ))}
         </Select>
-        <div>
+        <div className="flex w-full gap-3 sm:w-auto">
+        <div className="min-w-0 flex-1">
           <label className="mb-1 block text-xs text-muted">From</label>
-          <input type="date" value={from} max={to || undefined} onChange={(e) => withReset(setFrom)(e.target.value)} className={INPUT_CLASS} />
+          <input type="date" value={from} max={to || undefined} onChange={(e) => withReset(setFrom)(e.target.value)} className={`${INPUT_CLASS} w-full`} />
         </div>
-        <div>
+        <div className="min-w-0 flex-1">
           <label className="mb-1 block text-xs text-muted">To</label>
-          <input type="date" value={to} min={from || undefined} onChange={(e) => withReset(setTo)(e.target.value)} className={INPUT_CLASS} />
+          <input type="date" value={to} min={from || undefined} onChange={(e) => withReset(setTo)(e.target.value)} className={`${INPUT_CLASS} w-full`} />
+        </div>
         </div>
         {(search || type || from || to) && (
           <button
@@ -163,7 +172,7 @@ export function RecordingsPage() {
 
       <div className="overflow-hidden rounded-card border border-border bg-white">
         <div className="overflow-x-auto">
-          <table className="w-full text-left text-sm">
+          <table className="w-full min-w-[780px] text-left text-sm">
             <thead>
               <tr className="border-b border-border text-xs font-semibold text-muted">
                 <th className="px-4 py-3">Session</th>
@@ -261,8 +270,8 @@ function PlayerModal({ recording, url, onClose }: { recording: CollabRecording; 
   }, [onClose]);
 
   return (
-    <div className="fixed inset-0 z-30 flex items-center justify-center bg-black/60 px-4" onClick={onClose}>
-      <div className="w-full max-w-3xl rounded-card bg-white p-5 shadow-card" onClick={(e) => e.stopPropagation()}>
+    <div className="fixed inset-0 z-30 flex overflow-y-auto bg-black/60 p-4" onClick={onClose}>
+      <div className="m-auto w-full max-w-3xl rounded-card bg-white p-5 shadow-card" onClick={(e) => e.stopPropagation()}>
         <div className="mb-3 flex items-start justify-between gap-3">
           <div className="min-w-0">
             <h2 className="truncate text-base font-semibold text-ink">{recording.sessionTitle}</h2>

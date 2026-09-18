@@ -115,8 +115,8 @@ export function SessionFormModal({ type, session, currentStaffId, defaultTitle, 
   }
 
   return (
-    <div className="fixed inset-0 z-30 flex items-center justify-center bg-black/40 px-4">
-      <div className="max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-card bg-white p-6 shadow-card">
+    <div className="fixed inset-0 z-30 flex overflow-y-auto bg-black/40 p-4">
+      <div className="m-auto w-full max-w-lg rounded-card bg-white p-4 shadow-card sm:p-6">
         <div className="mb-4 flex items-center justify-between">
           <h2 className="text-base font-semibold text-ink">{isEdit ? copy.edit : copy.create}</h2>
           <button onClick={onClose} className="rounded p-1 text-muted hover:bg-bg" aria-label="Close">
@@ -134,7 +134,7 @@ export function SessionFormModal({ type, session, currentStaffId, defaultTitle, 
             <>
               {!isEdit && <Checkbox checked={instant} onChange={setInstant} label="Start now (instant meeting)" />}
               {showSchedule && (
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                   <div>
                     <label className="mb-1 block text-xs font-medium text-muted">Start</label>
                     <input required type="datetime-local" value={startAt} onChange={(e) => setStartAt(e.target.value)} className={INPUT_CLASS} />

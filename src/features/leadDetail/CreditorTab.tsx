@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { confirmAction } from "../../state/confirmStore";
 import {
   CREDIT_BUREAU_LABELS,
   CREDIT_PULL_AGENCY_LABELS,
@@ -123,14 +124,26 @@ export function CreditorTab({ leadId, onOpenAdditionalInfo }: { leadId: string; 
   }
 
   async function handleDelete(id: string) {
-    if (!window.confirm("Delete this creditor?")) return;
+    const ok = await confirmAction({
+      title: "Delete this creditor?",
+      message: "The creditor and its details will be removed from this lead. This can't be undone.",
+      confirmLabel: "Delete creditor",
+      tone: "danger",
+    });
+    if (!ok) return;
     await deleteCreditor(id);
     await load();
   }
 
   async function handleBulkDelete() {
     if (selected.size === 0) return;
-    if (!window.confirm(`Delete ${selected.size} selected creditor(s)?`)) return;
+    const ok = await confirmAction({
+      title: `Delete ${selected.size} creditor${selected.size === 1 ? "" : "s"}?`,
+      message: "The selected creditors will be removed from this lead. This can't be undone.",
+      confirmLabel: `Delete ${selected.size}`,
+      tone: "danger",
+    });
+    if (!ok) return;
     await bulkDeleteCreditors(leadId, [...selected]);
     await load();
   }
@@ -436,8 +449,8 @@ function BulkUpdateModal({
   }
 
   return (
-    <div className="fixed inset-0 z-30 flex items-center justify-center bg-black/40 px-4">
-      <div className="w-full max-w-md rounded-card bg-white p-6 shadow-card">
+    <div className="fixed inset-0 z-30 flex overflow-y-auto bg-black/40 p-4">
+      <div className="m-auto w-full max-w-md rounded-card bg-white p-6 shadow-card">
         <div className="mb-4 flex items-center justify-between">
           <h2 className="text-base font-semibold text-ink">Bulk Update ({count} selected)</h2>
           <button onClick={onClose} className="rounded p-1 text-muted hover:bg-bg" aria-label="Close">

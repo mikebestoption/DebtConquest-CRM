@@ -20,7 +20,7 @@ export function PolicyVersionsPage() {
 
       <div className="overflow-hidden rounded-card border border-border bg-white">
         <div className="overflow-x-auto">
-          <table className="w-full text-left text-sm">
+          <table className="w-full min-w-[720px] text-left text-sm">
             <thead>
               <tr className="border-b border-border text-xs font-semibold text-muted">
                 <th className="px-4 py-3">Version</th>

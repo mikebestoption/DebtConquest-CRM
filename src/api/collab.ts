@@ -63,7 +63,7 @@ export interface UpdateSessionInput {
 export interface RoomSignal {
   id: number;
   from: string;
-  kind: "offer" | "answer" | "candidate";
+  kind: "offer" | "answer" | "candidate" | "control";
   payload: string;
 }
 
@@ -153,9 +153,19 @@ export function pollCollabRoom(id: string, signalSince: number, messageSince: nu
 
 export function sendCollabSignals(
   id: string,
-  signals: { to: string; kind: RoomSignal["kind"]; payload: string }[],
+  signals: { to: string; kind: Exclude<RoomSignal["kind"], "control">; payload: string }[],
 ): Promise<{ status: string; accepted: number }> {
   return apiRequest(`/collab/sessions/${id}/signal`, { method: "POST", body: JSON.stringify({ signals }) });
+}
+
+export type ControlAction = "mute" | "stop-share" | "remove";
+
+// Host/admin moderation - the server enforces who may call this.
+export function controlCollabSession(
+  id: string,
+  input: { action: ControlAction; targetId?: string; all?: boolean },
+): Promise<{ status: string; affected: number }> {
+  return apiRequest(`/collab/sessions/${id}/control`, { method: "POST", body: JSON.stringify(input) });
 }
 
 export function sendCollabMessage(id: string, body: string): Promise<{ status: string }> {

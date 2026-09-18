@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import { confirmAction } from "../../state/confirmStore";
 import { useNavigate, useParams } from "react-router-dom";
 import { fetchStaff, type StaffOption } from "../../api/staff";
 import { fetchLeadDetail, submitLeadToCompliance, updateLeadDetail, deleteLead, type LeadDetail } from "../../api/leadDetail";
@@ -52,6 +53,13 @@ export function LeadDetailPage() {
 
   async function handleSubmitToCompliance() {
     if (!id) return;
+    const ok = await confirmAction({
+      title: "Submit to Compliance?",
+      message: "This lead will be marked as submitted to Compliance. It can't be undone.",
+      confirmLabel: "Submit",
+      tone: "warning",
+    });
+    if (!ok) return;
     await submitLeadToCompliance(id);
     await load();
   }
@@ -59,7 +67,14 @@ export function LeadDetailPage() {
   async function handleDeleteLead() {
     if (!id || !lead) return;
     const name = [lead.applicant.firstName, lead.applicant.lastName].filter(Boolean).join(" ") || `ID-${lead.leadNumber}`;
-    if (!window.confirm(`Permanently delete ${name} and all of their data (debts, creditors, credit reports, documents)? This cannot be undone.`)) return;
+    const ok = await confirmAction({
+      title: `Permanently delete ${name}?`,
+      message: "This also deletes all of their data - debts, creditors, credit reports and documents. This can't be undone.",
+      confirmLabel: "Delete lead",
+      tone: "danger",
+      requireText: "DELETE",
+    });
+    if (!ok) return;
     await deleteLead(id);
     navigate("/worklist");
   }
@@ -81,14 +96,14 @@ export function LeadDetailPage() {
         <IconChevronLeft width={16} height={16} /> Back to Worklist
       </button>
 
-      <div className="rounded-card border border-border bg-white p-5">
+      <div className="rounded-card border border-border bg-white p-4 sm:p-5">
         <div className="mb-3 flex flex-wrap items-start justify-between gap-3">
           <div className="flex items-center gap-3">
             <div className="flex h-9 w-9 items-center justify-center rounded-full bg-deep text-sm font-bold text-white">{initial}</div>
             <h1 className="text-xl font-bold text-ink">{name}</h1>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <button
               onClick={handleSubmitToCompliance}
               disabled={lead.complianceSubmitted}
@@ -150,12 +165,12 @@ export function LeadDetailPage() {
           </span>
         </div>
 
-        <div className="mt-4 flex gap-6 border-t border-border pt-3">
+        <div className="mt-4 flex gap-6 overflow-x-auto border-t border-border pt-3">
           {TABS.map((tab) => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
-              className={`border-b-2 pb-2 text-sm font-semibold ${activeTab === tab ? "border-teal text-teal" : "border-transparent text-muted hover:text-ink"}`}
+              className={`shrink-0 whitespace-nowrap border-b-2 pb-2 text-sm font-semibold ${activeTab === tab ? "border-teal text-teal" : "border-transparent text-muted hover:text-ink"}`}
             >
               {tab}
             </button>

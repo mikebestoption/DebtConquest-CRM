@@ -1,4 +1,6 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useIsDesktop } from "./useMediaQuery";
+import { confirmAction } from "../../state/confirmStore";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { MENU_NAV, MANAGER_NAV, TRAINING_NAV, type NavItem } from "./navConfig";
 import { useAuthStore } from "../../state/authStore";
@@ -121,7 +123,14 @@ function SidebarUserMenu({ collapsed }: { collapsed: boolean }) {
           </button>
           <button
             className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-ink hover:bg-bg"
-            onClick={() => {
+            onClick={async () => {
+              setOpen(false);
+              const ok = await confirmAction({
+                title: "Log out?",
+                message: "You'll need to sign in again to continue.",
+                confirmLabel: "Log out",
+              });
+              if (!ok) return;
               logout();
               navigate("/login");
             }}
@@ -144,8 +153,21 @@ function SidebarUserMenu({ collapsed }: { collapsed: boolean }) {
   );
 }
 
-export function Sidebar() {
-  const [collapsed, setCollapsed] = useState(false);
+export function Sidebar({ mobileOpen, onMobileClose }: { mobileOpen: boolean; onMobileClose: () => void }) {
+  const [collapsedPref, setCollapsed] = useState(false);
+  const isDesktop = useIsDesktop();
+  // The icon-only collapsed rail is a desktop affordance; the mobile drawer
+  // always shows full labels.
+  const collapsed = collapsedPref && isDesktop;
+
+  useEffect(() => {
+    if (!mobileOpen) return;
+    function onKey(e: KeyboardEvent) {
+      if (e.key === "Escape") onMobileClose();
+    }
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [mobileOpen, onMobileClose]);
   const [query, setQuery] = useState("");
 
   const q = query.trim().toLowerCase();
@@ -155,10 +177,24 @@ export function Sidebar() {
   const noResults = q.length > 0 && menuItems.length === 0 && managerItems.length === 0 && trainingItems.length === 0;
 
   return (
-    <aside className={`flex h-screen shrink-0 flex-col bg-deep py-4 transition-all ${collapsed ? "w-20 px-2" : "w-60 px-3"}`}>
+    <>
+      {/* Drawer backdrop - below lg only. */}
+      <div
+        onClick={onMobileClose}
+        aria-hidden="true"
+        className={`fixed inset-0 z-40 bg-black/50 transition-opacity lg:hidden ${mobileOpen ? "opacity-100" : "pointer-events-none opacity-0"}`}
+      />
+      <aside
+        className={`fixed inset-y-0 left-0 z-50 flex h-dvh w-72 max-w-[85vw] shrink-0 flex-col bg-deep px-3 py-4 transition-transform duration-200 lg:static lg:z-auto lg:max-w-none lg:translate-x-0 lg:transition-all ${
+          mobileOpen ? "translate-x-0" : "-translate-x-full"
+        } ${collapsed ? "lg:w-20 lg:px-2" : "lg:w-60 lg:px-3"}`}
+      >
       <div className={`mb-4 flex items-center gap-2 ${collapsed ? "justify-center" : "px-2"}`}>
         <img src={logo} alt="" className="h-8 w-8 shrink-0" />
-        {!collapsed && <span className="truncate text-sm font-semibold text-white">DebtConquest CRM</span>}
+        {!collapsed && <span className="flex-1 truncate text-sm font-semibold text-white">DebtConquest CRM</span>}
+        <button onClick={onMobileClose} aria-label="Close menu" className="rounded-md p-1 text-white/70 hover:bg-teal-100 hover:text-white lg:hidden">
+          <IconX width={18} height={18} />
+        </button>
       </div>
 
       {!collapsed && (
@@ -206,6 +242,7 @@ export function Sidebar() {
         <button
           type="button"
           onClick={() => setCollapsed((v) => !v)}
+          hidden={!isDesktop}
           title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
           className={`flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-teal-100 hover:text-white ${
             collapsed ? "justify-center" : ""
@@ -215,7 +252,8 @@ export function Sidebar() {
           {!collapsed && <span>Collapse</span>}
         </button>
       </div>
-    </aside>
+      </aside>
+    </>
   );
 }
 

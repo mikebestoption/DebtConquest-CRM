@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import { confirmAction } from "../../state/confirmStore";
 import {
   fetchWorklist,
   exportWorklist,
@@ -91,9 +92,14 @@ export function WorklistPage() {
   async function handleBulkDelete() {
     const count = selectedIds.size;
     if (count === 0) return;
-    if (!window.confirm(`Permanently delete ${count} lead${count === 1 ? "" : "s"} and all of their data (debts, creditors, credit reports, documents)? This cannot be undone.`)) {
-      return;
-    }
+    const ok = await confirmAction({
+      title: `Permanently delete ${count} lead${count === 1 ? "" : "s"}?`,
+      message: "This also deletes all of their data - debts, creditors, credit reports and documents. This can't be undone.",
+      confirmLabel: `Delete ${count} lead${count === 1 ? "" : "s"}`,
+      tone: "danger",
+      requireText: "DELETE",
+    });
+    if (!ok) return;
     setDeleting(true);
     try {
       await bulkDeleteLeads([...selectedIds]);
@@ -119,11 +125,10 @@ export function WorklistPage() {
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h1 className="text-2xl font-bold text-ink">Worklist</h1>
-        <div className="flex items-center gap-3">
-          <div>
+        <div className="flex w-full flex-wrap items-end gap-3 sm:w-auto sm:flex-nowrap">
+          <div className="min-w-0 flex-1 sm:min-w-44 sm:flex-none">
             <label className="mb-1 block text-xs font-medium text-muted">User</label>
             <Select
-              fitContent
               value={assignedStaffId}
               onChange={(e) => {
                 setAssignedStaffId(e.target.value);
@@ -140,23 +145,23 @@ export function WorklistPage() {
           </div>
           <button
             onClick={() => setShowAddLead(true)}
-            className="mt-5 flex items-center gap-1.5 rounded-md bg-teal px-4 py-2 text-sm font-semibold text-white hover:bg-teal-hover"
+            className="flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-md bg-teal px-4 py-2 text-sm font-semibold text-white hover:bg-teal-hover"
           >
             <IconPlus width={16} height={16} /> Add New Lead
           </button>
         </div>
       </div>
 
-      <div className="flex gap-6 border-b border-border">
+      <div className="flex gap-6 overflow-x-auto border-b border-border">
         <button
           onClick={() => setActiveTab("worklist")}
-          className={`border-b-2 pb-2 text-sm font-semibold ${activeTab === "worklist" ? "border-teal text-teal" : "border-transparent text-muted"}`}
+          className={`shrink-0 whitespace-nowrap border-b-2 pb-2 text-sm font-semibold ${activeTab === "worklist" ? "border-teal text-teal" : "border-transparent text-muted"}`}
         >
           Worklist
         </button>
         <button
           onClick={() => setActiveTab("search")}
-          className={`border-b-2 pb-2 text-sm font-semibold ${activeTab === "search" ? "border-teal text-teal" : "border-transparent text-muted"}`}
+          className={`shrink-0 whitespace-nowrap border-b-2 pb-2 text-sm font-semibold ${activeTab === "search" ? "border-teal text-teal" : "border-transparent text-muted"}`}
         >
           Search Prospect
         </button>
@@ -171,7 +176,7 @@ export function WorklistPage() {
           <FilterBar onApply={handleApplyFilters} onExport={() => exportWorklist({ ...filters, assignedStaffId: assignedStaffId || undefined })} />
 
           {selectedIds.size > 0 && (
-            <div className="flex items-center justify-between rounded-card border border-error/30 bg-error/5 px-4 py-2.5">
+            <div className="flex flex-wrap items-center justify-between gap-2 rounded-card border border-error/30 bg-error/5 px-4 py-2.5">
               <span className="text-sm font-medium text-ink">
                 {selectedIds.size} lead{selectedIds.size === 1 ? "" : "s"} selected
               </span>

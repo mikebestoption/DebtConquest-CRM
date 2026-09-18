@@ -34,8 +34,8 @@ export function UploadCreditReportModal({ leadId, onClose, onUploaded }: UploadC
   }
 
   return (
-    <div className="fixed inset-0 z-30 flex items-center justify-center bg-black/40 px-4">
-      <div className="w-full max-w-md rounded-card bg-white p-6 shadow-card">
+    <div className="fixed inset-0 z-30 flex overflow-y-auto bg-black/40 p-4">
+      <div className="m-auto w-full max-w-md rounded-card bg-white p-6 shadow-card">
         <div className="mb-4 flex items-center justify-between">
           <h2 className="text-base font-semibold text-ink">Upload Credit Report</h2>
           <button onClick={onClose} disabled={uploading} className="rounded p-1 text-muted hover:bg-bg disabled:opacity-50" aria-label="Close">

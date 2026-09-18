@@ -317,3 +317,31 @@ export const IconSend = (p: SVGProps<SVGSVGElement>) => (
     <path d="M22 2 11 13" />
   </Svg>
 );
+export const IconPin = (p: SVGProps<SVGSVGElement>) => (
+  <Svg {...p}>
+    <path d="M12 17v5" />
+    <path d="M9 3h6l-1 7 3 3v2H7v-2l3-3-1-7z" />
+  </Svg>
+);
+export const IconMaximize = (p: SVGProps<SVGSVGElement>) => (
+  <Svg {...p}>
+    <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3" />
+  </Svg>
+);
+export const IconMinimize = (p: SVGProps<SVGSVGElement>) => (
+  <Svg {...p}>
+    <path d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3" />
+  </Svg>
+);
+export const IconUserX = (p: SVGProps<SVGSVGElement>) => (
+  <Svg {...p}>
+    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+    <circle cx="9" cy="7" r="4" />
+    <path d="m17 8 5 5m0-5-5 5" />
+  </Svg>
+);
+export const IconMenu = (p: SVGProps<SVGSVGElement>) => (
+  <Svg {...p}>
+    <path d="M4 6h16M4 12h16M4 18h16" />
+  </Svg>
+);

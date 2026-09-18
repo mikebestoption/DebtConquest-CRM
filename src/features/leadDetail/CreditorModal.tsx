@@ -158,8 +158,8 @@ export function CreditorModal({
   }
 
   return (
-    <div className="fixed inset-0 z-30 flex items-center justify-center bg-black/40 px-4 py-6">
-      <div className="flex max-h-full w-full max-w-4xl flex-col rounded-card bg-white shadow-card">
+    <div className="fixed inset-0 z-30 flex overflow-y-auto bg-black/40 p-4">
+      <div className="m-auto flex max-h-full w-full max-w-4xl flex-col rounded-card bg-white shadow-card">
         <div className="flex items-center justify-between border-b border-border px-6 py-4">
           <h2 className="text-base font-semibold text-ink">{initial ? "Edit Creditor" : "Add Creditor"}</h2>
           <button onClick={onClose} className="rounded p-1 text-muted hover:bg-bg" aria-label="Close">
@@ -193,7 +193,7 @@ export function CreditorModal({
                 <input className={INPUT_CLASS} value={draft.creditorName} onChange={(e) => patch({ creditorName: e.target.value })} />
               </Field>
 
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                 <Field label="Address 1">
                   <input className={INPUT_CLASS} value={draft.address1 ?? ""} onChange={(e) => patch({ address1: e.target.value })} />
                 </Field>
@@ -202,7 +202,7 @@ export function CreditorModal({
                 </Field>
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                 <Field label="Country">
                   <Select value={draft.country ?? ""} onChange={(e) => patch({ country: e.target.value })}>
                     <option value="United States">United States</option>
@@ -220,7 +220,7 @@ export function CreditorModal({
                 </Field>
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                 <Field label="City">
                   <input className={INPUT_CLASS} value={draft.city ?? ""} onChange={(e) => patch({ city: e.target.value })} />
                 </Field>
@@ -229,7 +229,7 @@ export function CreditorModal({
                 </Field>
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                 <Field label="Phone">
                   <input className={INPUT_CLASS} value={draft.phone ?? ""} onChange={(e) => patch({ phone: e.target.value })} />
                 </Field>
@@ -242,7 +242,7 @@ export function CreditorModal({
             <div className="space-y-4">
               <p className="text-sm font-semibold text-ink">Account Details</p>
 
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                 <Field label="Account No. *">
                   <input className={INPUT_CLASS} value={draft.accountNo ?? ""} onChange={(e) => patch({ accountNo: e.target.value })} />
                 </Field>
@@ -256,7 +256,7 @@ export function CreditorModal({
                 </Field>
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                 <Field label="Monthly Payment">
                   <input
                     type="number"
@@ -270,7 +270,7 @@ export function CreditorModal({
                 </Field>
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                 <Field label="Debt Type *">
                   <Select value={draft.debtType ?? ""} onChange={(e) => patch({ debtType: e.target.value })}>
                     <option value="">—</option>
@@ -286,7 +286,7 @@ export function CreditorModal({
                 </Field>
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                 <Field label="Behind">
                   <YesNoSelect value={draft.behind ?? false} onChange={(v) => patch({ behind: v })} />
                 </Field>
@@ -306,7 +306,7 @@ export function CreditorModal({
                 </Field>
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                 <Field label="Include On Program">
                   <YesNoSelect value={draft.includeOnProgram ?? true} onChange={(v) => patch({ includeOnProgram: v })} />
                 </Field>
@@ -323,7 +323,7 @@ export function CreditorModal({
                 </Field>
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                 <Field label="Creditor Limit">
                   <input
                     type="number"
@@ -337,7 +337,7 @@ export function CreditorModal({
                 </Field>
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                 <Field label="Same Bank">
                   <YesNoSelect value={draft.sameBank ?? false} onChange={(v) => patch({ sameBank: v })} />
                 </Field>

@@ -47,7 +47,7 @@ export function MultiSelect({ label, options, selected, onChange }: MultiSelectP
         <IconChevronDown className="shrink-0 text-muted" width={14} height={14} />
       </button>
       {open && (
-        <div className="absolute z-20 mt-1 max-h-64 w-56 overflow-y-auto rounded-md border border-border bg-white py-1 shadow-card">
+        <div className="absolute z-20 mt-1 max-h-64 w-56 max-w-[80vw] overflow-y-auto rounded-md border border-border bg-white py-1 shadow-card">
           <div className="flex justify-between border-b border-border px-3 py-1.5 text-xs">
             <button type="button" className="text-teal hover:underline" onClick={() => onChange(options.map((o) => o.value))}>
               Select all

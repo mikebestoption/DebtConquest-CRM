@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import { promptAction } from "../../state/confirmStore";
 import { useNavigate, useParams } from "react-router-dom";
 import { fetchAccessProfile, patchAccessProfilePermission, publishAccessProfile, type AccessProfileDetail, type AccessScope } from "../../api/accessProfile";
 import { Checkbox, Select } from "../../components/controls";
@@ -45,7 +46,13 @@ export function AccessProfileDetailPage() {
   }
 
   async function handlePublish() {
-    const summary = prompt("Summarize this change for the Policy Versions log:");
+    const summary = await promptAction({
+      title: "Publish these changes?",
+      message: "This creates a new policy version and applies the permission changes to everyone on this profile.",
+      confirmLabel: "Publish",
+      tone: "warning",
+      input: { label: "Summary for the Policy Versions log", placeholder: "e.g. Allowed Retention team to view credit reports", required: true, multiline: true },
+    });
     if (!summary) return;
     setPublishing(true);
     try {
@@ -79,8 +86,8 @@ export function AccessProfileDetailPage() {
         until explicitly added here and published in a new policy version.
       </div>
 
-      <div className="rounded-card border border-border bg-white p-5">
-        <div className="mb-4 flex items-center justify-between">
+      <div className="rounded-card border border-border bg-white p-4 sm:p-5">
+        <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
           <div>
             <h3 className="font-semibold text-ink">Permissions</h3>
             <p className="text-xs text-muted">Action and data scope are configured separately.</p>
@@ -102,7 +109,8 @@ export function AccessProfileDetailPage() {
                 <span className="font-semibold text-ink">{mod.module}</span>
                 <span className="rounded-full bg-teal-50 px-2.5 py-0.5 text-xs font-semibold text-teal">{mod.permissions.length} permissions</span>
               </div>
-              <table className="w-full text-left text-sm">
+              <div className="overflow-x-auto">
+              <table className="w-full min-w-[520px] text-left text-sm">
                 <thead>
                   <tr className="border-b border-border text-xs font-semibold text-muted">
                     <th className="px-4 py-2">Permission</th>
@@ -144,6 +152,7 @@ export function AccessProfileDetailPage() {
                   ))}
                 </tbody>
               </table>
+              </div>
             </div>
           ))}
         </div>

@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import { confirmAction, notifyAction } from "../../state/confirmStore";
 import { useNavigate } from "react-router-dom";
 import { fetchUsers, resendInvite, updateUser, type ActiveFilter, type UserListItem } from "../../api/users";
 import { fetchDepartments, type Department } from "../../api/orgHierarchy";
@@ -60,19 +61,34 @@ export function UsersListPage() {
   }
 
   async function handleDisable(user: UserListItem) {
-    if (!confirm(`${user.isActive ? "Disable" : "Enable"} ${user.name}?`)) return;
+    const disabling = user.isActive;
+    const ok = await confirmAction({
+      title: `${disabling ? "Disable" : "Enable"} ${user.name}?`,
+      message: disabling
+        ? "They won't be able to log in until you enable them again."
+        : "They'll be able to log in again.",
+      confirmLabel: disabling ? "Disable user" : "Enable user",
+      tone: disabling ? "danger" : "primary",
+    });
+    if (!ok) return;
     await updateUser(user.id, { isActive: !user.isActive });
     load();
   }
 
   const [resendingId, setResendingId] = useState<string | null>(null);
   async function handleResendInvite(user: UserListItem) {
+    const ok = await confirmAction({
+      title: "Send invite email?",
+      message: `A new invite link will be emailed to ${user.email}.`,
+      confirmLabel: "Send invite",
+    });
+    if (!ok) return;
     setResendingId(user.id);
     try {
       await resendInvite(user.id);
-      alert(`Invite email sent to ${user.email}.`);
+      await notifyAction({ title: "Invite sent", message: `Invite email sent to ${user.email}.` });
     } catch {
-      alert("Failed to send invite email.");
+      await notifyAction({ title: "Couldn't send invite", message: "Failed to send invite email. Try again in a moment.", tone: "danger" });
     } finally {
       setResendingId(null);
     }
@@ -103,7 +119,7 @@ export function UsersListPage() {
               setSearch(e.target.value);
               setPage(1);
             }}
-            className="w-56 rounded-md border border-border bg-white px-3 py-2 text-sm text-ink outline-none focus:border-teal"
+            className="w-full rounded-md border sm:w-56 border-border bg-white px-3 py-2 text-sm text-ink outline-none focus:border-teal"
           />
           <Select
             fitContent

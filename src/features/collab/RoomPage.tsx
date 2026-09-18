@@ -1,9 +1,10 @@
 import { useEffect, useRef, useState, useSyncExternalStore, type FormEvent, type ReactNode } from "react";
+import { confirmAction } from "../../state/confirmStore";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useAuthStore } from "../../state/authStore";
 import { RoomRuntime, type RecordingState } from "./roomRuntime";
 import type { RecordingMode } from "./recorder";
-import { VideoTile } from "./VideoTile";
+import { TileButton, VideoTile } from "./VideoTile";
 import { TYPE_META, formatDuration, formatTimeRange, inRoomNames } from "./format";
 import { Select } from "../../components/controls";
 import {
@@ -12,10 +13,14 @@ import {
   IconMessage,
   IconMic,
   IconMicOff,
+  IconMaximize,
+  IconX,
+  IconMinimize,
   IconMonitor,
   IconRecord,
   IconSend,
   IconStop,
+  IconUserX,
   IconUsers,
   IconVideo,
   IconVideoOff,
@@ -194,6 +199,10 @@ function LiveRoom({ runtime, myId, myName, backPath }: { runtime: RoomRuntime; m
   const [leaving, setLeaving] = useState(false);
   const [copied, setCopied] = useState(false);
   const [seenMessages, setSeenMessages] = useState(0);
+  // Spotlight: the pinned tile fills the stage, everyone else moves to a strip.
+  const [pinnedKey, setPinnedKey] = useState<string | null>(null);
+  const stageRef = useRef<HTMLDivElement>(null);
+  const [stageFullscreen, setStageFullscreen] = useState(false);
 
   const recording_ = recording.status === "recording";
   const uploading = recording.status === "uploading";
@@ -206,6 +215,12 @@ function LiveRoom({ runtime, myId, myName, backPath }: { runtime: RoomRuntime; m
     }
     window.addEventListener("beforeunload", onBeforeUnload);
     return () => window.removeEventListener("beforeunload", onBeforeUnload);
+  }, []);
+
+  useEffect(() => {
+    const onChange = () => setStageFullscreen(document.fullscreenElement === stageRef.current);
+    document.addEventListener("fullscreenchange", onChange);
+    return () => document.removeEventListener("fullscreenchange", onChange);
   }, []);
 
   useEffect(() => {
@@ -241,29 +256,100 @@ function LiveRoom({ runtime, myId, myName, backPath }: { runtime: RoomRuntime; m
       status: p.connectionState === "connected" ? undefined : p.connectionState === "failed" ? "connection lost" : "connecting…",
     })),
   ];
-  const renderTile = (t: (typeof tiles)[number], className: string) => (
-    <VideoTile
-      key={t.key}
-      stream={t.stream}
-      name={t.name}
-      muted={t.muted}
-      videoOn={t.videoOn}
-      audioOn={t.audioOn}
-      mirror={t.mirror}
-      screen={t.screen}
-      status={t.status}
-      className={className}
-    />
-  );
-  const presenter = tiles.find((t) => t.screen);
+  const canModerate = session.canManage;
+  const renderTile = (t: (typeof tiles)[number], className: string) => {
+    const isMe = t.key === "me";
+    return (
+      <VideoTile
+        key={t.key}
+        stream={t.stream}
+        name={t.name}
+        muted={t.muted}
+        videoOn={t.videoOn}
+        audioOn={t.audioOn}
+        mirror={t.mirror}
+        screen={t.screen}
+        status={t.status}
+        pinned={pinnedKey === t.key}
+        onTogglePin={() => setPinnedKey((k) => (k === t.key ? null : t.key))}
+        actions={
+          canModerate && !isMe ? (
+            <>
+              {t.audioOn && (
+                <TileButton label={`Mute ${t.name}`} onClick={() => void runtime.control("mute", t.key)}>
+                  <IconMicOff width={15} height={15} />
+                </TileButton>
+              )}
+              {t.screen && (
+                <TileButton label={`Stop ${t.name}'s screen share`} onClick={() => void runtime.control("stop-share", t.key)}>
+                  <IconMonitor width={15} height={15} />
+                </TileButton>
+              )}
+              <TileButton label={`Remove ${t.name}`} danger onClick={() => handleRemove(t.key, t.name)}>
+                <IconUserX width={15} height={15} />
+              </TileButton>
+            </>
+          ) : undefined
+        }
+        className={className}
+      />
+    );
+  };
+  // A manual pin wins over an automatic "someone is sharing their screen".
+  // If the pinned person has left, this quietly falls back to the default layout.
+  const presenter = tiles.find((t) => t.key === pinnedKey) ?? tiles.find((t) => t.screen);
   const strip = presenter ? tiles.filter((t) => t !== presenter) : [];
-  const cols = tiles.length <= 1 ? 1 : tiles.length <= 4 ? 2 : tiles.length <= 6 ? 3 : 4;
+  // Literal class names (not built at runtime) so Tailwind can see them.
+  const gridCols =
+    tiles.length <= 1
+      ? "grid-cols-1"
+      : tiles.length === 2
+        ? "grid-cols-1 sm:grid-cols-2"
+        : tiles.length <= 4
+          ? "grid-cols-2"
+          : tiles.length <= 6
+            ? "grid-cols-2 lg:grid-cols-3"
+            : "grid-cols-2 lg:grid-cols-4";
 
   const unread = panel === "chat" ? 0 : Math.max(0, snapshot.messages.length - seenMessages);
   const waitingAlone = snapshot.peers.length === 0;
 
+  async function handleRemove(staffId: string, name: string) {
+    const ok = await confirmAction({
+      title: `Remove ${name}?`,
+      message: "They'll be disconnected from this session. They can rejoin if they still have the link.",
+      confirmLabel: "Remove",
+      tone: "danger",
+    });
+    if (ok) void runtime.control("remove", staffId);
+  }
+
+  async function handleMuteAll() {
+    const ok = await confirmAction({
+      title: "Mute everyone?",
+      message: "Everyone else's microphone will be muted. They can unmute themselves.",
+      confirmLabel: "Mute all",
+      tone: "warning",
+    });
+    if (ok) void runtime.control("mute");
+  }
+
+  function toggleStageFullscreen() {
+    if (document.fullscreenElement === stageRef.current) void document.exitFullscreen();
+    else void stageRef.current?.requestFullscreen().catch(() => {});
+  }
+
   async function handleLeave() {
-    if (recording_ && !window.confirm("You're recording. Leaving stops the recording and saves it. Leave now?")) return;
+    if (recording_) {
+      const ok = await confirmAction({
+        title: "Leave and stop recording?",
+        message: "You're recording this session. Leaving stops the recording and saves it to Recordings.",
+        confirmLabel: "Stop & leave",
+        cancelLabel: "Stay",
+        tone: "warning",
+      });
+      if (!ok) return;
+    }
     setLeaving(true);
     await runtime.leave();
     navigate(backPath);
@@ -271,7 +357,14 @@ function LiveRoom({ runtime, myId, myName, backPath }: { runtime: RoomRuntime; m
 
   async function handleEnd() {
     const what = session?.type === "SUPPORT" ? "support session" : session?.type === "MEETING" ? "meeting" : "huddle";
-    if (!window.confirm(`End this ${what} for everyone? Everyone will be disconnected.`)) return;
+    const ok = await confirmAction({
+      title: `End this ${what} for everyone?`,
+      message: "Everyone will be disconnected right away." + (recording_ ? " Your recording will be stopped and saved." : ""),
+      confirmLabel: "End for everyone",
+      cancelLabel: "Keep it going",
+      tone: "danger",
+    });
+    if (!ok) return;
     setLeaving(true);
     try {
       await runtime.endForEveryone();
@@ -289,7 +382,7 @@ function LiveRoom({ runtime, myId, myName, backPath }: { runtime: RoomRuntime; m
   }
 
   return (
-    <div className="flex h-[calc(100vh-9rem)] min-h-[480px] flex-col gap-3">
+    <div className="flex h-[calc(100dvh-9rem)] min-h-[420px] flex-col gap-3">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div className="min-w-0">
           <div className="flex items-center gap-2">
@@ -306,6 +399,11 @@ function LiveRoom({ runtime, myId, myName, backPath }: { runtime: RoomRuntime; m
           <button onClick={copyLink} className="flex items-center gap-1.5 rounded-md border border-border bg-white px-3 py-1.5 text-xs font-medium text-ink hover:border-teal">
             <IconLink width={14} height={14} /> {copied ? "Copied!" : "Copy link"}
           </button>
+          {canModerate && snapshot.peers.length > 0 && (
+            <button onClick={handleMuteAll} className="flex items-center gap-1.5 rounded-md border border-border bg-white px-3 py-1.5 text-xs font-medium text-ink hover:border-teal">
+              <IconMicOff width={14} height={14} /> Mute all
+            </button>
+          )}
           {session.canManage && (
             <button
               onClick={() => void handleEnd()}
@@ -321,10 +419,11 @@ function LiveRoom({ runtime, myId, myName, backPath }: { runtime: RoomRuntime; m
       {snapshot.reconnecting && (
         <div className="rounded-md bg-amber-50 px-3 py-2 text-sm text-amber-800">Connection problem - trying to reconnect…</div>
       )}
+      {state.notice && <div className="rounded-md bg-amber-50 px-3 py-2 text-sm text-amber-800">{state.notice}</div>}
       <RecordingBanner recording={recording} runtime={runtime} />
 
       <div className="flex min-h-0 flex-1 gap-3">
-        <div className="relative min-h-0 flex-1 rounded-card bg-[#0b1f1f] p-2">
+        <div ref={stageRef} className={`relative min-h-0 flex-1 bg-[#0b1f1f] p-2 ${stageFullscreen ? "" : "rounded-card"}`}>
           {presenter ? (
             <div className="flex h-full flex-col gap-2">
               {renderTile(presenter, "min-h-0 flex-1")}
@@ -335,8 +434,21 @@ function LiveRoom({ runtime, myId, myName, backPath }: { runtime: RoomRuntime; m
               )}
             </div>
           ) : (
-            <div className="grid h-full gap-2" style={{ gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))`, gridAutoRows: "minmax(0, 1fr)" }}>
+            <div className={`grid h-full gap-2 ${gridCols}`} style={{ gridAutoRows: "minmax(0, 1fr)" }}>
               {tiles.map((t) => renderTile(t, "h-full min-h-0"))}
+            </div>
+          )}
+          {stageFullscreen && (
+            <div className="absolute inset-x-0 bottom-4 z-10 flex justify-center gap-3">
+              <ControlButton label={media.micOn ? "Mute" : "Unmute"} active={!media.micOn} disabled={!media.audioTrack} onClick={runtime.toggleMic}>
+                {media.micOn ? <IconMic width={20} height={20} /> : <IconMicOff width={20} height={20} />}
+              </ControlButton>
+              <ControlButton label={media.camOn ? "Turn camera off" : "Turn camera on"} active={!media.camOn} onClick={runtime.toggleCamera}>
+                {media.camOn ? <IconVideo width={20} height={20} /> : <IconVideoOff width={20} height={20} />}
+              </ControlButton>
+              <ControlButton label="Exit full screen" onClick={toggleStageFullscreen}>
+                <IconMinimize width={20} height={20} />
+              </ControlButton>
             </div>
           )}
           {waitingAlone && (
@@ -347,8 +459,8 @@ function LiveRoom({ runtime, myId, myName, backPath }: { runtime: RoomRuntime; m
         </div>
 
         {panel && (
-          <div className="flex w-80 shrink-0 flex-col rounded-card border border-border bg-white">
-            <div className="flex border-b border-border text-sm font-semibold">
+          <div className="fixed inset-x-2 bottom-2 z-40 flex h-[65dvh] flex-col rounded-card border border-border bg-white shadow-card md:static md:z-auto md:h-auto md:w-80 md:shrink-0 md:shadow-none">
+            <div className="flex items-center border-b border-border text-sm font-semibold">
               {(["chat", "people"] as const).map((tab) => (
                 <button
                   key={tab}
@@ -358,6 +470,9 @@ function LiveRoom({ runtime, myId, myName, backPath }: { runtime: RoomRuntime; m
                   {tab}
                 </button>
               ))}
+              <button onClick={() => setPanel(null)} aria-label="Close panel" className="px-3 text-muted hover:text-ink md:hidden">
+                <IconX width={18} height={18} />
+              </button>
             </div>
             {panel === "chat" ? (
               <ChatPanel runtime={runtime} myId={myId} />
@@ -366,12 +481,39 @@ function LiveRoom({ runtime, myId, myName, backPath }: { runtime: RoomRuntime; m
                 {snapshot.participants
                   .filter((p) => p.inRoom)
                   .map((p) => (
-                    <li key={p.staffId} className="flex items-center justify-between rounded px-2 py-1.5 hover:bg-bg">
-                      <span className="text-ink">
+                    <li key={p.staffId} className="flex items-center justify-between gap-2 rounded px-2 py-1.5 hover:bg-bg">
+                      <span className="min-w-0 truncate text-ink">
                         {p.name}
                         {p.staffId === myId && " (You)"}
+                        {p.role === "HOST" && <span className="ml-1.5 text-xs font-semibold text-teal-100">Host</span>}
                       </span>
-                      {p.role === "HOST" && <span className="text-xs font-semibold text-teal-100">Host</span>}
+                      <span className="flex shrink-0 items-center gap-1">
+                        {(p.staffId === myId ? !media.micOn : snapshot.peers.find((x) => x.staffId === p.staffId)?.audio === false) && (
+                          <IconMicOff width={14} height={14} className="text-red-400" />
+                        )}
+                        {canModerate && p.staffId !== myId && (
+                          <>
+                            <button
+                              onClick={() => void runtime.control("mute", p.staffId)}
+                              title={`Mute ${p.name}`}
+                              aria-label={`Mute ${p.name}`}
+                              className="rounded p-1 text-muted hover:bg-white hover:text-ink"
+                            >
+                              <IconMic width={14} height={14} />
+                            </button>
+                            {p.role !== "HOST" && (
+                              <button
+                                onClick={() => handleRemove(p.staffId, p.name)}
+                                title={`Remove ${p.name}`}
+                                aria-label={`Remove ${p.name}`}
+                                className="rounded p-1 text-error hover:bg-red-50"
+                              >
+                                <IconUserX width={14} height={14} />
+                              </button>
+                            )}
+                          </>
+                        )}
+                      </span>
                     </li>
                   ))}
               </ul>
@@ -380,7 +522,7 @@ function LiveRoom({ runtime, myId, myName, backPath }: { runtime: RoomRuntime; m
         )}
       </div>
 
-      <div className="flex flex-wrap items-center justify-center gap-3 rounded-card border border-border bg-white px-4 py-3">
+      <div className="flex flex-wrap items-center justify-center gap-2 rounded-card border border-border bg-white px-3 py-2.5 sm:gap-3 sm:px-4 sm:py-3">
         <ControlButton label={media.micOn ? "Mute" : "Unmute"} active={!media.micOn} disabled={!media.audioTrack} onClick={runtime.toggleMic}>
           {media.micOn ? <IconMic width={20} height={20} /> : <IconMicOff width={20} height={20} />}
         </ControlButton>
@@ -391,7 +533,11 @@ function LiveRoom({ runtime, myId, myName, backPath }: { runtime: RoomRuntime; m
           <IconMonitor width={20} height={20} />
         </ControlButton>
 
-        <span className="mx-1 h-8 w-px bg-border" />
+        <ControlButton label="Full screen" onClick={toggleStageFullscreen}>
+          <IconMaximize width={20} height={20} />
+        </ControlButton>
+
+        <span className="mx-1 hidden h-8 w-px bg-border sm:block" />
 
         {runtime.recordingSupported && (
           <div className="flex items-center gap-2">
@@ -412,7 +558,7 @@ function LiveRoom({ runtime, myId, myName, backPath }: { runtime: RoomRuntime; m
           </div>
         )}
 
-        <span className="mx-1 h-8 w-px bg-border" />
+        <span className="mx-1 hidden h-8 w-px bg-border sm:block" />
 
         <div className="relative">
           <ControlButton label="Chat" highlight={panel === "chat"} onClick={() => setPanel((p) => (p === "chat" ? null : "chat"))}>
@@ -431,9 +577,10 @@ function LiveRoom({ runtime, myId, myName, backPath }: { runtime: RoomRuntime; m
         <button
           onClick={() => void handleLeave()}
           disabled={leaving}
-          className="flex items-center gap-1.5 rounded-full bg-error px-5 py-2.5 text-sm font-semibold text-white hover:opacity-90 disabled:opacity-60"
+          aria-label="Leave"
+          className="flex items-center gap-1.5 rounded-full bg-error px-3.5 py-2.5 text-sm font-semibold text-white hover:opacity-90 disabled:opacity-60 sm:px-5"
         >
-          <IconLogOut width={16} height={16} /> {leaving ? "Leaving…" : "Leave"}
+          <IconLogOut width={16} height={16} /> <span className="hidden sm:inline">{leaving ? "Leaving…" : "Leave"}</span>
         </button>
       </div>
       {media.error && <p className="text-center text-xs text-amber-700">{media.error}</p>}
@@ -467,7 +614,7 @@ function ControlButton({ label, onClick, children, active, highlight, danger, di
       disabled={disabled}
       title={label}
       aria-label={label}
-      className={`flex h-11 w-11 items-center justify-center rounded-full border transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${tone}`}
+      className={`flex h-10 w-10 items-center justify-center rounded-full border sm:h-11 sm:w-11 transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${tone}`}
     >
       {children}
     </button>

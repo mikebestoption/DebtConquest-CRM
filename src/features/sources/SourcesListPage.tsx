@@ -75,7 +75,7 @@ export function SourcesListPage() {
               setSearch(e.target.value);
               setPage(1);
             }}
-            className="w-56 rounded-md border border-border bg-white px-3 py-2 text-sm text-ink outline-none focus:border-teal"
+            className="w-full rounded-md border sm:w-56 border-border bg-white px-3 py-2 text-sm text-ink outline-none focus:border-teal"
           />
           <div className="flex items-center gap-3 text-sm text-ink">
             <span className="font-medium">Active</span>

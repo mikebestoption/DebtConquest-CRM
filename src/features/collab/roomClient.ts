@@ -62,6 +62,7 @@ interface SignalPayload {
   connId: string;
   sdp?: RTCSessionDescriptionInit;
   candidate?: RTCIceCandidateInit;
+  action?: string;
 }
 
 export interface RoomClientOptions {
@@ -69,6 +70,9 @@ export interface RoomClientOptions {
   myId: string;
   iceServers: IceServer[];
   onUpdate: (snapshot: RoomSnapshot) => void;
+  // The host asked us to mute or stop sharing (server-verified: only the
+  // moderation endpoint can create these signals).
+  onControl: (action: "mute" | "stop-share") => void;
   // Session ended for everyone, or the server no longer lets us poll it.
   onClosed: (reason: "ended" | "error", message: string) => void;
 }
@@ -79,9 +83,10 @@ export class RoomClient {
   private iceServers: IceServer[];
   private onUpdate: (snapshot: RoomSnapshot) => void;
   private onClosed: (reason: "ended" | "error", message: string) => void;
+  private onControl: (action: "mute" | "stop-share") => void;
 
   private peers = new Map<string, Peer>();
-  private outbound: { to: string; kind: RoomSignal["kind"]; payload: string }[] = [];
+  private outbound: { to: string; kind: Exclude<RoomSignal["kind"], "control">; payload: string }[] = [];
   private signalSince = 0;
   private messageSince = 0;
   private participants: CollabParticipant[] = [];
@@ -104,6 +109,7 @@ export class RoomClient {
     this.iceServers = options.iceServers;
     this.onUpdate = options.onUpdate;
     this.onClosed = options.onClosed;
+    this.onControl = options.onControl;
   }
 
   start(): void {
@@ -329,6 +335,11 @@ export class RoomClient {
   private async handleSignal(signal: RoomSignal): Promise<void> {
     const data = JSON.parse(signal.payload) as SignalPayload;
     const from = signal.from;
+
+    if (signal.kind === "control") {
+      if (data.action === "mute" || data.action === "stop-share") this.onControl(data.action);
+      return;
+    }
     const remote = this.participants.find((p) => p.staffId === from);
 
     if (signal.kind === "offer") {
@@ -382,7 +393,7 @@ export class RoomClient {
 
   // --- outbound signaling ---
 
-  private queueSignal(to: string, kind: RoomSignal["kind"], payload: SignalPayload): void {
+  private queueSignal(to: string, kind: Exclude<RoomSignal["kind"], "control">, payload: SignalPayload): void {
     this.outbound.push({ to, kind, payload: JSON.stringify(payload) });
     // ICE candidates trickle in between polls - send them promptly instead of
     // waiting for the next tick, which would add up to a second of latency to

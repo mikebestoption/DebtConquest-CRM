@@ -92,3 +92,35 @@ button:not(:disabled),
 .sidebar-scroll::-webkit-scrollbar-thumb:hover {
   background-color: rgba(255, 255, 255, 0.45);
 }
+
+/* Global confirmation dialog (components/ConfirmDialog.tsx). */
+@keyframes confirm-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes confirm-pop {
+  from {
+    opacity: 0;
+    transform: translateY(6px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.confirm-backdrop {
+  animation: confirm-fade 120ms ease-out;
+}
+.confirm-card {
+  animation: confirm-pop 150ms ease-out;
+}
+@media (prefers-reduced-motion: reduce) {
+  .confirm-backdrop,
+  .confirm-card {
+    animation: none;
+  }
+}

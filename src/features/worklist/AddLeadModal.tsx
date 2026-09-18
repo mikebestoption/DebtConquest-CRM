@@ -58,8 +58,8 @@ export function AddLeadModal({ onClose, onCreated }: AddLeadModalProps) {
   }
 
   return (
-    <div className="fixed inset-0 z-30 flex items-center justify-center bg-black/40 px-4">
-      <div className="w-full max-w-lg rounded-card bg-white p-6 shadow-card">
+    <div className="fixed inset-0 z-30 flex overflow-y-auto bg-black/40 p-4">
+      <div className="m-auto w-full max-w-lg rounded-card bg-white p-4 shadow-card sm:p-6">
         <div className="mb-4 flex items-center justify-between">
           <h2 className="text-base font-semibold text-ink">Add New Lead</h2>
           <button onClick={onClose} className="rounded p-1 text-muted hover:bg-bg" aria-label="Close">
@@ -68,7 +68,7 @@ export function AddLeadModal({ onClose, onCreated }: AddLeadModalProps) {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-3">
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <Field label="First Name" required>
               <input
                 required
@@ -82,7 +82,7 @@ export function AddLeadModal({ onClose, onCreated }: AddLeadModalProps) {
             </Field>
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <Field label="Cell Phone" required>
               <input required value={form.phone} onChange={(e) => patch({ phone: e.target.value })} className={INPUT_CLASS} />
             </Field>
@@ -91,7 +91,7 @@ export function AddLeadModal({ onClose, onCreated }: AddLeadModalProps) {
             </Field>
           </div>
 
-          <div className="grid grid-cols-3 gap-3">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
             <Field label="State">
               <Select value={form.state ?? ""} onChange={(e) => patch({ state: e.target.value || undefined })}>
                 <option value="">—</option>

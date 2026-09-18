@@ -105,7 +105,8 @@ export function OrganizationPage() {
 
             <div className="rounded-card border border-border bg-white p-5">
               <h3 className="mb-3 font-semibold text-ink">Job Title Ladder</h3>
-              <table className="w-full text-left text-sm">
+              <div className="overflow-x-auto">
+              <table className="w-full min-w-[480px] text-left text-sm">
                 <thead>
                   <tr className="border-b border-border text-xs font-semibold text-muted">
                     <th className="py-2 pr-3">Level</th>
@@ -123,6 +124,7 @@ export function OrganizationPage() {
                   ))}
                 </tbody>
               </table>
+              </div>
             </div>
 
             <div className="rounded-card border border-border bg-white p-5">

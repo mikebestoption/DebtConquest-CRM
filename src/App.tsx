@@ -24,6 +24,7 @@ import { SourceFormPage } from "./features/sources/SourceFormPage";
 import { HuddleRoomPage, MeetingPage, SupportSessionPage } from "./features/collab/SessionsPage";
 import { RoomPage } from "./features/collab/RoomPage";
 import { RecordingsPage } from "./features/collab/RecordingsPage";
+import { ConfirmDialog } from "./components/ConfirmDialog";
 import { ALL_NAV_ITEMS } from "./features/layout/navConfig";
 
 // Every sidebar item beyond Worklist, Calendar, User Management (Users/Teams/
@@ -53,6 +54,7 @@ const PLACEHOLDER_ITEMS = ALL_NAV_ITEMS.filter((item) => !BUILT_PATHS.includes(i
 export default function App() {
   return (
     <BrowserRouter>
+      <ConfirmDialog />
       <Routes>
         <Route path="/login" element={<LoginPage />} />
         <Route path="/forgot-password" element={<ForgotPasswordPage />} />

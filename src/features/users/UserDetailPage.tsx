@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import { confirmAction, notifyAction } from "../../state/confirmStore";
 import { useNavigate, useParams } from "react-router-dom";
 import {
   fetchUser,
@@ -386,7 +387,13 @@ function AccessTab({ user }: { user: UserDetail }) {
   }
 
   async function handleRevoke(id: number) {
-    if (!confirm("Revoke this temporary exception?")) return;
+    const ok = await confirmAction({
+      title: "Revoke this temporary access?",
+      message: "The extra permission ends immediately for this user.",
+      confirmLabel: "Revoke",
+      tone: "danger",
+    });
+    if (!ok) return;
     await revokeTemporaryException(user.id, id);
     load();
   }
@@ -562,12 +569,18 @@ export function UserDetailPage() {
 
   async function handleResendInvite() {
     if (!user) return;
+    const ok = await confirmAction({
+      title: "Send invite email?",
+      message: `A new invite link will be emailed to ${user.email}.`,
+      confirmLabel: "Send invite",
+    });
+    if (!ok) return;
     setResending(true);
     try {
       await resendInvite(user.id);
-      alert(`Invite email sent to ${user.email}.`);
+      await notifyAction({ title: "Invite sent", message: `Invite email sent to ${user.email}.` });
     } catch {
-      alert("Failed to send invite email.");
+      await notifyAction({ title: "Couldn't send invite", message: "Failed to send invite email. Try again in a moment.", tone: "danger" });
     } finally {
       setResending(false);
     }

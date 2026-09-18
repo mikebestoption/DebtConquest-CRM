@@ -1,4 +1,5 @@
 import { useState, type FormEvent } from "react";
+import { confirmAction } from "../../state/confirmStore";
 import { createCalendarEvent, updateCalendarEvent, deleteCalendarEvent, type CalendarEvent } from "../../api/calendar";
 import { ApiError } from "../../api/client";
 import type { StaffOption } from "../../api/staff";
@@ -70,7 +71,13 @@ export function CalendarEventModal({ event, defaultDate, isAdmin, staff, current
 
   async function handleDelete() {
     if (!event) return;
-    if (!window.confirm(`Delete "${event.title}"? This cannot be undone.`)) return;
+    const ok = await confirmAction({
+      title: "Delete this event?",
+      message: `"${event.title}" will be removed from the calendar. This can't be undone.`,
+      confirmLabel: "Delete event",
+      tone: "danger",
+    });
+    if (!ok) return;
     setError(null);
     setDeleting(true);
     try {
@@ -83,8 +90,8 @@ export function CalendarEventModal({ event, defaultDate, isAdmin, staff, current
   }
 
   return (
-    <div className="fixed inset-0 z-30 flex items-center justify-center bg-black/40 px-4">
-      <div className="w-full max-w-md rounded-card bg-white p-6 shadow-card">
+    <div className="fixed inset-0 z-30 flex overflow-y-auto bg-black/40 p-4">
+      <div className="m-auto w-full max-w-md rounded-card bg-white p-4 shadow-card sm:p-6">
         <div className="mb-4 flex items-center justify-between">
           <h2 className="text-base font-semibold text-ink">{isEdit ? "Edit Event" : "New Event"}</h2>
           <button onClick={onClose} className="rounded p-1 text-muted hover:bg-bg" aria-label="Close">
@@ -113,7 +120,7 @@ export function CalendarEventModal({ event, defaultDate, isAdmin, staff, current
 
           <Checkbox checked={allDay} onChange={setAllDay} label="All day" />
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <div>
               <label className="mb-1 block text-xs font-medium text-muted">Start</label>
               <input

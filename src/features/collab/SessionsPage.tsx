@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import { confirmAction } from "../../state/confirmStore";
 import { Link, useNavigate } from "react-router-dom";
 import { endCollabSession, fetchCollabSessions, type CollabSession, type CollabSessionType } from "../../api/collab";
 import { ApiError } from "../../api/client";
@@ -100,7 +101,17 @@ function SessionsPage({ type }: { type: CollabSessionType }) {
 
   async function handleEnd(s: CollabSession) {
     const verb = s.status === "SCHEDULED" || s.status === "WAITING" ? "Cancel" : "End";
-    if (!window.confirm(`${verb} "${s.title}"?${s.status === "LIVE" ? " Everyone in the room will be disconnected." : ""}`)) return;
+    const ok = await confirmAction({
+      title: `${verb} this ${s.type === "MEETING" ? "meeting" : s.type === "SUPPORT" ? "support request" : "huddle"}?`,
+      message:
+        s.status === "LIVE"
+          ? `"${s.title}" will end and everyone in the room will be disconnected.`
+          : `"${s.title}" will be cancelled${s.type === "MEETING" ? " and removed from attendees' calendars" : ""}.`,
+      confirmLabel: verb === "Cancel" ? "Cancel it" : "End for everyone",
+      cancelLabel: "Keep it",
+      tone: "danger",
+    });
+    if (!ok) return;
     setBusyId(s.id);
     try {
       await endCollabSession(s.id);
@@ -124,7 +135,7 @@ function SessionsPage({ type }: { type: CollabSessionType }) {
         <IconPlus width={16} height={16} /> Start a Huddle
       </button>
     ) : type === "MEETING" ? (
-      <div className="flex gap-2">
+      <div className="flex flex-wrap gap-2">
         <button onClick={() => setModal({ session: null, startNow: true })} className="rounded-md border border-teal px-4 py-2 text-sm font-semibold text-teal hover:bg-bg">
           Meet now
         </button>
@@ -186,10 +197,10 @@ function SessionsPage({ type }: { type: CollabSessionType }) {
             const inRoom = inRoomNames(s);
             const attendees = s.participants.filter((p) => p.role === "INVITEE");
             return (
-              <div key={s.id} className="flex flex-wrap items-center justify-between gap-4 rounded-card border border-border bg-white px-5 py-4">
-                <div className="min-w-0 flex-1">
+              <div key={s.id} className="flex flex-wrap items-center justify-between gap-3 rounded-card border border-border bg-white px-4 py-4 sm:gap-4 sm:px-5">
+                <div className="min-w-0 basis-full sm:flex-1 sm:basis-0">
                   <div className="flex flex-wrap items-center gap-2">
-                    <h2 className="truncate text-base font-semibold text-ink">{s.title}</h2>
+                    <h2 className="min-w-0 break-words text-base font-semibold text-ink">{s.title}</h2>
                     <span className={`rounded px-2 py-0.5 text-xs font-semibold ${status.className}`}>{status.label}</span>
                     {s.isOpen && s.inRoomCount > 0 && (
                       <span className="rounded bg-green-50 px-2 py-0.5 text-xs font-semibold text-green-700">{s.inRoomCount} in room</span>
@@ -227,7 +238,7 @@ function SessionsPage({ type }: { type: CollabSessionType }) {
                 </div>
 
                 {s.isOpen && (
-                  <div className="flex shrink-0 items-center gap-2">
+                  <div className="flex w-full shrink-0 items-center gap-2 sm:w-auto">
                     {s.canManage && (
                       <>
                         {type !== "SUPPORT" && (
@@ -246,7 +257,7 @@ function SessionsPage({ type }: { type: CollabSessionType }) {
                     )}
                     <button
                       onClick={() => navigate(`/teams/room/${s.id}`)}
-                      className="rounded-md bg-teal px-4 py-2 text-sm font-semibold text-white hover:bg-teal-hover"
+                      className="flex-1 rounded-md bg-teal px-4 py-2 text-sm font-semibold text-white hover:bg-teal-hover sm:flex-none"
                     >
                       {joinLabel(s)}
                     </button>

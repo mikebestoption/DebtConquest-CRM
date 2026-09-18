@@ -4,6 +4,8 @@ import {
   fetchCollabSession,
   joinCollabSession,
   leaveCollabSession,
+  controlCollabSession,
+  type ControlAction,
   uploadCollabRecording,
   type CollabSession,
 } from "../../api/collab";
@@ -36,6 +38,8 @@ export interface RuntimeState {
   session: CollabSession | null;
   snapshot: RoomSnapshot;
   recording: RecordingState;
+  // Short-lived message like "The host muted you".
+  notice: string | null;
   // Bumped whenever LocalMedia changes so subscribers re-render.
   mediaVersion: number;
 }
@@ -62,6 +66,7 @@ export class RoomRuntime {
   private joined = false;
   private disposed = false;
   private unsubscribeMedia: () => void;
+  private noticeTimer: number | null = null;
 
   constructor(sessionId: string, me: { id: string; name: string }) {
     this.sessionId = sessionId;
@@ -74,6 +79,7 @@ export class RoomRuntime {
       session: null,
       snapshot: EMPTY_SNAPSHOT,
       recording: { status: "idle", mode: "video", startedAt: null, error: null, pending: null },
+      notice: null,
       mediaVersion: 0,
     };
     this.unsubscribeMedia = this.media.subscribe(() => {
@@ -142,6 +148,15 @@ export class RoomRuntime {
           this.patch({ snapshot });
           this.syncRecorderTiles();
         },
+        onControl: (action) => {
+          if (action === "mute") {
+            this.media.muteMic();
+            this.showNotice("The host muted your microphone.");
+          } else {
+            this.media.stopShare();
+            this.showNotice("The host stopped your screen share.");
+          }
+        },
         onClosed: (reason, message) => void this.handleClosed(reason, message),
       });
       this.syncOutgoing();
@@ -173,6 +188,21 @@ export class RoomRuntime {
     await this.client?.sendMessage(body);
   }
 
+  private showNotice(message: string): void {
+    if (this.noticeTimer !== null) window.clearTimeout(this.noticeTimer);
+    this.patch({ notice: message });
+    this.noticeTimer = window.setTimeout(() => this.patch({ notice: null }), 6000);
+  }
+
+  // Host/admin moderation (the server checks permission).
+  async control(action: ControlAction, targetId?: string): Promise<void> {
+    try {
+      await controlCollabSession(this.sessionId, targetId ? { action, targetId } : { action, all: true });
+    } catch (err) {
+      this.showNotice(errorMessage(err, "That didn't work"));
+    }
+  }
+
   // --- leaving / ending ---
 
   private async handleClosed(reason: "ended" | "error", message: string): Promise<void> {
@@ -184,6 +214,12 @@ export class RoomRuntime {
       void leaveCollabSession(this.sessionId).catch(() => {});
     }
     if (this.disposed) return;
+    // A refused poll mid-call means the host removed us (or we were dropped) -
+    // not a failure to open the session.
+    if (reason === "error" && this.state.phase === "live") {
+      this.patch({ phase: "ended", endedMessage: "You were removed from this session, or your connection was lost." });
+      return;
+    }
     this.patch(reason === "ended" ? { phase: "ended", endedMessage: message } : { phase: "error", error: message });
   }
 
@@ -210,6 +246,7 @@ export class RoomRuntime {
     if (this.disposed) return;
     this.disposed = true;
     this.unsubscribeMedia();
+    if (this.noticeTimer !== null) window.clearTimeout(this.noticeTimer);
     this.client?.stop();
     this.client = null;
     void this.finishRecording();
