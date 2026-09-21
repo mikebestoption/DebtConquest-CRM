@@ -5,7 +5,7 @@ import {
   sendCollabSignals,
   type CollabParticipant,
   type CollabSessionStatus,
-  type IceServer,
+  type IceConfig,
   type RoomMessage,
   type RoomSignal,
 } from "../../api/collab";
@@ -23,6 +23,12 @@ import {
 // refreshed their tab) can't be applied to its replacement.
 
 const POLL_INTERVAL_MS = 800;
+// A connection that hasn't come up after this long is abandoned and retried
+// from scratch - ICE can wedge in "checking" when a NAT mapping goes stale.
+const CONNECT_TIMEOUT_MS = 20_000;
+// After this long still "connecting" we tell the user something's off rather
+// than leaving a spinner that might never resolve.
+const SLOW_AFTER_MS = 7_000;
 
 export interface PeerMediaState {
   audio: boolean;
@@ -30,10 +36,18 @@ export interface PeerMediaState {
   screen: boolean;
 }
 
+// How the connection to one person is going, for the UI:
+//   connected  - media is flowing
+//   connecting - negotiating (normal for a few seconds)
+//   slow       - still not up after SLOW_AFTER_MS; likely a network problem
+//   failed     - an attempt gave up (timed out / ICE failed); retrying
+export type PeerLink = "connected" | "connecting" | "slow" | "failed";
+
 export interface RemotePeer extends PeerMediaState {
   staffId: string;
   stream: MediaStream;
   connectionState: RTCPeerConnectionState;
+  link: PeerLink;
 }
 
 export interface RoomSnapshot {
@@ -41,6 +55,9 @@ export interface RoomSnapshot {
   peers: RemotePeer[];
   messages: RoomMessage[];
   reconnecting: boolean;
+  // Whether the server offers a TURN relay (see IceConfig) - decides what
+  // advice to give when connections won't come up.
+  relayConfigured: boolean;
 }
 
 interface Peer {
@@ -56,6 +73,14 @@ interface Peer {
   // Until the peer's data channel reports its real state, fall back to
   // guessing from whether video is actually arriving.
   gotMediaState: boolean;
+  startedAt: number;
+  // ICE candidates we gathered before our offer/answer was queued for
+  // sending - they must go out after it, or the other side has no peer to
+  // attach them to and drops them.
+  outboundReady: boolean;
+  earlyLocal: RTCIceCandidateInit[];
+  localCandidateTypes: Set<string>;
+  remoteCandidateCount: number;
 }
 
 interface SignalPayload {
@@ -65,10 +90,9 @@ interface SignalPayload {
   action?: string;
 }
 
-export interface RoomClientOptions {
+export interface RoomClientOptions extends IceConfig {
   sessionId: string;
   myId: string;
-  iceServers: IceServer[];
   onUpdate: (snapshot: RoomSnapshot) => void;
   // The host asked us to mute or stop sharing (server-verified: only the
   // moderation endpoint can create these signals).
@@ -80,12 +104,20 @@ export interface RoomClientOptions {
 export class RoomClient {
   private sessionId: string;
   private myId: string;
-  private iceServers: IceServer[];
+  private iceConfig: IceConfig;
   private onUpdate: (snapshot: RoomSnapshot) => void;
   private onClosed: (reason: "ended" | "error", message: string) => void;
   private onControl: (action: "mute" | "stop-share") => void;
 
   private peers = new Map<string, Peer>();
+  // Per person we're trying to reach: when we first started and how many
+  // attempts have failed. Outlives individual RTCPeerConnections so the UI
+  // keeps saying "can't connect" across retries instead of flickering.
+  private health = new Map<string, { since: number; failures: number }>();
+  // Stand-in streams for people in the room we have no live connection to yet.
+  private placeholders = new Map<string, MediaStream>();
+  // Candidates that arrive before the offer that introduces their connection.
+  private orphanCandidates = new Map<string, RTCIceCandidateInit[]>();
   private outbound: { to: string; kind: Exclude<RoomSignal["kind"], "control">; payload: string }[] = [];
   private signalSince = 0;
   private messageSince = 0;
@@ -106,7 +138,7 @@ export class RoomClient {
   constructor(options: RoomClientOptions) {
     this.sessionId = options.sessionId;
     this.myId = options.myId;
-    this.iceServers = options.iceServers;
+    this.iceConfig = { iceServers: options.iceServers, iceTransportPolicy: options.iceTransportPolicy, relayConfigured: options.relayConfigured };
     this.onUpdate = options.onUpdate;
     this.onClosed = options.onClosed;
     this.onControl = options.onControl;
@@ -203,6 +235,7 @@ export class RoomClient {
       }
     }
 
+    this.expireStalledPeers();
     await this.reconcile();
     this.emit();
     await this.flushOutbound();
@@ -218,6 +251,45 @@ export class RoomClient {
   }
 
   // --- peers ---
+
+  // Abandon attempts that never got anywhere. The offerer's next reconcile()
+  // starts a fresh one (new connId); the other side picks it up from its offer.
+  private expireStalledPeers(): void {
+    const now = Date.now();
+    for (const [staffId, peer] of [...this.peers]) {
+      if (peer.pc.connectionState !== "connected" && now - peer.startedAt > CONNECT_TIMEOUT_MS) {
+        this.noteFailure(staffId, peer, "timed out");
+        this.closePeer(staffId, false);
+      }
+    }
+  }
+
+  private noteFailure(staffId: string, peer: Peer, why: string): void {
+    const h = this.health.get(staffId) ?? { since: peer.startedAt, failures: 0 };
+    h.failures++;
+    this.health.set(staffId, h);
+    // Diagnostics for whoever ends up debugging a network: the candidate
+    // types tell you at a glance whether a relay was ever in play.
+    console.warn(
+      `[teams] connection to ${staffId} ${why}. local candidates: ${[...peer.localCandidateTypes].join(", ") || "none"}; ` +
+        `remote candidates received: ${peer.remoteCandidateCount}; ice: ${peer.pc.iceConnectionState}; relay configured: ${this.iceConfig.relayConfigured}`,
+    );
+  }
+
+  private logSelectedPath(staffId: string, pc: RTCPeerConnection): void {
+    void pc
+      .getStats()
+      .then((stats) => {
+        let pair: { localCandidateId?: string; remoteCandidateId?: string } | undefined;
+        stats.forEach((r) => {
+          if (r.type === "transport" && r.selectedCandidatePairId) pair = stats.get(r.selectedCandidatePairId);
+        });
+        const local = pair?.localCandidateId ? stats.get(pair.localCandidateId) : undefined;
+        const remote = pair?.remoteCandidateId ? stats.get(pair.remoteCandidateId) : undefined;
+        console.info(`[teams] connected to ${staffId} via local ${local?.candidateType ?? "?"} / remote ${remote?.candidateType ?? "?"}`);
+      })
+      .catch(() => {});
+  }
 
   // Make the set of open connections match who's actually in the room.
   private async reconcile(): Promise<void> {
@@ -238,7 +310,7 @@ export class RoomClient {
   }
 
   private makePeer(staffId: string, connId: string, remoteJoinedAt: string | null): Peer {
-    const pc = new RTCPeerConnection({ iceServers: this.iceServers });
+    const pc = new RTCPeerConnection({ iceServers: this.iceConfig.iceServers, iceTransportPolicy: this.iceConfig.iceTransportPolicy });
     const stream = new MediaStream();
     const peer: Peer = {
       staffId,
@@ -251,6 +323,11 @@ export class RoomClient {
       hasRemote: false,
       media: { audio: true, video: false, screen: false },
       gotMediaState: false,
+      startedAt: Date.now(),
+      outboundReady: false,
+      earlyLocal: [],
+      localCandidateTypes: new Set(),
+      remoteCandidateCount: 0,
     };
 
     pc.ontrack = (e) => {
@@ -268,20 +345,37 @@ export class RoomClient {
       this.emit();
     };
     pc.onicecandidate = (e) => {
-      if (e.candidate) this.queueSignal(staffId, "candidate", { connId, candidate: e.candidate.toJSON() });
+      if (!e.candidate) return;
+      peer.localCandidateTypes.add(e.candidate.type ?? "unknown");
+      const candidate = e.candidate.toJSON();
+      if (peer.outboundReady) this.queueSignal(staffId, "candidate", { connId, candidate });
+      else peer.earlyLocal.push(candidate);
     };
     pc.onconnectionstatechange = () => {
       const state = pc.connectionState;
+      if (state === "connected") {
+        this.health.delete(staffId);
+        this.logSelectedPath(staffId, pc);
+      }
       // "failed"/"closed" are terminal. "disconnected" often recovers on its
       // own, so it's left alone. Dropping the peer makes reconcile() rebuild
       // it (offerer) or the offerer's new offer replace it (answerer).
-      if ((state === "failed" || state === "closed") && this.peers.get(staffId) === peer) this.closePeer(staffId, false);
-      else this.emit();
+      if ((state === "failed" || state === "closed") && this.peers.get(staffId) === peer) {
+        if (state === "failed") this.noteFailure(staffId, peer, "failed");
+        this.closePeer(staffId, false);
+      } else this.emit();
     };
+    pc.oniceconnectionstatechange = () => this.emit();
     pc.ondatachannel = (e) => this.attachChannel(peer, e.channel);
 
     this.peers.set(staffId, peer);
     return peer;
+  }
+
+  // Our offer/answer is now queued, so candidates gathered meanwhile can follow it.
+  private releaseEarlyCandidates(peer: Peer): void {
+    peer.outboundReady = true;
+    for (const candidate of peer.earlyLocal.splice(0)) this.queueSignal(peer.staffId, "candidate", { connId: peer.connId, candidate });
   }
 
   private attachChannel(peer: Peer, channel: RTCDataChannel): void {
@@ -327,6 +421,7 @@ export class RoomClient {
       const offer = await pc.createOffer();
       await pc.setLocalDescription(offer);
       this.queueSignal(staffId, "offer", { connId, sdp: pc.localDescription!.toJSON() });
+      this.releaseEarlyCandidates(peer);
     } catch {
       this.closePeer(staffId, false);
     }
@@ -356,11 +451,27 @@ export class RoomClient {
       const answer = await pc.createAnswer();
       await pc.setLocalDescription(answer);
       this.queueSignal(from, "answer", { connId: data.connId, sdp: pc.localDescription!.toJSON() });
+      this.releaseEarlyCandidates(peer);
+      // Candidates that beat the offer here.
+      const orphaned = this.orphanCandidates.get(`${from}:${data.connId}`);
+      if (orphaned) {
+        peer.pendingCandidates.push(...orphaned);
+        this.orphanCandidates.delete(`${from}:${data.connId}`);
+      }
       await this.drainCandidates(peer);
       return;
     }
 
     const peer = this.peers.get(from);
+    if (!peer && signal.kind === "candidate" && data.candidate && data.connId) {
+      const key = `${from}:${data.connId}`;
+      const list = this.orphanCandidates.get(key) ?? [];
+      list.push(data.candidate);
+      this.orphanCandidates.set(key, list);
+      // Bounded: stale keys from abandoned connections shouldn't pile up.
+      if (this.orphanCandidates.size > 20) this.orphanCandidates.delete(this.orphanCandidates.keys().next().value as string);
+      return;
+    }
     if (!peer || peer.connId !== data.connId) return;
 
     if (signal.kind === "answer") {
@@ -369,6 +480,7 @@ export class RoomClient {
       peer.hasRemote = true;
       await this.drainCandidates(peer);
     } else if (signal.kind === "candidate" && data.candidate) {
+      peer.remoteCandidateCount++;
       if (peer.hasRemote) await peer.pc.addIceCandidate(data.candidate).catch(() => {});
       else peer.pendingCandidates.push(data.candidate);
     }
@@ -422,18 +534,45 @@ export class RoomClient {
     if (this.outbound.length) await this.flushOutbound();
   }
 
+  private linkFor(staffId: string, peer: Peer | undefined): PeerLink {
+    if (peer?.pc.connectionState === "connected") return "connected";
+    const h = this.health.get(staffId);
+    if (h && h.failures > 0) return "failed";
+    const since = peer?.startedAt ?? h?.since ?? Date.now();
+    return Date.now() - since > SLOW_AFTER_MS ? "slow" : "connecting";
+  }
+
   private emit(): void {
     if (this.stopped) return;
+    const present = this.participants.filter((p) => p.inRoom && p.staffId !== this.myId);
+    const peers: RemotePeer[] = present.map((p) => {
+      const peer = this.peers.get(p.staffId);
+      let stream = peer?.stream;
+      if (!stream) {
+        // In the room but no live connection (yet, or between retries): show a
+        // tile with the right status rather than letting it vanish.
+        stream = this.placeholders.get(p.staffId) ?? new MediaStream();
+        this.placeholders.set(p.staffId, stream);
+      }
+      return {
+        staffId: p.staffId,
+        stream,
+        connectionState: peer?.pc.connectionState ?? "new",
+        link: this.linkFor(p.staffId, peer),
+        ...(peer?.media ?? { audio: true, video: false, screen: false }),
+      };
+    });
+    // Forget people who left.
+    const presentIds = new Set(present.map((p) => p.staffId));
+    for (const id of [...this.placeholders.keys()]) if (!presentIds.has(id)) this.placeholders.delete(id);
+    for (const id of [...this.health.keys()]) if (!presentIds.has(id)) this.health.delete(id);
+
     this.onUpdate({
       participants: this.participants,
-      peers: [...this.peers.values()].map((p) => ({
-        staffId: p.staffId,
-        stream: p.stream,
-        connectionState: p.pc.connectionState,
-        ...p.media,
-      })),
+      peers,
       messages: [...this.messages],
       reconnecting: this.reconnecting,
+      relayConfigured: this.iceConfig.relayConfigured,
     });
   }
 }

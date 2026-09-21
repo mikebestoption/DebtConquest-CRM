@@ -42,6 +42,16 @@ export interface IceServer {
   credential?: string;
 }
 
+// Everything the browser needs to build RTCPeerConnections.
+export interface IceConfig {
+  iceServers: IceServer[];
+  // "relay" forces all media through the TURN server.
+  iceTransportPolicy: "all" | "relay";
+  // Whether the server has a TURN relay configured at all - without one,
+  // people on restrictive networks simply can't connect to each other.
+  relayConfigured: boolean;
+}
+
 export interface CreateSessionInput {
   type: CollabSessionType;
   title: string;
@@ -139,7 +149,7 @@ export function endCollabSession(id: string): Promise<{ status: string }> {
   return apiRequest(`/collab/sessions/${id}/end`, { method: "POST" });
 }
 
-export function joinCollabSession(id: string): Promise<{ status: string; session: CollabSession; iceServers: IceServer[] }> {
+export function joinCollabSession(id: string): Promise<{ status: string; session: CollabSession } & IceConfig> {
   return apiRequest(`/collab/sessions/${id}/join`, { method: "POST" });
 }
 
@@ -192,6 +202,6 @@ export function deleteCollabRecording(id: string): Promise<{ status: string }> {
   return apiRequest(`/collab/recordings/${id}`, { method: "DELETE" });
 }
 
-export function fetchCollabConfig(): Promise<{ status: string; iceServers: IceServer[]; maxParticipants: number }> {
+export function fetchCollabConfig(): Promise<{ status: string; maxParticipants: number } & IceConfig> {
   return apiRequest("/collab/config");
 }

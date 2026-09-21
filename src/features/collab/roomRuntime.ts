@@ -44,7 +44,7 @@ export interface RuntimeState {
   mediaVersion: number;
 }
 
-const EMPTY_SNAPSHOT: RoomSnapshot = { participants: [], peers: [], messages: [], reconnecting: false };
+const EMPTY_SNAPSHOT: RoomSnapshot = { participants: [], peers: [], messages: [], reconnecting: false, relayConfigured: false };
 
 function errorMessage(err: unknown, fallback: string): string {
   return err instanceof ApiError || err instanceof Error ? err.message : fallback;
@@ -144,6 +144,8 @@ export class RoomRuntime {
         sessionId: this.sessionId,
         myId: this.myId,
         iceServers: res.iceServers,
+        iceTransportPolicy: res.iceTransportPolicy,
+        relayConfigured: res.relayConfigured,
         onUpdate: (snapshot) => {
           this.patch({ snapshot });
           this.syncRecorderTiles();
