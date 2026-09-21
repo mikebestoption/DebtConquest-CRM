@@ -253,7 +253,7 @@ function LiveRoom({ runtime, myId, myName, backPath }: { runtime: RoomRuntime; m
       audioOn: p.audio,
       mirror: false,
       screen: p.screen,
-      status: p.connectionState === "connected" ? undefined : p.connectionState === "failed" ? "connection lost" : "connecting…",
+      status: p.link === "connected" ? undefined : p.link === "connecting" ? "connecting…" : p.link === "slow" ? "still connecting…" : "can't connect",
     })),
   ];
   const canModerate = session.canManage;
@@ -297,6 +297,7 @@ function LiveRoom({ runtime, myId, myName, backPath }: { runtime: RoomRuntime; m
   };
   // A manual pin wins over an automatic "someone is sharing their screen".
   // If the pinned person has left, this quietly falls back to the default layout.
+  const troubled = snapshot.peers.filter((p) => p.link === "slow" || p.link === "failed");
   const presenter = tiles.find((t) => t.key === pinnedKey) ?? tiles.find((t) => t.screen);
   const strip = presenter ? tiles.filter((t) => t !== presenter) : [];
   // Literal class names (not built at runtime) so Tailwind can see them.
@@ -420,6 +421,16 @@ function LiveRoom({ runtime, myId, myName, backPath }: { runtime: RoomRuntime; m
         <div className="rounded-md bg-amber-50 px-3 py-2 text-sm text-amber-800">Connection problem - trying to reconnect…</div>
       )}
       {state.notice && <div className="rounded-md bg-amber-50 px-3 py-2 text-sm text-amber-800">{state.notice}</div>}
+      {troubled.length > 0 && (
+        <div role="alert" className="rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-900">
+          <strong>
+            Having trouble connecting to {troubled.map((p) => nameOf(p.staffId)).join(", ")}.
+          </strong>{" "}
+          {snapshot.relayConfigured
+            ? "Even the relay server isn't getting through - a firewall may be blocking the relay ports. Try another network."
+            : "Your network (a VPN, firewall or some office Wi-Fi) may be blocking direct calls between devices. Try turning off any VPN or switching networks; if it keeps happening, ask your admin to set up a TURN relay server."}
+        </div>
+      )}
       <RecordingBanner recording={recording} runtime={runtime} />
 
       <div className="flex min-h-0 flex-1 gap-3">

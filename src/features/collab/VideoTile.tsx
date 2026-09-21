@@ -55,7 +55,10 @@ export function VideoTile({ stream, name, muted, videoOn, audioOn, mirror, scree
       // yet; surface a button rather than staying silently mute.
       el.play().then(
         () => setBlocked(false),
-        () => setBlocked(true),
+        // Only a real autoplay refusal warrants the button - an empty stream
+        // (someone we haven't connected to yet) also rejects, and isn't
+        // something clicking can fix.
+        (err: unknown) => setBlocked(err instanceof DOMException && err.name === "NotAllowedError"),
       );
     }
   }, [stream]);
