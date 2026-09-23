@@ -139,6 +139,8 @@ export function LeadDetailPage() {
         <div className="flex flex-wrap items-center gap-x-6 gap-y-3 text-sm">
           <span className="font-bold text-ink">ID-{lead.leadNumber}</span>
 
+          <span className="text-muted">Elevate ID: {lead.elevateClientId ?? "—"}</span>
+
           <span className="flex items-center gap-2 text-muted">
             Queue:
             <PillSelect value={lead.queue} onChange={(v) => patchHeader({ queue: v })} options={[{ value: "Main", label: "Main" }]} />

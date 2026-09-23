@@ -138,6 +138,7 @@ export interface CoApplicantDetail {
 export interface LeadDetail {
   id: string;
   leadNumber: number;
+  elevateClientId: string | null;
   createdAt: string;
 
   queue: string;
