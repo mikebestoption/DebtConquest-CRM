@@ -83,6 +83,10 @@ export const SOURCE_LABELS: Record<LeadSource, string> = {
 export interface WorklistItem {
   id: string;
   leadNumber: number;
+  // Elevate (elevate.cftconnect.com) client id, set once the "Elevate → CRM
+  // Sync" browser extension has synced this client's contact record at
+  // least once - see server/src/services/integrations/elevateSync.service.ts.
+  elevateClientId: string | null;
   firstName: string | null;
   lastName: string | null;
   name: string;

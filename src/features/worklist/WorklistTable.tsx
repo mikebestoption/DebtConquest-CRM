@@ -9,8 +9,10 @@ interface Column {
   label: string;
 }
 
+// "Id" (leadNumber) is rendered on its own, immediately followed by the
+// (non-sortable) "Elevate ID" column, rather than going through this list -
+// see the <thead> below.
 const COLUMNS: Column[] = [
-  { key: "leadNumber", label: "Id" },
   { key: "name", label: "Name" },
   { key: "lastActivityAt", label: "Last Activity" },
   { key: "createdAt", label: "Date Created" },
@@ -66,6 +68,14 @@ export function WorklistTable({
               />
             </th>
             <th className="px-4 py-3">Actions</th>
+            <th className="px-4 py-3">
+              <button className="flex items-center gap-1 hover:text-ink" onClick={() => onSort("leadNumber")}>
+                Id
+                <IconChevronUpDown className={sortBy === "leadNumber" ? "text-teal" : "text-gray-300"} />
+                {sortBy === "leadNumber" && <span className="text-[10px] text-teal">{sortDir === "asc" ? "▲" : "▼"}</span>}
+              </button>
+            </th>
+            <th className="px-4 py-3">Elevate ID</th>
             {COLUMNS.map((col) => (
               <th key={col.key} className="px-4 py-3">
                 <button className="flex items-center gap-1 hover:text-ink" onClick={() => onSort(col.key)}>
@@ -97,14 +107,14 @@ export function WorklistTable({
         <tbody>
           {loading && (
             <tr>
-              <td colSpan={11} className="px-4 py-10 text-center text-muted">
+              <td colSpan={12} className="px-4 py-10 text-center text-muted">
                 Loading…
               </td>
             </tr>
           )}
           {!loading && items.length === 0 && (
             <tr>
-              <td colSpan={11} className="px-4 py-10 text-center text-muted">
+              <td colSpan={12} className="px-4 py-10 text-center text-muted">
                 No leads match these filters.
               </td>
             </tr>
@@ -130,6 +140,7 @@ export function WorklistTable({
                   </div>
                 </td>
                 <td className="px-4 py-3 font-medium text-ink">{item.leadNumber}</td>
+                <td className="px-4 py-3 text-muted">{item.elevateClientId ?? "—"}</td>
                 <td className="px-4 py-3 text-ink">
                   <button className="hover:text-teal hover:underline" onClick={() => navigate(`/leads/${item.id}`)}>
                     {item.name}
