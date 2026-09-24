@@ -8,6 +8,7 @@ import { PillSelect } from "./formFields";
 import { ProfileTab } from "./ProfileTab";
 import { BudgetTab } from "./BudgetTab";
 import { CreditorTab } from "./CreditorTab";
+import { BankInfoTab } from "./BankInfoTab";
 import { AdditionalInfoTab } from "./AdditionalInfoTab";
 import { IconChevronLeft } from "../layout/icons";
 
@@ -183,8 +184,9 @@ export function LeadDetailPage() {
       {activeTab === "Profile" && <ProfileTab lead={lead} onSaved={setLead} />}
       {activeTab === "Budget" && <BudgetTab leadId={lead.id} />}
       {activeTab === "Creditor" && <CreditorTab leadId={lead.id} onOpenAdditionalInfo={() => setActiveTab("Additional Info")} />}
+      {activeTab === "Bank Info" && <BankInfoTab lead={lead} />}
       {activeTab === "Additional Info" && <AdditionalInfoTab leadId={lead.id} />}
-      {activeTab !== "Profile" && activeTab !== "Budget" && activeTab !== "Creditor" && activeTab !== "Additional Info" && (
+      {activeTab !== "Profile" && activeTab !== "Budget" && activeTab !== "Creditor" && activeTab !== "Bank Info" && activeTab !== "Additional Info" && (
         <div className="rounded-card border border-dashed border-border bg-white p-10 text-center text-sm text-muted">{activeTab} - coming soon</div>
       )}
     </div>
