@@ -18,6 +18,7 @@ import { ApiError } from "../../api/client";
 import { Checkbox, Radio, Select } from "../../components/controls";
 import { IconAlertTriangle, IconChevronLeft, IconChevronUpDown, IconCloud, IconInfo, IconPencil, IconPlus, IconTrash, IconX } from "../layout/icons";
 import { CreditorModal } from "./CreditorModal";
+import { CustomerCalculatorSection } from "./customerCalculator/CustomerCalculatorSection";
 
 const CURRENCY = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", minimumFractionDigits: 2 });
 const PERCENT = new Intl.NumberFormat("en-US", { style: "percent", minimumFractionDigits: 0, maximumFractionDigits: 1 });
@@ -379,6 +380,19 @@ export function CreditorTab({ leadId, onOpenAdditionalInfo }: { leadId: string; 
               ))}
             </Select>
           </div>
+        </div>
+      </div>
+
+      <div className="rounded-card border border-border bg-white">
+        <div className="flex items-center gap-3 border-b border-border px-5 py-4">
+          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-teal text-white">
+            <IconCloud width={16} height={16} />
+          </div>
+          <span className="font-semibold text-ink">Customer's Calculator View</span>
+          <span className="text-xs text-muted">Exactly what this customer sees on the debt calculator - read-only</span>
+        </div>
+        <div className="p-5">
+          <CustomerCalculatorSection leadId={leadId} />
         </div>
       </div>
 
