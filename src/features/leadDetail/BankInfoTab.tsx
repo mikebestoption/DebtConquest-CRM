@@ -135,7 +135,7 @@ function SummaryBar({
               onClick={onVerify}
               disabled={!info || editing || verifying}
               title={!info ? "Save bank info before verifying" : editing ? "Save or cancel your edits first" : undefined}
-              className="flex items-center gap-1.5 whitespace-nowrap rounded-md bg-teal px-4 py-2 text-sm font-semibold text-white hover:bg-teal-hover disabled:opacity-60"
+              className="flex items-center gap-1.5 whitespace-nowrap rounded-md bg-teal px-4 py-2 text-sm font-medium text-white hover:bg-teal-hover disabled:opacity-60"
             >
               <IconShield width={14} height={14} />
               {verifying ? "Verifying…" : "Verify Bank Account"}
@@ -143,7 +143,7 @@ function SummaryBar({
             <button
               onClick={onEdit}
               disabled={editing}
-              className="flex items-center gap-1.5 whitespace-nowrap rounded-md border border-teal px-4 py-2 text-sm font-semibold text-teal hover:bg-teal hover:text-white disabled:opacity-60"
+              className="flex items-center gap-1.5 whitespace-nowrap rounded-md border border-teal px-4 py-2 text-sm font-medium text-teal hover:bg-teal hover:text-white disabled:opacity-60"
             >
               <IconPencil width={14} height={14} />
               Edit
@@ -391,7 +391,7 @@ export function BankInfoTab({ lead }: { lead: LeadDetail }) {
           <button onClick={handleCancel} className="rounded-md border border-border bg-white px-5 py-2 text-sm font-medium text-ink hover:bg-white">
             Cancel
           </button>
-          <button onClick={handleSave} disabled={saving} className="rounded-md bg-teal px-5 py-2 text-sm font-semibold text-white hover:bg-teal-hover disabled:opacity-60">
+          <button onClick={handleSave} disabled={saving} className="rounded-md bg-teal px-5 py-2 text-sm font-medium text-white hover:bg-teal-hover disabled:opacity-60">
             {saving ? "Saving…" : "Save"}
           </button>
         </div>

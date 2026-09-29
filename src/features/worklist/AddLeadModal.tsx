@@ -143,7 +143,7 @@ export function AddLeadModal({ onClose, onCreated }: AddLeadModalProps) {
             <button
               type="submit"
               disabled={submitting}
-              className="rounded-md bg-teal px-4 py-2 text-sm font-semibold text-white hover:bg-teal-hover disabled:opacity-60"
+              className="rounded-md bg-teal px-4 py-2 text-sm font-medium text-white hover:bg-teal-hover disabled:opacity-60"
             >
               {submitting ? "Adding…" : "Add Lead"}
             </button>
@@ -157,7 +157,7 @@ export function AddLeadModal({ onClose, onCreated }: AddLeadModalProps) {
 function Field({ label, required, children }: { label: string; required?: boolean; children: React.ReactNode }) {
   return (
     <label className="block">
-      <span className="mb-1.5 block text-xs font-semibold text-muted">
+      <span className="mb-1 block text-sm text-gray-600">
         {label}
         {required && <span className="text-error"> *</span>}
       </span>

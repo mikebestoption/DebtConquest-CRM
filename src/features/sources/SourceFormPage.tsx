@@ -124,7 +124,7 @@ export function SourceFormPage() {
         <button onClick={() => navigate("/manager/leads/sources")} className="mb-1 text-sm text-muted hover:text-ink">
           ‹ Back
         </button>
-        <h1 className="text-2xl font-bold text-ink underline decoration-teal decoration-2 underline-offset-8">
+        <h1 className="text-2xl page-title">
           {isEdit ? "Edit Source" : "Add New Source"}
         </h1>
       </div>
@@ -237,7 +237,7 @@ export function SourceFormPage() {
         <button
           onClick={handleSubmit}
           disabled={submitting}
-          className="rounded-md bg-teal px-5 py-2 text-sm font-semibold text-white hover:bg-teal-hover disabled:opacity-60"
+          className="rounded-md bg-teal px-5 py-2 text-sm font-medium text-white hover:bg-teal-hover disabled:opacity-60"
         >
           {submitting ? "Submitting…" : "Submit"}
         </button>

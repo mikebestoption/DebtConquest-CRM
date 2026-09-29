@@ -123,7 +123,7 @@ function HardshipCard({ id, initial, onSaved }: { id: string; initial: BudgetHar
           <button
             onClick={handleSave}
             disabled={saving}
-            className="rounded-md bg-teal px-5 py-2 text-sm font-semibold text-white hover:bg-teal-hover disabled:opacity-60"
+            className="rounded-md bg-teal px-5 py-2 text-sm font-medium text-white hover:bg-teal-hover disabled:opacity-60"
           >
             {saving ? "Saving…" : "Save"}
           </button>
@@ -268,7 +268,7 @@ function IncomeExpensesCard({
         <button onClick={resetDrafts} className="rounded-md border border-border bg-white px-5 py-2 text-sm font-medium text-ink hover:bg-white">
           Cancel
         </button>
-        <button onClick={handleSave} disabled={saving} className="rounded-md bg-teal px-5 py-2 text-sm font-semibold text-white hover:bg-teal-hover disabled:opacity-60">
+        <button onClick={handleSave} disabled={saving} className="rounded-md bg-teal px-5 py-2 text-sm font-medium text-white hover:bg-teal-hover disabled:opacity-60">
           {saving ? "Saving…" : "Save"}
         </button>
       </div>

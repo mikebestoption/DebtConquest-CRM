@@ -31,13 +31,15 @@ interface WorklistTableProps {
 }
 
 function formatDateTime(iso: string): string {
-  return new Date(iso).toLocaleString(undefined, {
-    month: "2-digit",
-    day: "2-digit",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
+  return new Date(iso)
+    .toLocaleString(undefined, {
+      month: "2-digit",
+      day: "2-digit",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    })
+    .replace(", ", " ");
 }
 
 export function WorklistTable({
@@ -57,7 +59,7 @@ export function WorklistTable({
     <div className="overflow-x-auto">
       <table className="w-full min-w-[900px] text-left text-sm">
         <thead>
-          <tr className="border-b border-border text-xs font-semibold text-muted">
+          <tr className="border-b border-border text-sm font-semibold text-ink">
             <th className="w-10 px-4 py-3">
               <input
                 type="checkbox"
@@ -139,22 +141,22 @@ export function WorklistTable({
                     <StatusQuickChangeMenu current={item.crmStatus} onChange={(status) => onStatusChange(item.id, status)} />
                   </div>
                 </td>
-                <td className="px-4 py-3 font-medium text-ink">{item.leadNumber}</td>
-                <td className="px-4 py-3 text-muted">{item.elevateClientId ?? "—"}</td>
+                <td className="px-4 py-3 text-ink">{item.leadNumber}</td>
+                <td className="px-4 py-3 text-ink">{item.elevateClientId ?? "—"}</td>
                 <td className="px-4 py-3 text-ink">
                   <button className="hover:text-teal hover:underline" onClick={() => navigate(`/leads/${item.id}`)}>
                     {item.name}
                   </button>
                 </td>
-                <td className="px-4 py-3 text-muted">{formatDateTime(item.lastActivityAt)}</td>
-                <td className="px-4 py-3 text-muted">{formatDateTime(item.createdAt)}</td>
-                <td className="px-4 py-3 text-muted">{item.leadAgeDays}</td>
+                <td className="whitespace-nowrap px-4 py-3 text-ink">{formatDateTime(item.lastActivityAt)}</td>
+                <td className="whitespace-nowrap px-4 py-3 text-ink">{formatDateTime(item.createdAt)}</td>
+                <td className="px-4 py-3 text-ink">{item.leadAgeDays}</td>
                 <td className="px-4 py-3">
                   <StatusBadge status={item.crmStatus} />
                 </td>
-                <td className="px-4 py-3 text-muted">{item.source ? SOURCE_LABELS[item.source] : "—"}</td>
-                <td className="px-4 py-3 text-ink">{item.phone ?? "—"}</td>
-                <td className="px-4 py-3 text-muted">{item.state ?? "—"}</td>
+                <td className="px-4 py-3 text-ink">{item.source ? SOURCE_LABELS[item.source] : "—"}</td>
+                <td className="whitespace-nowrap px-4 py-3 text-ink">{item.phone ?? "—"}</td>
+                <td className="px-4 py-3 text-ink">{item.state ?? "—"}</td>
               </tr>
             ))}
         </tbody>

@@ -123,10 +123,10 @@ export function WorklistPage() {
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h1 className="text-2xl font-bold text-ink underline decoration-teal decoration-2 underline-offset-8">Opportunities</h1>
+        <h1 className="text-2xl page-title">Opportunities</h1>
         <div className="flex w-full flex-wrap items-end gap-3 sm:w-auto sm:flex-nowrap">
           <div className="min-w-0 flex-1 sm:min-w-44 sm:flex-none">
-            <label className="mb-1.5 block text-xs font-semibold text-muted">User</label>
+            <label className="mb-1 block text-sm text-gray-600">User</label>
             <Select
               value={assignedStaffId}
               onChange={(e) => {
@@ -144,7 +144,7 @@ export function WorklistPage() {
           </div>
           <button
             onClick={() => setShowAddLead(true)}
-            className="flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-md bg-teal px-4 py-2 text-sm font-semibold text-white hover:bg-teal-hover"
+            className="flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-md bg-teal px-4 py-2 text-sm font-medium text-white hover:bg-teal-hover"
           >
             <IconPlus width={16} height={16} /> Add New Lead
           </button>
@@ -161,7 +161,7 @@ export function WorklistPage() {
           <button
             onClick={handleBulkDelete}
             disabled={deleting}
-            className="flex items-center gap-1.5 rounded-md border border-error px-3 py-1.5 text-xs font-semibold text-error hover:bg-error hover:text-white disabled:opacity-60"
+            className="flex items-center gap-1.5 rounded-md border border-error px-3 py-1.5 text-xs font-medium text-error hover:bg-error hover:text-white disabled:opacity-60"
           >
             <IconTrash width={14} height={14} /> {deleting ? "Deleting…" : "Delete"}
           </button>

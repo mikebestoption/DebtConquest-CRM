@@ -190,7 +190,7 @@ export function CreditorTab({ leadId, onOpenAdditionalInfo }: { leadId: string; 
               setEditing(null);
               setModalOpen(true);
             }}
-            className="flex items-center gap-1 rounded-md bg-teal px-4 py-2 text-sm font-semibold text-white hover:bg-teal-hover"
+            className="flex items-center gap-1 rounded-md bg-teal px-4 py-2 text-sm font-medium text-white hover:bg-teal-hover"
           >
             <IconPlus width={16} height={16} /> Add New Creditor
           </button>
@@ -215,7 +215,7 @@ export function CreditorTab({ leadId, onOpenAdditionalInfo }: { leadId: string; 
           <button
             disabled
             title="Credit pull integration not yet connected - coming soon"
-            className="flex items-center gap-1.5 rounded-md border border-border px-3 py-1.5 text-sm font-semibold text-teal opacity-60 cursor-not-allowed"
+            className="flex items-center gap-1.5 rounded-md border border-border px-3 py-1.5 text-sm font-medium text-teal opacity-60 cursor-not-allowed"
           >
             <IconCloud width={15} height={15} /> Applicant Pull
           </button>
@@ -233,7 +233,7 @@ export function CreditorTab({ leadId, onOpenAdditionalInfo }: { leadId: string; 
           {onOpenAdditionalInfo && (
             <button
               onClick={onOpenAdditionalInfo}
-              className="ml-auto rounded-md border border-teal px-4 py-1.5 text-sm font-semibold text-teal hover:bg-teal hover:text-white"
+              className="ml-auto rounded-md border border-teal px-4 py-1.5 text-sm font-medium text-teal hover:bg-teal hover:text-white"
             >
               Additional Info
             </button>
@@ -246,14 +246,14 @@ export function CreditorTab({ leadId, onOpenAdditionalInfo }: { leadId: string; 
             <button
               disabled={selected.size === 0}
               onClick={() => setBulkOpen(true)}
-              className="rounded-md border border-teal px-4 py-1.5 text-sm font-semibold text-teal disabled:cursor-not-allowed disabled:border-border disabled:text-muted"
+              className="rounded-md border border-teal px-4 py-1.5 text-sm font-medium text-teal disabled:cursor-not-allowed disabled:border-border disabled:text-muted"
             >
               Bulk Update
             </button>
             <button
               disabled={selected.size === 0}
               onClick={handleBulkDelete}
-              className="rounded-md border border-error px-4 py-1.5 text-sm font-semibold text-error disabled:cursor-not-allowed disabled:border-border disabled:text-muted"
+              className="rounded-md border border-error px-4 py-1.5 text-sm font-medium text-error disabled:cursor-not-allowed disabled:border-border disabled:text-muted"
             >
               Delete
             </button>
@@ -263,7 +263,7 @@ export function CreditorTab({ leadId, onOpenAdditionalInfo }: { leadId: string; 
         <div className="overflow-x-auto">
           <table className="w-full min-w-[1500px] text-left text-sm">
             <thead>
-              <tr className="border-y border-border text-xs font-semibold text-muted">
+              <tr className="border-y border-border text-sm font-semibold text-ink">
                 <th className="px-4 py-3">
                   <Checkbox checked={allPageSelected} onChange={() => toggleSelectAll(pageIds, allPageSelected)} />
                 </th>
@@ -500,7 +500,7 @@ function BulkUpdateModal({
           <button onClick={onClose} className="rounded-md border border-border bg-white px-5 py-2 text-sm font-medium text-ink hover:bg-bg">
             Cancel
           </button>
-          <button onClick={handleSave} disabled={saving} className="rounded-md bg-teal px-5 py-2 text-sm font-semibold text-white hover:bg-teal-hover disabled:opacity-60">
+          <button onClick={handleSave} disabled={saving} className="rounded-md bg-teal px-5 py-2 text-sm font-medium text-white hover:bg-teal-hover disabled:opacity-60">
             {saving ? "Saving…" : "Apply"}
           </button>
         </div>

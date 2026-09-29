@@ -101,7 +101,7 @@ function CenteredCard({ title, message, backPath, children }: { title: string; m
       {message && <p className="mt-1 text-sm text-muted">{message}</p>}
       {children}
       {backPath && (
-        <Link to={backPath} className="mt-4 rounded-md bg-teal px-4 py-2 text-sm font-semibold text-white hover:bg-teal-hover">
+        <Link to={backPath} className="mt-4 rounded-md bg-teal px-4 py-2 text-sm font-medium text-white hover:bg-teal-hover">
           Back to {backPath === "/teams/meeting" ? "meetings" : backPath === "/teams/support-session" ? "support sessions" : "huddle rooms"}
         </Link>
       )}
@@ -171,7 +171,7 @@ function Lobby({ runtime }: { runtime: RoomRuntime }) {
           <button
             onClick={() => void runtime.join()}
             disabled={joining || !media.ready}
-            className="flex-1 rounded-md bg-teal px-4 py-2.5 text-sm font-semibold text-white hover:bg-teal-hover disabled:opacity-60"
+            className="flex-1 rounded-md bg-teal px-4 py-2.5 text-sm font-medium text-white hover:bg-teal-hover disabled:opacity-60"
           >
             {joining ? "Joining…" : !media.ready ? "Checking devices…" : "Join now"}
           </button>
@@ -409,7 +409,7 @@ function LiveRoom({ runtime, myId, myName, backPath }: { runtime: RoomRuntime; m
             <button
               onClick={() => void handleEnd()}
               disabled={leaving}
-              className="rounded-md border border-error px-3 py-1.5 text-xs font-semibold text-error hover:bg-error hover:text-white disabled:opacity-60"
+              className="rounded-md border border-error px-3 py-1.5 text-xs font-medium text-error hover:bg-error hover:text-white disabled:opacity-60"
             >
               End for everyone
             </button>

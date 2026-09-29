@@ -194,7 +194,7 @@ export function AdditionalInfoTab({ leadId }: { leadId: string }) {
           <button
             type="button"
             onClick={() => setShowUpload(true)}
-            className="mt-4 inline-flex items-center gap-1.5 rounded-md bg-teal px-4 py-2 text-sm font-semibold text-white hover:bg-teal-hover"
+            className="mt-4 inline-flex items-center gap-1.5 rounded-md bg-teal px-4 py-2 text-sm font-medium text-white hover:bg-teal-hover"
           >
             <IconUpload width={16} height={16} /> Upload Credit Report
           </button>
@@ -243,13 +243,13 @@ export function AdditionalInfoTab({ leadId }: { leadId: string }) {
               </option>
             ))}
           </Select>
-          <button type="button" onClick={() => setSelectedSnapshotId(undefined)} className="rounded-md border border-border px-3 py-2 text-xs font-semibold text-ink hover:border-teal">
+          <button type="button" onClick={() => setSelectedSnapshotId(undefined)} className="rounded-md border border-border px-3 py-2 text-xs font-medium text-ink hover:border-teal">
             Current
           </button>
           <button
             type="button"
             onClick={() => setShowUpload(true)}
-            className="flex items-center gap-1.5 rounded-md bg-teal px-3 py-2 text-xs font-semibold text-white hover:bg-teal-hover"
+            className="flex items-center gap-1.5 rounded-md bg-teal px-3 py-2 text-xs font-medium text-white hover:bg-teal-hover"
           >
             <IconUpload width={14} height={14} /> Upload Credit Report
           </button>

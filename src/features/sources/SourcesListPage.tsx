@@ -52,10 +52,10 @@ export function SourcesListPage() {
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h1 className="text-2xl font-bold text-ink underline decoration-teal decoration-2 underline-offset-8">Source Maintenance</h1>
+        <h1 className="text-2xl page-title">Source Maintenance</h1>
         <button
           onClick={() => navigate("/manager/leads/sources/new")}
-          className="flex items-center gap-1.5 rounded-md bg-teal px-4 py-2 text-sm font-semibold text-white hover:bg-teal-hover"
+          className="flex items-center gap-1.5 rounded-md bg-teal px-4 py-2 text-sm font-medium text-white hover:bg-teal-hover"
         >
           <IconPlus width={16} height={16} /> Add New Source
         </button>
@@ -108,7 +108,7 @@ export function SourcesListPage() {
         <div className="overflow-x-auto">
           <table className="w-full min-w-[1100px] text-left text-sm">
             <thead>
-              <tr className="border-b border-border text-xs font-semibold text-muted">
+              <tr className="border-b border-border text-sm font-semibold text-ink">
                 <th className="px-4 py-3">ID</th>
                 <th className="px-4 py-3">Source</th>
                 <th className="px-4 py-3">List Id</th>

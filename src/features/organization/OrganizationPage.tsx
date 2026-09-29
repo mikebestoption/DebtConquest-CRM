@@ -60,7 +60,7 @@ export function OrganizationPage() {
   return (
     <div className="space-y-4">
       <div>
-        <h1 className="text-2xl font-bold text-ink underline decoration-teal decoration-2 underline-offset-8">Departments</h1>
+        <h1 className="text-2xl page-title">Departments</h1>
         <p className="mt-0.5 text-sm text-muted">One hierarchy engine for every department - the labels change, the structure underneath doesn't.</p>
       </div>
 
@@ -108,7 +108,7 @@ export function OrganizationPage() {
               <div className="overflow-x-auto">
               <table className="w-full min-w-[480px] text-left text-sm">
                 <thead>
-                  <tr className="border-b border-border text-xs font-semibold text-muted">
+                  <tr className="border-b border-border text-sm font-semibold text-ink">
                     <th className="py-2 pr-3">Level</th>
                     <th className="py-2 pr-3">Job Title</th>
                     <th className="py-2 pr-3">Default Scope</th>

@@ -37,7 +37,7 @@ export function MultiSelect({ label, options, selected, onChange }: MultiSelectP
 
   return (
     <div ref={ref} className="relative">
-      <label className="mb-1 block text-xs font-semibold text-muted">{label}</label>
+      <label className="mb-1 block text-sm text-gray-600">{label}</label>
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}

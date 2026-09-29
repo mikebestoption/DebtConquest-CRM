@@ -122,10 +122,10 @@ export function CalendarPage() {
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h1 className="text-2xl font-bold text-ink underline decoration-teal decoration-2 underline-offset-8">{isAdmin ? "Admin Calendar Portal" : "Calendar"}</h1>
+        <h1 className="text-2xl page-title">{isAdmin ? "Admin Calendar Portal" : "Calendar"}</h1>
         <button
           onClick={() => setModal({ event: null, defaultDate: new Date() })}
-          className="flex items-center gap-1.5 rounded-md bg-teal px-4 py-2 text-sm font-semibold text-white hover:bg-teal-hover"
+          className="flex items-center gap-1.5 rounded-md bg-teal px-4 py-2 text-sm font-medium text-white hover:bg-teal-hover"
         >
           <IconPlus width={16} height={16} /> New Event
         </button>
@@ -142,7 +142,7 @@ export function CalendarPage() {
           </button>
           <button
             onClick={() => setViewDate(new Date())}
-            className="rounded-md border border-border px-3 py-2 text-xs font-semibold text-ink hover:border-teal"
+            className="rounded-md border border-border px-3 py-2 text-xs font-medium text-ink hover:border-teal"
           >
             Today
           </button>
@@ -259,7 +259,7 @@ export function CalendarPage() {
             </h2>
             <button
               onClick={() => setModal({ event: null, defaultDate: selectedDay })}
-              className="flex items-center gap-1 rounded-md border border-teal px-2.5 py-1.5 text-xs font-semibold text-teal hover:bg-bg"
+              className="flex items-center gap-1 rounded-md border border-teal px-2.5 py-1.5 text-xs font-medium text-teal hover:bg-bg"
             >
               <IconPlus width={14} height={14} /> Add
             </button>

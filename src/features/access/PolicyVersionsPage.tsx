@@ -14,7 +14,7 @@ export function PolicyVersionsPage() {
   return (
     <div className="space-y-4">
       <div>
-        <h1 className="text-2xl font-bold text-ink underline decoration-teal decoration-2 underline-offset-8">Policy Versions</h1>
+        <h1 className="text-2xl page-title">Policy Versions</h1>
         <p className="mt-0.5 text-sm text-muted">Every published permissions change, versioned and auditable.</p>
       </div>
 
@@ -22,7 +22,7 @@ export function PolicyVersionsPage() {
         <div className="overflow-x-auto">
           <table className="w-full min-w-[720px] text-left text-sm">
             <thead>
-              <tr className="border-b border-border text-xs font-semibold text-muted">
+              <tr className="border-b border-border text-sm font-semibold text-ink">
                 <th className="px-4 py-3">Version</th>
                 <th className="px-4 py-3">Access Profile</th>
                 <th className="px-4 py-3">Published</th>

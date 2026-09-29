@@ -195,7 +195,7 @@ function DetailsTab({ user, onSaved }: { user: UserDetail; onSaved: (u: UserDeta
       </div>
 
       <div className="flex justify-end gap-3">
-        <button onClick={handleSave} disabled={saving} className="rounded-md bg-teal px-5 py-2 text-sm font-semibold text-white hover:bg-teal-hover disabled:opacity-60">
+        <button onClick={handleSave} disabled={saving} className="rounded-md bg-teal px-5 py-2 text-sm font-medium text-white hover:bg-teal-hover disabled:opacity-60">
           {saving ? "Saving…" : "Save"}
         </button>
       </div>
@@ -346,7 +346,7 @@ function OrganizationTab({ user, onSaved }: { user: UserDetail; onSaved: (u: Use
       {error && <p className="text-sm text-error">{error}</p>}
 
       <div className="flex justify-end gap-3">
-        <button onClick={handleSave} disabled={saving || !changed} className="rounded-md bg-teal px-5 py-2 text-sm font-semibold text-white hover:bg-teal-hover disabled:opacity-60">
+        <button onClick={handleSave} disabled={saving || !changed} className="rounded-md bg-teal px-5 py-2 text-sm font-medium text-white hover:bg-teal-hover disabled:opacity-60">
           {saving ? "Saving…" : changed ? "Confirm & Save" : "No Changes"}
         </button>
       </div>
@@ -410,7 +410,7 @@ function AccessTab({ user }: { user: UserDetail }) {
           </div>
           <button
             onClick={() => setShowRequest((v) => !v)}
-            className="flex items-center gap-1.5 rounded-md bg-teal px-4 py-2 text-sm font-semibold text-white hover:bg-teal-hover"
+            className="flex items-center gap-1.5 rounded-md bg-teal px-4 py-2 text-sm font-medium text-white hover:bg-teal-hover"
           >
             <IconPlus width={16} height={16} /> Request Exception
           </button>
@@ -441,7 +441,7 @@ function AccessTab({ user }: { user: UserDetail }) {
               <button
                 onClick={handleRequest}
                 disabled={submitting || !form.permissionId || !form.reason || !form.expiresAt}
-                className="rounded-md bg-teal px-4 py-2 text-sm font-semibold text-white hover:bg-teal-hover disabled:opacity-60"
+                className="rounded-md bg-teal px-4 py-2 text-sm font-medium text-white hover:bg-teal-hover disabled:opacity-60"
               >
                 {submitting ? "Submitting…" : "Grant Exception"}
               </button>
@@ -537,7 +537,7 @@ function SettingsTab({ user, onSaved }: { user: UserDetail; onSaved: (u: UserDet
         <button onClick={() => setSettings(user.settings)} className="rounded-md border border-border bg-white px-5 py-2 text-sm font-medium text-ink hover:bg-bg">
           Cancel
         </button>
-        <button onClick={handleSave} disabled={saving} className="rounded-md bg-teal px-5 py-2 text-sm font-semibold text-white hover:bg-teal-hover disabled:opacity-60">
+        <button onClick={handleSave} disabled={saving} className="rounded-md bg-teal px-5 py-2 text-sm font-medium text-white hover:bg-teal-hover disabled:opacity-60">
           {saving ? "Saving…" : "Save"}
         </button>
       </div>
@@ -594,7 +594,7 @@ export function UserDetailPage() {
 
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h1 className="mb-4 text-2xl font-bold text-ink underline decoration-teal decoration-2 underline-offset-8">User - {user.name}</h1>
+          <h1 className="mb-4 text-2xl page-title">User - {user.name}</h1>
           <div className="flex items-center gap-3">
             <div className="flex h-14 w-14 items-center justify-center rounded-full bg-bg text-muted">
               <IconUser width={24} height={24} />

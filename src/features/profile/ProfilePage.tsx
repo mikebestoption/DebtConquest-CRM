@@ -129,7 +129,7 @@ function OverviewTab() {
         >
           Cancel
         </button>
-        <button onClick={handleSave} disabled={saving} className="rounded-md bg-teal px-5 py-2 text-sm font-semibold text-white hover:bg-teal-hover disabled:opacity-60">
+        <button onClick={handleSave} disabled={saving} className="rounded-md bg-teal px-5 py-2 text-sm font-medium text-white hover:bg-teal-hover disabled:opacity-60">
           {saving ? "Saving…" : "Save"}
         </button>
       </div>
@@ -241,7 +241,7 @@ function ResetPasswordTab() {
         <button
           type="submit"
           disabled={saving || !newPassword || !confirm}
-          className="rounded-md bg-teal px-5 py-2 text-sm font-semibold text-white hover:bg-teal-hover disabled:opacity-60"
+          className="rounded-md bg-teal px-5 py-2 text-sm font-medium text-white hover:bg-teal-hover disabled:opacity-60"
         >
           {saving ? "Saving…" : "Save"}
         </button>
@@ -280,7 +280,7 @@ export function ProfilePage() {
 
   return (
     <div className="space-y-4">
-      <h1 className="text-2xl font-bold text-ink underline decoration-teal decoration-2 underline-offset-8">Profile</h1>
+      <h1 className="text-2xl page-title">Profile</h1>
 
       <div className="grid grid-cols-1 gap-5 lg:grid-cols-[280px_1fr]">
         <div className="space-y-0 overflow-hidden rounded-card border border-border bg-white">

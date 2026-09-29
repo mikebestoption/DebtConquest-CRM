@@ -50,12 +50,12 @@ export function PermissionCatalogPage() {
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold text-ink underline decoration-teal decoration-2 underline-offset-8">Permission Catalog</h1>
+          <h1 className="text-2xl page-title">Permission Catalog</h1>
           <p className="mt-0.5 text-sm text-muted">The single source of truth for every permission any feature has registered.</p>
         </div>
         <button
           onClick={() => setShowRegister((v) => !v)}
-          className="flex items-center gap-1.5 rounded-md bg-teal px-4 py-2 text-sm font-semibold text-white hover:bg-teal-hover"
+          className="flex items-center gap-1.5 rounded-md bg-teal px-4 py-2 text-sm font-medium text-white hover:bg-teal-hover"
         >
           <IconPlus width={16} height={16} /> Register Permission
         </button>
@@ -92,7 +92,7 @@ export function PermissionCatalogPage() {
             <button
               onClick={handleRegister}
               disabled={submitting || !form.module.trim() || !form.key.trim() || !form.name.trim()}
-              className="rounded-md bg-teal px-4 py-2 text-sm font-semibold text-white hover:bg-teal-hover disabled:opacity-60"
+              className="rounded-md bg-teal px-4 py-2 text-sm font-medium text-white hover:bg-teal-hover disabled:opacity-60"
             >
               {submitting ? "Registering…" : "Register Permission"}
             </button>
@@ -104,7 +104,7 @@ export function PermissionCatalogPage() {
         <div className="overflow-x-auto">
           <table className="w-full min-w-[760px] text-left text-sm">
             <thead>
-              <tr className="border-b border-border text-xs font-semibold text-muted">
+              <tr className="border-b border-border text-sm font-semibold text-ink">
                 <th className="px-4 py-3">Module</th>
                 <th className="px-4 py-3">Permission Key</th>
                 <th className="px-4 py-3">Description</th>

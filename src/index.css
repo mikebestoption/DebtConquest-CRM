@@ -1,9 +1,12 @@
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap");
 @import "tailwindcss";
 
-/* Aligned with apps/client's customer-facing brand (teal/deep) rather than
-   the old internal-tool navy+orange scheme, so the CRM reads as the same
-   product family as the customer wizard. */
+/* Teal is the brand ACCENT (sidebar, primary buttons, active states, focus
+   rings, links) - aligned with apps/client's customer-facing brand rather
+   than the old internal-tool navy+orange scheme. Text, page background and
+   borders are deliberately neutral, following the Elevate CRM's density
+   and restraint: color used only where it means something, so the accent
+   actually stands out instead of every label and cell being tinted. */
 @theme {
   --font-sans: "Inter", sans-serif;
 
@@ -11,14 +14,17 @@
   --color-teal-hover: #06a39d;
   --color-teal-100: #109793;
   --color-deep: #106666;
-  --color-ink: #106666;
-  --color-bg: #ebffff;
-  /* Was #d7ecec - nearly invisible against white/bg cards (almost no
-     lightness delta), which made every input, table row and card edge in
-     the app hard to make out at a glance. Darkened to an actually visible
-     line while staying in the teal family rather than jumping to neutral
-     gray, so the app doesn't lose its color identity. */
-  --color-border: #9fd6d2;
+  /* Was #106666 (same dark teal as the sidebar) - every name, label, table
+     cell and heading in the app rendered teal, which read as busy and
+     unprofessional next to Elevate's neutral text. Only ever used as a
+     text color (see text-ink), so this is a pure text recolor. */
+  --color-ink: #1f2937;
+  /* Was #ebffff - a visible cyan wash behind every page. Neutral light
+     gray, same role as Elevate's page background. */
+  --color-bg: #f4f6f8;
+  /* Neutral and still clearly visible against white cards/inputs - the
+     earlier teal-tinted #9fd6d2 fixed visibility but colored every edge. */
+  --color-border: #d1d5db;
   --color-error: #b00020;
   --color-muted: #6b7280;
   --color-ring: rgba(79, 182, 163, 0.4);
@@ -48,6 +54,17 @@ body {
 
 #root {
   height: 100%;
+}
+
+/* 14px instead of the browser's 16px default. Tailwind sizes everything in
+   rem (text sizes, padding, gaps, widths like the sidebar's w-60), so this
+   one value scales the whole CRM's density at once - matching the compact
+   feel of the Elevate CRM's admin template, where the same 16px default had
+   every control, label and row rendering ~20% larger. Breakpoints don't
+   move: rem in media queries always resolves against the browser default,
+   not this. The single knob to turn if the app ever feels too big/small. */
+html {
+  font-size: 14px;
 }
 
 body {
@@ -101,6 +118,30 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   padding: 4px;
   cursor: pointer;
   opacity: 1;
+}
+
+/* Page <h1>s app-wide: bold neutral title with a short teal accent bar under
+   its first letters (Elevate's title treatment), instead of a full-word
+   underline that read like a hyperlink. Size stays on the element itself
+   (text-2xl / text-xl) so this composes with either. In a layer so any
+   utility on the same element still wins. */
+@layer components {
+  .page-title {
+    position: relative;
+    font-weight: 700;
+    color: var(--color-ink);
+    padding-bottom: 0.5rem;
+  }
+  .page-title::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 2rem;
+    height: 3px;
+    border-radius: 9999px;
+    background: var(--color-teal);
+  }
 }
 
 .sidebar-scroll {

@@ -118,7 +118,7 @@ export function RecordingsPage() {
   return (
     <div className="space-y-4">
       <div>
-        <h1 className="text-2xl font-bold text-ink underline decoration-teal decoration-2 underline-offset-8">Recordings</h1>
+        <h1 className="text-2xl page-title">Recordings</h1>
         <p className="mt-0.5 text-sm text-muted">
           Recordings saved from your huddles, meetings and support sessions. Start one from the Record button inside any room.
         </p>
@@ -174,7 +174,7 @@ export function RecordingsPage() {
         <div className="overflow-x-auto">
           <table className="w-full min-w-[780px] text-left text-sm">
             <thead>
-              <tr className="border-b border-border text-xs font-semibold text-muted">
+              <tr className="border-b border-border text-sm font-semibold text-ink">
                 <th className="px-4 py-3">Session</th>
                 <th className="px-4 py-3">Type</th>
                 <th className="px-4 py-3">Recorded by</th>

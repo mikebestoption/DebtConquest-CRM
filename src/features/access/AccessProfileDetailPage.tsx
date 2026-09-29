@@ -70,7 +70,7 @@ export function AccessProfileDetailPage() {
         <IconChevronLeft width={16} height={16} /> Back to Access Profiles
       </button>
 
-      <h1 className="text-2xl font-bold text-ink underline decoration-teal decoration-2 underline-offset-8">
+      <h1 className="text-2xl page-title">
         {profile.department} — {profile.jobTitle}
       </h1>
 
@@ -95,7 +95,7 @@ export function AccessProfileDetailPage() {
           <button
             onClick={handlePublish}
             disabled={publishing || !dirty}
-            className="rounded-md bg-teal px-4 py-2 text-sm font-semibold text-white hover:bg-teal-hover disabled:opacity-50"
+            className="rounded-md bg-teal px-4 py-2 text-sm font-medium text-white hover:bg-teal-hover disabled:opacity-50"
             title={dirty ? undefined : "No unpublished changes"}
           >
             {publishing ? "Publishing…" : "Publish Changes"}
@@ -112,7 +112,7 @@ export function AccessProfileDetailPage() {
               <div className="overflow-x-auto">
               <table className="w-full min-w-[520px] text-left text-sm">
                 <thead>
-                  <tr className="border-b border-border text-xs font-semibold text-muted">
+                  <tr className="border-b border-border text-sm font-semibold text-ink">
                     <th className="px-4 py-2">Permission</th>
                     <th className="px-4 py-2">Allowed</th>
                     <th className="px-4 py-2">Scope</th>

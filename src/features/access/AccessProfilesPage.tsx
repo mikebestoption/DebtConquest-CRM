@@ -25,7 +25,7 @@ export function AccessProfilesPage() {
   return (
     <div className="space-y-4">
       <div>
-        <h1 className="text-2xl font-bold text-ink underline decoration-teal decoration-2 underline-offset-8">Access Profiles</h1>
+        <h1 className="text-2xl page-title">Access Profiles</h1>
         <p className="mt-0.5 text-sm text-muted">One bundle of permissions per Department + Job Title. Users inherit these automatically.</p>
       </div>
 
@@ -33,7 +33,7 @@ export function AccessProfilesPage() {
         <div className="overflow-x-auto">
           <table className="w-full min-w-[560px] text-left text-sm">
             <thead>
-              <tr className="border-b border-border text-xs font-semibold text-muted">
+              <tr className="border-b border-border text-sm font-semibold text-ink">
                 <th className="px-4 py-3">Access Profile</th>
                 <th className="px-4 py-3">Department</th>
                 <th className="px-4 py-3">Job Title</th>
@@ -61,7 +61,7 @@ export function AccessProfilesPage() {
                     <td className="px-4 py-3">
                       <button
                         onClick={() => navigate(`/manager/access/profiles/${p.id}`)}
-                        className="rounded-md border border-border px-3 py-1.5 text-xs font-semibold text-ink hover:bg-bg"
+                        className="rounded-md border border-border px-3 py-1.5 text-xs font-medium text-ink hover:bg-bg"
                       >
                         Open
                       </button>

@@ -207,7 +207,7 @@ export function AddUserPage() {
         <button onClick={() => navigate("/manager/users")} className="mb-1 text-sm text-muted hover:text-ink">
           ‹ Back to Users
         </button>
-        <h1 className="text-2xl font-bold text-ink underline decoration-teal decoration-2 underline-offset-8">Add New User</h1>
+        <h1 className="text-2xl page-title">Add New User</h1>
         <p className="mt-1 max-w-2xl text-sm text-muted">
           Department and Job Title determine this person's access automatically - there's no permissions step to fill in by hand.
         </p>
@@ -336,7 +336,7 @@ export function AddUserPage() {
             <button onClick={() => navigate("/manager/users")} className="rounded-md border border-border bg-white px-5 py-2 text-sm font-medium text-ink hover:bg-bg">
               Cancel
             </button>
-            <button onClick={handleContinueStep1} className="rounded-md bg-teal px-5 py-2 text-sm font-semibold text-white hover:bg-teal-hover">
+            <button onClick={handleContinueStep1} className="rounded-md bg-teal px-5 py-2 text-sm font-medium text-white hover:bg-teal-hover">
               Continue
             </button>
           </div>
@@ -418,7 +418,7 @@ export function AddUserPage() {
               <button onClick={() => navigate("/manager/users")} className="rounded-md border border-border bg-white px-5 py-2 text-sm font-medium text-ink hover:bg-bg">
                 Cancel
               </button>
-              <button onClick={handleContinueStep2} className="rounded-md bg-teal px-5 py-2 text-sm font-semibold text-white hover:bg-teal-hover">
+              <button onClick={handleContinueStep2} className="rounded-md bg-teal px-5 py-2 text-sm font-medium text-white hover:bg-teal-hover">
                 Continue
               </button>
             </div>
@@ -448,7 +448,7 @@ export function AddUserPage() {
               <button onClick={() => navigate("/manager/users")} className="rounded-md border border-border bg-white px-5 py-2 text-sm font-medium text-ink hover:bg-bg">
                 Cancel
               </button>
-              <button onClick={() => setStep(4)} className="rounded-md bg-teal px-5 py-2 text-sm font-semibold text-white hover:bg-teal-hover">
+              <button onClick={() => setStep(4)} className="rounded-md bg-teal px-5 py-2 text-sm font-medium text-white hover:bg-teal-hover">
                 Continue
               </button>
             </div>
@@ -502,7 +502,7 @@ export function AddUserPage() {
               <button
                 onClick={handleSubmit}
                 disabled={submitting}
-                className="rounded-md bg-teal px-5 py-2 text-sm font-semibold text-white hover:bg-teal-hover disabled:opacity-60"
+                className="rounded-md bg-teal px-5 py-2 text-sm font-medium text-white hover:bg-teal-hover disabled:opacity-60"
               >
                 {submitting ? "Creating…" : "Create User"}
               </button>

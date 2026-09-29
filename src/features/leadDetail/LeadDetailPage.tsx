@@ -101,14 +101,14 @@ export function LeadDetailPage() {
         <div className="mb-3 flex flex-wrap items-start justify-between gap-3">
           <div className="flex items-center gap-3">
             <div className="flex h-9 w-9 items-center justify-center rounded-full bg-deep text-sm font-bold text-white">{initial}</div>
-            <h1 className="text-xl font-bold text-ink underline decoration-teal decoration-2 underline-offset-8">{name}</h1>
+            <h1 className="text-xl page-title">{name}</h1>
           </div>
 
           <div className="flex flex-wrap items-center gap-2">
             <button
               onClick={handleSubmitToCompliance}
               disabled={lead.complianceSubmitted}
-              className="rounded-md bg-teal px-4 py-2 text-sm font-semibold text-white hover:bg-teal-hover disabled:opacity-60"
+              className="rounded-md bg-teal px-4 py-2 text-sm font-medium text-white hover:bg-teal-hover disabled:opacity-60"
             >
               {lead.complianceSubmitted ? "Submitted to Compliance" : "Submit To Compliance"}
             </button>
@@ -128,7 +128,7 @@ export function LeadDetailPage() {
             <button
               onClick={handleDeleteLead}
               title="Permanently delete this lead and all of its data"
-              className="rounded-md border border-error px-3 py-1.5 text-xs font-semibold text-error hover:bg-error hover:text-white"
+              className="rounded-md border border-error px-3 py-1.5 text-xs font-medium text-error hover:bg-error hover:text-white"
             >
               Delete Lead
             </button>

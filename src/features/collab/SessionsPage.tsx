@@ -131,20 +131,20 @@ function SessionsPage({ type }: { type: CollabSessionType }) {
 
   const primary =
     type === "HUDDLE" ? (
-      <button onClick={() => setModal({ session: null })} className="flex items-center gap-1.5 rounded-md bg-teal px-4 py-2 text-sm font-semibold text-white hover:bg-teal-hover">
+      <button onClick={() => setModal({ session: null })} className="flex items-center gap-1.5 rounded-md bg-teal px-4 py-2 text-sm font-medium text-white hover:bg-teal-hover">
         <IconPlus width={16} height={16} /> Start a Huddle
       </button>
     ) : type === "MEETING" ? (
       <div className="flex flex-wrap gap-2">
-        <button onClick={() => setModal({ session: null, startNow: true })} className="rounded-md border border-teal px-4 py-2 text-sm font-semibold text-teal hover:bg-bg">
+        <button onClick={() => setModal({ session: null, startNow: true })} className="rounded-md border border-teal px-4 py-2 text-sm font-medium text-teal hover:bg-bg">
           Meet now
         </button>
-        <button onClick={() => setModal({ session: null })} className="flex items-center gap-1.5 rounded-md bg-teal px-4 py-2 text-sm font-semibold text-white hover:bg-teal-hover">
+        <button onClick={() => setModal({ session: null })} className="flex items-center gap-1.5 rounded-md bg-teal px-4 py-2 text-sm font-medium text-white hover:bg-teal-hover">
           <IconPlus width={16} height={16} /> Schedule Meeting
         </button>
       </div>
     ) : (
-      <button onClick={() => setModal({ session: null })} className="flex items-center gap-1.5 rounded-md bg-teal px-4 py-2 text-sm font-semibold text-white hover:bg-teal-hover">
+      <button onClick={() => setModal({ session: null })} className="flex items-center gap-1.5 rounded-md bg-teal px-4 py-2 text-sm font-medium text-white hover:bg-teal-hover">
         <IconPlus width={16} height={16} /> Request Support
       </button>
     );
@@ -153,7 +153,7 @@ function SessionsPage({ type }: { type: CollabSessionType }) {
     <div className="space-y-4">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="max-w-2xl">
-          <h1 className="text-2xl font-bold text-ink underline decoration-teal decoration-2 underline-offset-8">{config.title}</h1>
+          <h1 className="text-2xl page-title">{config.title}</h1>
           <p className="mt-0.5 text-sm text-muted">{config.subtitle}</p>
         </div>
         {primary}
@@ -242,14 +242,14 @@ function SessionsPage({ type }: { type: CollabSessionType }) {
                     {s.canManage && (
                       <>
                         {type !== "SUPPORT" && (
-                          <button onClick={() => setModal({ session: s })} className="rounded-md border border-border px-3 py-2 text-xs font-semibold text-ink hover:bg-bg">
+                          <button onClick={() => setModal({ session: s })} className="rounded-md border border-border px-3 py-2 text-xs font-medium text-ink hover:bg-bg">
                             Edit
                           </button>
                         )}
                         <button
                           onClick={() => void handleEnd(s)}
                           disabled={busyId === s.id}
-                          className="rounded-md border border-error px-3 py-2 text-xs font-semibold text-error hover:bg-error hover:text-white disabled:opacity-60"
+                          className="rounded-md border border-error px-3 py-2 text-xs font-medium text-error hover:bg-error hover:text-white disabled:opacity-60"
                         >
                           {s.status === "SCHEDULED" || s.status === "WAITING" ? "Cancel" : "End"}
                         </button>
@@ -257,7 +257,7 @@ function SessionsPage({ type }: { type: CollabSessionType }) {
                     )}
                     <button
                       onClick={() => navigate(`/teams/room/${s.id}`)}
-                      className="flex-1 rounded-md bg-teal px-4 py-2 text-sm font-semibold text-white hover:bg-teal-hover sm:flex-none"
+                      className="flex-1 rounded-md bg-teal px-4 py-2 text-sm font-medium text-white hover:bg-teal-hover sm:flex-none"
                     >
                       {joinLabel(s)}
                     </button>

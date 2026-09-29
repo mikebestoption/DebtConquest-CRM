@@ -101,13 +101,13 @@ export function CalendarEventModal({ event, defaultDate, isAdmin, staff, current
 
         <form onSubmit={handleSubmit} className="space-y-3">
           <div>
-            <label className="mb-1.5 block text-xs font-semibold text-muted">Title *</label>
+            <label className="mb-1 block text-sm text-gray-600">Title *</label>
             <input required autoFocus value={title} onChange={(e) => setTitle(e.target.value)} className={INPUT_CLASS} />
           </div>
 
           {isAdmin && (
             <div>
-              <label className="mb-1.5 block text-xs font-semibold text-muted">Staff</label>
+              <label className="mb-1 block text-sm text-gray-600">Staff</label>
               <Select value={staffId} onChange={(e) => setStaffId(e.target.value)}>
                 {staff.map((s) => (
                   <option key={s.id} value={s.id}>
@@ -122,7 +122,7 @@ export function CalendarEventModal({ event, defaultDate, isAdmin, staff, current
 
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <div>
-              <label className="mb-1.5 block text-xs font-semibold text-muted">Start</label>
+              <label className="mb-1 block text-sm text-gray-600">Start</label>
               <input
                 required
                 type={allDay ? "date" : "datetime-local"}
@@ -132,7 +132,7 @@ export function CalendarEventModal({ event, defaultDate, isAdmin, staff, current
               />
             </div>
             <div>
-              <label className="mb-1.5 block text-xs font-semibold text-muted">End</label>
+              <label className="mb-1 block text-sm text-gray-600">End</label>
               <input
                 required
                 type={allDay ? "date" : "datetime-local"}
@@ -144,12 +144,12 @@ export function CalendarEventModal({ event, defaultDate, isAdmin, staff, current
           </div>
 
           <div>
-            <label className="mb-1.5 block text-xs font-semibold text-muted">Location</label>
+            <label className="mb-1 block text-sm text-gray-600">Location</label>
             <input value={location} onChange={(e) => setLocation(e.target.value)} className={INPUT_CLASS} />
           </div>
 
           <div>
-            <label className="mb-1.5 block text-xs font-semibold text-muted">Description</label>
+            <label className="mb-1 block text-sm text-gray-600">Description</label>
             <textarea rows={3} value={description} onChange={(e) => setDescription(e.target.value)} className={INPUT_CLASS} />
           </div>
 
@@ -161,7 +161,7 @@ export function CalendarEventModal({ event, defaultDate, isAdmin, staff, current
                 type="button"
                 onClick={handleDelete}
                 disabled={deleting}
-                className="flex items-center gap-1.5 rounded-md border border-error px-3 py-2 text-xs font-semibold text-error hover:bg-error hover:text-white disabled:opacity-60"
+                className="flex items-center gap-1.5 rounded-md border border-error px-3 py-2 text-xs font-medium text-error hover:bg-error hover:text-white disabled:opacity-60"
               >
                 <IconTrash width={14} height={14} /> {deleting ? "Deleting…" : "Delete"}
               </button>
@@ -175,7 +175,7 @@ export function CalendarEventModal({ event, defaultDate, isAdmin, staff, current
               <button
                 type="submit"
                 disabled={saving}
-                className="rounded-md bg-teal px-4 py-2 text-sm font-semibold text-white hover:bg-teal-hover disabled:opacity-60"
+                className="rounded-md bg-teal px-4 py-2 text-sm font-medium text-white hover:bg-teal-hover disabled:opacity-60"
               >
                 {saving ? "Saving…" : isEdit ? "Save" : "Create"}
               </button>
