@@ -50,7 +50,7 @@ export function PermissionCatalogPage() {
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold text-ink">Permission Catalog</h1>
+          <h1 className="text-2xl font-bold text-ink underline decoration-teal decoration-2 underline-offset-8">Permission Catalog</h1>
           <p className="mt-0.5 text-sm text-muted">The single source of truth for every permission any feature has registered.</p>
         </div>
         <button

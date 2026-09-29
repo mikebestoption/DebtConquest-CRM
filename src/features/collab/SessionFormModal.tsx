@@ -126,7 +126,7 @@ export function SessionFormModal({ type, session, currentStaffId, defaultTitle, 
 
         <form onSubmit={handleSubmit} className="space-y-3">
           <div>
-            <label className="mb-1 block text-xs font-medium text-muted">{copy.titleLabel} *</label>
+            <label className="mb-1.5 block text-xs font-semibold text-muted">{copy.titleLabel} *</label>
             <input required autoFocus maxLength={200} value={title} onChange={(e) => setTitle(e.target.value)} placeholder={copy.titlePlaceholder} className={INPUT_CLASS} />
           </div>
 
@@ -136,18 +136,18 @@ export function SessionFormModal({ type, session, currentStaffId, defaultTitle, 
               {showSchedule && (
                 <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                   <div>
-                    <label className="mb-1 block text-xs font-medium text-muted">Start</label>
+                    <label className="mb-1.5 block text-xs font-semibold text-muted">Start</label>
                     <input required type="datetime-local" value={startAt} onChange={(e) => setStartAt(e.target.value)} className={INPUT_CLASS} />
                   </div>
                   <div>
-                    <label className="mb-1 block text-xs font-medium text-muted">End</label>
+                    <label className="mb-1.5 block text-xs font-semibold text-muted">End</label>
                     <input required type="datetime-local" value={endAt} onChange={(e) => setEndAt(e.target.value)} className={INPUT_CLASS} />
                   </div>
                 </div>
               )}
 
               <div>
-                <label className="mb-1 block text-xs font-medium text-muted">Invite people ({invitees.length} selected)</label>
+                <label className="mb-1.5 block text-xs font-semibold text-muted">Invite people ({invitees.length} selected)</label>
                 <div className="relative mb-2">
                   <IconSearch width={14} height={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted" />
                   <input value={staffSearch} onChange={(e) => setStaffSearch(e.target.value)} placeholder="Search staff" className={`${INPUT_CLASS} pl-9`} />
@@ -167,13 +167,13 @@ export function SessionFormModal({ type, session, currentStaffId, defaultTitle, 
 
           {type === "SUPPORT" && !isEdit && (
             <div>
-              <label className="mb-1 block text-xs font-medium text-muted">Related lead # (optional)</label>
+              <label className="mb-1.5 block text-xs font-semibold text-muted">Related lead # (optional)</label>
               <input inputMode="numeric" value={leadNumber} onChange={(e) => setLeadNumber(e.target.value)} placeholder="e.g. 1042" className={INPUT_CLASS} />
             </div>
           )}
 
           <div>
-            <label className="mb-1 block text-xs font-medium text-muted">{type === "SUPPORT" ? "Details" : "Description"}</label>
+            <label className="mb-1.5 block text-xs font-semibold text-muted">{type === "SUPPORT" ? "Details" : "Description"}</label>
             <textarea rows={3} maxLength={2000} value={description} onChange={(e) => setDescription(e.target.value)} className={INPUT_CLASS} />
           </div>
 

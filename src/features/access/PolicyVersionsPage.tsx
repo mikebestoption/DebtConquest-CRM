@@ -14,7 +14,7 @@ export function PolicyVersionsPage() {
   return (
     <div className="space-y-4">
       <div>
-        <h1 className="text-2xl font-bold text-ink">Policy Versions</h1>
+        <h1 className="text-2xl font-bold text-ink underline decoration-teal decoration-2 underline-offset-8">Policy Versions</h1>
         <p className="mt-0.5 text-sm text-muted">Every published permissions change, versioned and auditable.</p>
       </div>
 

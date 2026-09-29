@@ -62,7 +62,7 @@ export function TeamsPage() {
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold text-ink">Teams</h1>
+          <h1 className="text-2xl font-bold text-ink underline decoration-teal decoration-2 underline-offset-8">Teams</h1>
           <p className="mt-0.5 text-sm text-muted">Manage team membership and keep capacity honest.</p>
         </div>
         <button

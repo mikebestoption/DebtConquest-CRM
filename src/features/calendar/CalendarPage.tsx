@@ -122,7 +122,7 @@ export function CalendarPage() {
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h1 className="text-2xl font-bold text-ink">{isAdmin ? "Admin Calendar Portal" : "Calendar"}</h1>
+        <h1 className="text-2xl font-bold text-ink underline decoration-teal decoration-2 underline-offset-8">{isAdmin ? "Admin Calendar Portal" : "Calendar"}</h1>
         <button
           onClick={() => setModal({ event: null, defaultDate: new Date() })}
           className="flex items-center gap-1.5 rounded-md bg-teal px-4 py-2 text-sm font-semibold text-white hover:bg-teal-hover"

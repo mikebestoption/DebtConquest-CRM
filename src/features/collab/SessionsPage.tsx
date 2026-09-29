@@ -153,7 +153,7 @@ function SessionsPage({ type }: { type: CollabSessionType }) {
     <div className="space-y-4">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="max-w-2xl">
-          <h1 className="text-2xl font-bold text-ink">{config.title}</h1>
+          <h1 className="text-2xl font-bold text-ink underline decoration-teal decoration-2 underline-offset-8">{config.title}</h1>
           <p className="mt-0.5 text-sm text-muted">{config.subtitle}</p>
         </div>
         {primary}

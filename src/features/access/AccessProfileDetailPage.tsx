@@ -70,7 +70,7 @@ export function AccessProfileDetailPage() {
         <IconChevronLeft width={16} height={16} /> Back to Access Profiles
       </button>
 
-      <h1 className="text-2xl font-bold text-ink">
+      <h1 className="text-2xl font-bold text-ink underline decoration-teal decoration-2 underline-offset-8">
         {profile.department} — {profile.jobTitle}
       </h1>
 

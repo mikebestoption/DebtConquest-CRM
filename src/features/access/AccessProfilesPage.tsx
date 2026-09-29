@@ -25,7 +25,7 @@ export function AccessProfilesPage() {
   return (
     <div className="space-y-4">
       <div>
-        <h1 className="text-2xl font-bold text-ink">Access Profiles</h1>
+        <h1 className="text-2xl font-bold text-ink underline decoration-teal decoration-2 underline-offset-8">Access Profiles</h1>
         <p className="mt-0.5 text-sm text-muted">One bundle of permissions per Department + Job Title. Users inherit these automatically.</p>
       </div>
 

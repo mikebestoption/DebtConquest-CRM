@@ -34,7 +34,7 @@ export function AccessAuditLogPage() {
   return (
     <div className="space-y-4">
       <div>
-        <h1 className="text-2xl font-bold text-ink">Access Audit Log</h1>
+        <h1 className="text-2xl font-bold text-ink underline decoration-teal decoration-2 underline-offset-8">Access Audit Log</h1>
         <p className="mt-0.5 text-sm text-muted">Every promotion, transfer, access change, exception, and policy update - traceable to who and why.</p>
       </div>
 

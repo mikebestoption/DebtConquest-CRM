@@ -118,7 +118,7 @@ export function RecordingsPage() {
   return (
     <div className="space-y-4">
       <div>
-        <h1 className="text-2xl font-bold text-ink">Recordings</h1>
+        <h1 className="text-2xl font-bold text-ink underline decoration-teal decoration-2 underline-offset-8">Recordings</h1>
         <p className="mt-0.5 text-sm text-muted">
           Recordings saved from your huddles, meetings and support sessions. Start one from the Record button inside any room.
         </p>

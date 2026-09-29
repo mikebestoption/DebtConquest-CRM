@@ -101,7 +101,7 @@ export function LeadDetailPage() {
         <div className="mb-3 flex flex-wrap items-start justify-between gap-3">
           <div className="flex items-center gap-3">
             <div className="flex h-9 w-9 items-center justify-center rounded-full bg-deep text-sm font-bold text-white">{initial}</div>
-            <h1 className="text-xl font-bold text-ink">{name}</h1>
+            <h1 className="text-xl font-bold text-ink underline decoration-teal decoration-2 underline-offset-8">{name}</h1>
           </div>
 
           <div className="flex flex-wrap items-center gap-2">

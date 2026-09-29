@@ -101,13 +101,13 @@ export function CalendarEventModal({ event, defaultDate, isAdmin, staff, current
 
         <form onSubmit={handleSubmit} className="space-y-3">
           <div>
-            <label className="mb-1 block text-xs font-medium text-muted">Title *</label>
+            <label className="mb-1.5 block text-xs font-semibold text-muted">Title *</label>
             <input required autoFocus value={title} onChange={(e) => setTitle(e.target.value)} className={INPUT_CLASS} />
           </div>
 
           {isAdmin && (
             <div>
-              <label className="mb-1 block text-xs font-medium text-muted">Staff</label>
+              <label className="mb-1.5 block text-xs font-semibold text-muted">Staff</label>
               <Select value={staffId} onChange={(e) => setStaffId(e.target.value)}>
                 {staff.map((s) => (
                   <option key={s.id} value={s.id}>
@@ -122,7 +122,7 @@ export function CalendarEventModal({ event, defaultDate, isAdmin, staff, current
 
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <div>
-              <label className="mb-1 block text-xs font-medium text-muted">Start</label>
+              <label className="mb-1.5 block text-xs font-semibold text-muted">Start</label>
               <input
                 required
                 type={allDay ? "date" : "datetime-local"}
@@ -132,7 +132,7 @@ export function CalendarEventModal({ event, defaultDate, isAdmin, staff, current
               />
             </div>
             <div>
-              <label className="mb-1 block text-xs font-medium text-muted">End</label>
+              <label className="mb-1.5 block text-xs font-semibold text-muted">End</label>
               <input
                 required
                 type={allDay ? "date" : "datetime-local"}
@@ -144,12 +144,12 @@ export function CalendarEventModal({ event, defaultDate, isAdmin, staff, current
           </div>
 
           <div>
-            <label className="mb-1 block text-xs font-medium text-muted">Location</label>
+            <label className="mb-1.5 block text-xs font-semibold text-muted">Location</label>
             <input value={location} onChange={(e) => setLocation(e.target.value)} className={INPUT_CLASS} />
           </div>
 
           <div>
-            <label className="mb-1 block text-xs font-medium text-muted">Description</label>
+            <label className="mb-1.5 block text-xs font-semibold text-muted">Description</label>
             <textarea rows={3} value={description} onChange={(e) => setDescription(e.target.value)} className={INPUT_CLASS} />
           </div>
 

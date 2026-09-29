@@ -123,10 +123,10 @@ export function WorklistPage() {
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h1 className="text-2xl font-bold text-ink">Opportunities</h1>
+        <h1 className="text-2xl font-bold text-ink underline decoration-teal decoration-2 underline-offset-8">Opportunities</h1>
         <div className="flex w-full flex-wrap items-end gap-3 sm:w-auto sm:flex-nowrap">
           <div className="min-w-0 flex-1 sm:min-w-44 sm:flex-none">
-            <label className="mb-1 block text-xs font-medium text-muted">User</label>
+            <label className="mb-1.5 block text-xs font-semibold text-muted">User</label>
             <Select
               value={assignedStaffId}
               onChange={(e) => {

@@ -157,7 +157,7 @@ export function AddLeadModal({ onClose, onCreated }: AddLeadModalProps) {
 function Field({ label, required, children }: { label: string; required?: boolean; children: React.ReactNode }) {
   return (
     <label className="block">
-      <span className="mb-1 block text-xs font-medium text-muted">
+      <span className="mb-1.5 block text-xs font-semibold text-muted">
         {label}
         {required && <span className="text-error"> *</span>}
       </span>

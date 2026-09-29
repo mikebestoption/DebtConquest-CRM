@@ -111,7 +111,7 @@ function ConfirmCard({ item }: { item: PendingConfirmView }) {
             )}
             {wantsInput && (
               <div className="mt-4">
-                <label className="mb-1 block text-xs font-medium text-muted">
+                <label className="mb-1.5 block text-xs font-semibold text-muted">
                   {options.requireText ? (
                     <>
                       Type <span className="font-mono font-bold text-ink">{options.requireText}</span> to confirm
