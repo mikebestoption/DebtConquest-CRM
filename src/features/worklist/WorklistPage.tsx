@@ -33,7 +33,6 @@ export function WorklistPage() {
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
   const [showAddLead, setShowAddLead] = useState(false);
-  const [activeTab, setActiveTab] = useState<"worklist" | "search">("worklist");
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [deleting, setDeleting] = useState(false);
 
@@ -124,7 +123,7 @@ export function WorklistPage() {
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h1 className="text-2xl font-bold text-ink">Worklist</h1>
+        <h1 className="text-2xl font-bold text-ink">Opportunities</h1>
         <div className="flex w-full flex-wrap items-end gap-3 sm:w-auto sm:flex-nowrap">
           <div className="min-w-0 flex-1 sm:min-w-44 sm:flex-none">
             <label className="mb-1 block text-xs font-medium text-muted">User</label>
@@ -152,60 +151,37 @@ export function WorklistPage() {
         </div>
       </div>
 
-      <div className="flex gap-6 overflow-x-auto border-b border-border">
-        <button
-          onClick={() => setActiveTab("worklist")}
-          className={`shrink-0 whitespace-nowrap border-b-2 pb-2 text-sm font-semibold ${activeTab === "worklist" ? "border-teal text-teal" : "border-transparent text-muted"}`}
-        >
-          Worklist
-        </button>
-        <button
-          onClick={() => setActiveTab("search")}
-          className={`shrink-0 whitespace-nowrap border-b-2 pb-2 text-sm font-semibold ${activeTab === "search" ? "border-teal text-teal" : "border-transparent text-muted"}`}
-        >
-          Search Prospect
-        </button>
-      </div>
+      <FilterBar onApply={handleApplyFilters} onExport={() => exportWorklist({ ...filters, assignedStaffId: assignedStaffId || undefined })} />
 
-      {activeTab === "search" ? (
-        <div className="rounded-card border border-dashed border-border bg-white p-10 text-center text-sm text-muted">
-          Search Prospect is coming soon.
+      {selectedIds.size > 0 && (
+        <div className="flex flex-wrap items-center justify-between gap-2 rounded-card border border-error/30 bg-error/5 px-4 py-2.5">
+          <span className="text-sm font-medium text-ink">
+            {selectedIds.size} lead{selectedIds.size === 1 ? "" : "s"} selected
+          </span>
+          <button
+            onClick={handleBulkDelete}
+            disabled={deleting}
+            className="flex items-center gap-1.5 rounded-md border border-error px-3 py-1.5 text-xs font-semibold text-error hover:bg-error hover:text-white disabled:opacity-60"
+          >
+            <IconTrash width={14} height={14} /> {deleting ? "Deleting…" : "Delete"}
+          </button>
         </div>
-      ) : (
-        <>
-          <FilterBar onApply={handleApplyFilters} onExport={() => exportWorklist({ ...filters, assignedStaffId: assignedStaffId || undefined })} />
-
-          {selectedIds.size > 0 && (
-            <div className="flex flex-wrap items-center justify-between gap-2 rounded-card border border-error/30 bg-error/5 px-4 py-2.5">
-              <span className="text-sm font-medium text-ink">
-                {selectedIds.size} lead{selectedIds.size === 1 ? "" : "s"} selected
-              </span>
-              <button
-                onClick={handleBulkDelete}
-                disabled={deleting}
-                className="flex items-center gap-1.5 rounded-md border border-error px-3 py-1.5 text-xs font-semibold text-error hover:bg-error hover:text-white disabled:opacity-60"
-              >
-                <IconTrash width={14} height={14} /> {deleting ? "Deleting…" : "Delete"}
-              </button>
-            </div>
-          )}
-
-          <div className="overflow-hidden rounded-card border border-border bg-white">
-            <WorklistTable
-              items={items}
-              loading={loading}
-              sortBy={sortBy}
-              sortDir={sortDir}
-              onSort={handleSort}
-              onStatusChange={handleStatusChange}
-              selectedIds={selectedIds}
-              onToggleSelect={handleToggleSelect}
-              onToggleSelectAll={handleToggleSelectAll}
-            />
-            <Pagination page={page} pageSize={PAGE_SIZE} total={total} onPageChange={setPage} />
-          </div>
-        </>
       )}
+
+      <div className="overflow-hidden rounded-card border border-border bg-white">
+        <WorklistTable
+          items={items}
+          loading={loading}
+          sortBy={sortBy}
+          sortDir={sortDir}
+          onSort={handleSort}
+          onStatusChange={handleStatusChange}
+          selectedIds={selectedIds}
+          onToggleSelect={handleToggleSelect}
+          onToggleSelectAll={handleToggleSelectAll}
+        />
+        <Pagination page={page} pageSize={PAGE_SIZE} total={total} onPageChange={setPage} />
+      </div>
 
       {showAddLead && (
         <AddLeadModal

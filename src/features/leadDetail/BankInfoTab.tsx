@@ -369,7 +369,7 @@ export function BankInfoTab({ lead }: { lead: LeadDetail }) {
               <Field label="Mothers Maiden Name">
                 <input className={FIELD_CLASS} disabled={disabled} value={draft.mothersMaidenName} onChange={(e) => set("mothersMaidenName", e.target.value)} />
               </Field>
-              <Field label="Account enrolled with this same bank?" required error={errors.enrolledWithSameBank}>
+              <Field label="Is there any account enrolled with this same bank?" required error={errors.enrolledWithSameBank}>
                 <Select
                   disabled={disabled}
                   value={draft.enrolledWithSameBank}

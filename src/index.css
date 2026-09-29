@@ -13,7 +13,12 @@
   --color-deep: #106666;
   --color-ink: #106666;
   --color-bg: #ebffff;
-  --color-border: #d7ecec;
+  /* Was #d7ecec - nearly invisible against white/bg cards (almost no
+     lightness delta), which made every input, table row and card edge in
+     the app hard to make out at a glance. Darkened to an actually visible
+     line while staying in the teal family rather than jumping to neutral
+     gray, so the app doesn't lose its color identity. */
+  --color-border: #9fd6d2;
   --color-error: #b00020;
   --color-muted: #6b7280;
   --color-ring: rgba(79, 182, 163, 0.4);
