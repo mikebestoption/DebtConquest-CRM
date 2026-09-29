@@ -36,7 +36,7 @@ function DateInput({ value, onChange, placeholder }: { value?: string; onChange:
       // min-w-0 lets it actually shrink inside the flex pair below - native
       // date inputs otherwise refuse to go below their content width and
       // spill into the next grid cell.
-      className="min-w-0 flex-1 rounded-md border border-border bg-white px-3 py-2.5 text-sm text-ink outline-none transition-colors focus:border-teal focus:ring-2 focus:ring-ring"
+      className="min-w-0 flex-1 rounded-md border border-border bg-white px-3 py-2 text-sm text-ink outline-none transition-colors focus:border-teal focus:ring-2 focus:ring-ring"
     />
   );
 }
@@ -54,7 +54,7 @@ export function FilterBar({ onApply, onExport }: FilterBarProps) {
   }
 
   return (
-    <div className="rounded-card border border-border bg-white p-5 shadow-card">
+    <div className="rounded-card border border-border bg-white p-4 shadow-card">
       {/* auto-fit/minmax instead of viewport breakpoints (sm:/lg:/xl:) -
           this grid sits next to a fixed-width sidebar, so its actual
           rendered width doesn't track the viewport width breakpoints
@@ -62,20 +62,20 @@ export function FilterBar({ onApply, onExport }: FilterBarProps) {
           Credit Pulled Yes/No) into overlapping columns. Base width bumped
           260px -> lets each field breathe on the wide space next to the
           sidebar instead of packing in as many narrow columns as fit. */}
-      <div className="grid gap-5 *:min-w-0" style={{ gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))" }}>
+      <div className="grid gap-4 *:min-w-0" style={{ gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))" }}>
         <div>
-          <label className="mb-1.5 block text-xs font-semibold text-muted">Search by Id or Name</label>
+          <label className="mb-1 block text-xs font-semibold text-muted">Search by Id or Name</label>
           <input
             type="text"
             value={draft.search ?? ""}
             onChange={(e) => patch({ search: e.target.value || undefined })}
             placeholder="Search by Id or Name"
-            className="w-full rounded-md border border-border bg-white px-3 py-2.5 text-sm outline-none transition-colors focus:border-teal focus:ring-2 focus:ring-ring"
+            className="w-full rounded-md border border-border bg-white px-3 py-2 text-sm outline-none transition-colors focus:border-teal focus:ring-2 focus:ring-ring"
           />
         </div>
 
         <div>
-          <label className="mb-1.5 block text-xs font-semibold text-muted">Date Created</label>
+          <label className="mb-1 block text-xs font-semibold text-muted">Date Created</label>
           <div className="flex min-w-0 gap-1">
             <DateInput value={draft.dateCreatedFrom} onChange={(v) => patch({ dateCreatedFrom: v })} placeholder="From" />
             <DateInput value={draft.dateCreatedTo} onChange={(v) => patch({ dateCreatedTo: v })} placeholder="To" />
@@ -83,7 +83,7 @@ export function FilterBar({ onApply, onExport }: FilterBarProps) {
         </div>
 
         <div>
-          <label className="mb-1.5 block text-xs font-semibold text-muted">Last Activity</label>
+          <label className="mb-1 block text-xs font-semibold text-muted">Last Activity</label>
           <div className="flex min-w-0 gap-1">
             <DateInput value={draft.lastActivityFrom} onChange={(v) => patch({ lastActivityFrom: v })} placeholder="From" />
             <DateInput value={draft.lastActivityTo} onChange={(v) => patch({ lastActivityTo: v })} placeholder="To" />
@@ -110,7 +110,7 @@ export function FilterBar({ onApply, onExport }: FilterBarProps) {
         />
 
         <div>
-          <label className="mb-1.5 block text-xs font-semibold text-muted">Enrolled</label>
+          <label className="mb-1 block text-xs font-semibold text-muted">Enrolled</label>
           <Select value={draft.enrolled ?? "all"} onChange={(e) => patch({ enrolled: e.target.value as YesNoAll })}>
             <option value="all">All</option>
             <option value="yes">Yes</option>
@@ -119,7 +119,7 @@ export function FilterBar({ onApply, onExport }: FilterBarProps) {
         </div>
 
         <div>
-          <label className="mb-1.5 block text-xs font-semibold text-muted">Credit Pulled Date</label>
+          <label className="mb-1 block text-xs font-semibold text-muted">Credit Pulled Date</label>
           <div className="flex min-w-0 gap-1">
             <DateInput value={draft.creditPulledDateFrom} onChange={(v) => patch({ creditPulledDateFrom: v })} placeholder="From" />
             <DateInput value={draft.creditPulledDateTo} onChange={(v) => patch({ creditPulledDateTo: v })} placeholder="To" />
@@ -127,7 +127,7 @@ export function FilterBar({ onApply, onExport }: FilterBarProps) {
         </div>
 
         <div>
-          <span className="mb-1.5 block text-xs font-semibold text-muted">Credit Pulled</span>
+          <span className="mb-1 block text-xs font-semibold text-muted">Credit Pulled</span>
           <div className="flex items-center gap-4 pt-2">
             <Checkbox
               label="Yes"
@@ -143,22 +143,22 @@ export function FilterBar({ onApply, onExport }: FilterBarProps) {
         </div>
       </div>
 
-      <div className="mt-5 flex justify-end gap-2 border-t border-border pt-4">
+      <div className="mt-4 flex justify-end gap-2 border-t border-border pt-3">
         <button
           onClick={onExport}
-          className="flex items-center gap-1.5 rounded-md border border-border px-3.5 py-2 text-sm font-semibold text-ink transition-colors hover:border-teal hover:bg-bg"
+          className="flex items-center gap-1.5 rounded-md border border-border px-3 py-1.5 text-sm font-semibold text-ink transition-colors hover:border-teal hover:bg-bg"
         >
           <IconDownload width={14} height={14} /> Export
         </button>
         <button
           onClick={() => onApply(draft)}
-          className="flex items-center gap-1.5 rounded-md bg-teal px-3.5 py-2 text-sm font-semibold text-white shadow-card transition-colors hover:bg-teal-hover"
+          className="flex items-center gap-1.5 rounded-md bg-teal px-3 py-1.5 text-sm font-semibold text-white shadow-card transition-colors hover:bg-teal-hover"
         >
           <IconFilter width={14} height={14} /> Filter
         </button>
         <button
           onClick={handleClear}
-          className="flex items-center gap-1.5 rounded-md border border-border px-3.5 py-2 text-sm font-semibold text-ink transition-colors hover:border-error hover:bg-error/5 hover:text-error"
+          className="flex items-center gap-1.5 rounded-md border border-border px-3 py-1.5 text-sm font-semibold text-ink transition-colors hover:border-error hover:bg-error/5 hover:text-error"
         >
           <IconTrash width={14} height={14} /> Clear
         </button>

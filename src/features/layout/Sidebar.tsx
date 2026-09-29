@@ -24,12 +24,12 @@ function NavRow({ item, nested, collapsed }: { item: Omit<NavItem, "children">; 
       to={item.path}
       title={collapsed ? item.label : undefined}
       className={({ isActive }) =>
-        `flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors ${nested && !collapsed ? "pl-9" : ""} ${
+        `flex items-center gap-2.5 rounded-md px-2.5 py-1.5 text-sm font-medium transition-colors ${nested && !collapsed ? "pl-8" : ""} ${
           collapsed ? "justify-center" : ""
         } ${isActive ? "bg-teal text-white" : "text-gray-300 hover:bg-teal-100 hover:text-white"}`
       }
     >
-      {(!nested || collapsed) && <Icon className="shrink-0" />}
+      {(!nested || collapsed) && <Icon width={16} height={16} className="shrink-0" />}
       {!collapsed && <span className="truncate">{item.label}</span>}
     </NavLink>
   );
@@ -60,11 +60,11 @@ function NavGroup({ item, collapsed, query }: { item: NavItem; collapsed: boolea
         type="button"
         title={item.label}
         onClick={() => navigate(item.children![0].path)}
-        className={`flex w-full items-center justify-center rounded-md px-3 py-2 transition-colors ${
+        className={`flex w-full items-center justify-center rounded-md px-2.5 py-1.5 transition-colors ${
           childActive ? "bg-teal text-white" : "text-gray-300 hover:bg-teal-100 hover:text-white"
         }`}
       >
-        <Icon className="shrink-0" />
+        <Icon width={16} height={16} className="shrink-0" />
       </button>
     );
   }
@@ -74,11 +74,11 @@ function NavGroup({ item, collapsed, query }: { item: NavItem; collapsed: boolea
       <button
         type="button"
         onClick={() => setManualOpen((v) => !v)}
-        className={`flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors ${
+        className={`flex w-full items-center gap-2.5 rounded-md px-2.5 py-1.5 text-sm font-medium transition-colors ${
           childActive ? "text-white" : "text-gray-300 hover:bg-teal-100 hover:text-white"
         }`}
       >
-        <Icon className="shrink-0" />
+        <Icon width={16} height={16} className="shrink-0" />
         <span className="flex-1 truncate text-left">{item.label}</span>
         <IconChevronDown width={14} height={14} className={`shrink-0 transition-transform ${open ? "rotate-180" : ""}`} />
       </button>
@@ -187,7 +187,7 @@ export function Sidebar({ mobileOpen, onMobileClose }: { mobileOpen: boolean; on
       <aside
         className={`fixed inset-y-0 left-0 z-50 flex h-dvh w-72 max-w-[85vw] shrink-0 flex-col bg-deep px-3 py-4 transition-transform duration-200 lg:static lg:z-auto lg:max-w-none lg:translate-x-0 lg:transition-all ${
           mobileOpen ? "translate-x-0" : "-translate-x-full"
-        } ${collapsed ? "lg:w-20 lg:px-2" : "lg:w-60 lg:px-3"}`}
+        } ${collapsed ? "lg:w-20 lg:px-2" : "lg:w-56 lg:px-2.5"}`}
       >
       <div className={`mb-4 flex items-center gap-2 ${collapsed ? "justify-center" : "px-2"}`}>
         <img src={logo} alt="" className="h-8 w-8 shrink-0" />
@@ -244,7 +244,7 @@ export function Sidebar({ mobileOpen, onMobileClose }: { mobileOpen: boolean; on
           onClick={() => setCollapsed((v) => !v)}
           hidden={!isDesktop}
           title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
-          className={`flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-teal-100 hover:text-white ${
+          className={`flex w-full items-center gap-2.5 rounded-md px-2.5 py-1.5 text-sm font-medium text-gray-300 hover:bg-teal-100 hover:text-white ${
             collapsed ? "justify-center" : ""
           }`}
         >

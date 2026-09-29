@@ -37,11 +37,11 @@ export function MultiSelect({ label, options, selected, onChange }: MultiSelectP
 
   return (
     <div ref={ref} className="relative">
-      <label className="mb-1.5 block text-xs font-semibold text-muted">{label}</label>
+      <label className="mb-1 block text-xs font-semibold text-muted">{label}</label>
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className={`flex w-full items-center justify-between rounded-md border bg-white px-3 py-2.5 text-left text-sm text-ink outline-none transition-colors focus-visible:ring-2 focus-visible:ring-ring ${open ? "border-teal" : "border-border"}`}
+        className={`flex w-full items-center justify-between rounded-md border bg-white px-3 py-2 text-left text-sm text-ink outline-none transition-colors focus-visible:ring-2 focus-visible:ring-ring ${open ? "border-teal" : "border-border"}`}
       >
         <span className="truncate">{summary}</span>
         <IconChevronDown className="shrink-0 text-muted" width={14} height={14} />

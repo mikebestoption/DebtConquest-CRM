@@ -19,7 +19,7 @@ export function Select({ className, children, fitContent, ...props }: SelectProp
   return (
     <div className={`relative ${fitContent ? "inline-block" : ""}`}>
       <select
-        className={`${fitContent ? "" : "w-full"} appearance-none rounded-md border border-border bg-white px-3 py-2.5 pr-9 text-sm text-ink outline-none transition-colors focus:border-teal focus:ring-2 focus:ring-ring disabled:cursor-not-allowed disabled:bg-bg disabled:text-muted ${className ?? ""}`}
+        className={`${fitContent ? "" : "w-full"} appearance-none rounded-md border border-border bg-white px-3 py-2 pr-9 text-sm text-ink outline-none transition-colors focus:border-teal focus:ring-2 focus:ring-ring disabled:cursor-not-allowed disabled:bg-bg disabled:text-muted ${className ?? ""}`}
         {...props}
       >
         {children}
