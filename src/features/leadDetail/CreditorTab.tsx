@@ -389,7 +389,7 @@ export function CreditorTab({ leadId, onOpenAdditionalInfo }: { leadId: string; 
             <IconCloud width={16} height={16} />
           </div>
           <span className="font-semibold text-ink">Customer's Calculator View</span>
-          <span className="text-xs text-muted">Exactly what this customer sees on the debt calculator - read-only</span>
+          <span className="text-xs text-muted">This customer's debt calculator, exactly as they see it - try other values without changing their data</span>
         </div>
         <div className="p-5">
           <CustomerCalculatorSection leadId={leadId} />

@@ -13,22 +13,29 @@ import {
 } from "@debtconquest/calc-engine";
 
 // This whole file ports the pure calculation logic behind the customer
-// wizard's read-only "results" sections (apps/client/src/features/
-// comparison/usePayoffComparison.ts, programCost/useProgramCost.ts,
-// compare/useCompareChart.ts, wealth/useWealthGrowthSeries.ts) as plain
-// functions instead of Zustand-backed hooks - this view has no live
-// customer session to react to, just one fetched snapshot of the lead's
-// debts. Defaults (programMonths=36, legalSupportEnabled=true, wealth
-// returnRate=7%, credit-counseling/loan-consolidation assumptions) match
-// the client's own store defaults (programCostStore.ts, assumptionsStore.ts,
-// wealthStore.ts) verbatim - this section never lets an agent override them,
-// same "no forms here" scope as the rest of this panel.
+// calculator's results sections (apps/client/src/features/comparison/
+// usePayoffComparison.ts, programCost/useProgramCost.ts, compare/
+// useCompareChart.ts, wealth/useWealthGrowthSeries.ts) as plain functions
+// instead of Zustand-backed hooks, fed by this view's own local what-if
+// state (see useCalculatorState.ts). Defaults match the client's own store
+// defaults (programCostStore.ts, assumptionsStore.ts, wealthStore.ts)
+// verbatim, so an untouched view shows exactly what the customer sees.
 
 export const DEFAULT_PROGRAM_MONTHS = 36;
 export const DEFAULT_LEGAL_SUPPORT_ENABLED = true;
 export const DEFAULT_WEALTH_RETURN_RATE = 7;
-export const CC_ASSUMPTION = { apr: 8.0, months: 48 };
-export const LOAN_ASSUMPTION = { apr: 14.9, months: 60 };
+// assumptionsStore.ts's DEFAULTS.
+export const DEFAULT_ASSUMPTIONS = { ccApr: 8.0, ccMonths: 48, loanApr: 14.9, loanMonths: 60 };
+export type Assumptions = typeof DEFAULT_ASSUMPTIONS;
+// ProgramCostPanel.tsx's "Estimated Time" options.
+export const PROGRAM_MONTH_OPTIONS = [6, 12, 24, 36, 48];
+
+const CURRENCY = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+// The client's shared/format.ts formatCurrency.
+export function formatCurrency(amount: number): string {
+  return CURRENCY.format(amount);
+}
 
 export function selectActiveDebts(debts: DebtInput[]): DebtInput[] {
   return debts.filter((d) => d.active);
@@ -50,10 +57,9 @@ export interface PayoffComparison {
   avalanche: PayoffResult | null;
 }
 
-// Ports usePayoffComparison.ts. `budget` isn't a persisted field (the
-// client's own "Monthly Budget for Debt" input is ephemeral, never saved -
-// see TotalsBar.tsx/debtStore.ts), so callers pass the same default the
-// client itself falls back to: the sum of active minimum payments.
+// Ports usePayoffComparison.ts. The budget is never saved on the customer's
+// side either (debtStore.ts starts it at the sum of active minimums on
+// every load), so the view starts from that same default.
 export function computePayoffComparison(debts: DebtInput[], budget: number): PayoffComparison {
   const activeDebts = selectActiveDebts(debts);
   const minRequired = selectTotalMinPayment(debts);

@@ -235,6 +235,24 @@ export const IconCloud = (p: SVGProps<SVGSVGElement>) => (
     <path d="M7 18h11a4 4 0 0 0 .4-8 5.5 5.5 0 0 0-10.6-1.8A4.5 4.5 0 0 0 7 18Z" />
   </Svg>
 );
+export const IconEye = (p: SVGProps<SVGSVGElement>) => (
+  <Svg {...p}>
+    <path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z" />
+    <circle cx="12" cy="12" r="3" />
+  </Svg>
+);
+export const IconCheckCircle = (p: SVGProps<SVGSVGElement>) => (
+  <Svg {...p}>
+    <circle cx="12" cy="12" r="9" />
+    <path d="m8.5 12 2.5 2.5 4.5-5" />
+  </Svg>
+);
+export const IconLayers = (p: SVGProps<SVGSVGElement>) => (
+  <Svg {...p}>
+    <path d="m12 3 9 5-9 5-9-5 9-5Z" />
+    <path d="m3 13 9 5 9-5" />
+  </Svg>
+);
 export const IconBuilding = (p: SVGProps<SVGSVGElement>) => (
   <Svg {...p}>
     <rect x="4" y="3" width="10" height="18" rx="1" />

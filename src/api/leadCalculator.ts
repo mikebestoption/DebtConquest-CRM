@@ -3,7 +3,8 @@ import type { DebtInput, SettlementRate } from "@debtconquest/calc-engine";
 
 // Mirrors server/src/routes/crm/creditor.route.ts's toDebtResponse - the
 // exact same Debt rows the customer wizard's "Enter your debts" step reads
-// (see server's routes/leads.route.ts), read-only here.
+// (see server's routes/leads.route.ts). Only ever read here: the CRM's
+// calculator view edits a local copy (see customerCalculator/), never these.
 export interface LeadDebt {
   id: string;
   debtName: string;
@@ -15,7 +16,18 @@ export interface LeadDebt {
   sortOrder: number;
 }
 
-export function fetchLeadDebts(leadId: string): Promise<{ status: string; debts: LeadDebt[] }> {
+// The customer's uploaded debt documents, same shape as GET /leads/:uuid's
+// sourceDocuments. Optional: a server without that addition just omits it.
+export interface LeadSourceDocument {
+  id: string;
+  fileName: string;
+  uploadedAt: string;
+  pageCount: number | null;
+  debtsImportedCount: number;
+  downloadUrl: string;
+}
+
+export function fetchLeadDebts(leadId: string): Promise<{ status: string; debts: LeadDebt[]; sourceDocuments?: LeadSourceDocument[] }> {
   return apiRequest(`/leads/${leadId}/debts`);
 }
 
