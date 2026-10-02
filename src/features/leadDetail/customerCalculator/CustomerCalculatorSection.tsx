@@ -155,7 +155,7 @@ export function CustomerCalculatorSection({ leadId }: { leadId: string }) {
           debtsRev,
         );
         latest.invalidate();
-        setData((prev) => (prev ? { ...prev, debts: res.debts.map(toDebtInput), debtsRev: res.rev.debts } : prev));
+        setData((prev) => (prev ? { ...prev, debts: res.debts.map(toDebtInput), debtsRev: res.rev?.debts } : prev));
         setStale(false);
         setSave({ status: "saved" });
       } catch (err) {

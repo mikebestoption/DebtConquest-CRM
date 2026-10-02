@@ -32,6 +32,6 @@ export interface LeadDebtInput {
 // seconds). `baseRev` is the debts revision the list was loaded at: the
 // server answers 409 instead of saving if the customer has changed their
 // debts since.
-export function saveLeadDebts(leadId: string, debts: LeadDebtInput[], baseRev: string | undefined): Promise<{ status: string; debts: LeadDebt[]; rev: LeadRevisions }> {
+export function saveLeadDebts(leadId: string, debts: LeadDebtInput[], baseRev: string | undefined): Promise<{ status: string; debts: LeadDebt[]; rev: LeadRevisions | null }> {
   return apiRequest(`/leads/${leadId}/debts`, { method: "PUT", body: JSON.stringify({ debts, baseRev }) });
 }
