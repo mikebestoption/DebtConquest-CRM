@@ -2,14 +2,18 @@ import { useCallback, useState } from "react";
 import type { DebtInput } from "@debtconquest/calc-engine";
 import { DEFAULT_ASSUMPTIONS, DEFAULT_LEGAL_SUPPORT_ENABLED, DEFAULT_PROGRAM_MONTHS, type Assumptions } from "./calc";
 
+// A debt as the customer has it saved: `source` (where the row came from)
+// isn't shown, only carried, so a list saved back to them keeps it.
+export type SavedDebt = DebtInput & { source?: "MANUAL" | "CREDIT_REPORT" };
+
 // A debt row plus a local id, so rows keep their identity (focus, keys)
 // when one above them is removed - the client keys by index.
-export type CalcDebt = DebtInput & { uid: number };
+export type CalcDebt = SavedDebt & { uid: number };
 
 export type DebtField = "name" | "balance" | "apr" | "min";
 
 let nextUid = 1;
-function withUid(d: DebtInput): CalcDebt {
+function withUid(d: SavedDebt): CalcDebt {
   return { ...d, uid: nextUid++ };
 }
 
@@ -20,9 +24,10 @@ function sumActiveMins(debts: DebtInput[]): number {
 // The CRM's what-if copy of the customer's calculator: the same actions as
 // the client's debtStore.ts / programCostStore.ts / assumptionsStore.ts,
 // ported one-for-one, but held in local state for this view only. Nothing
-// here is ever written back - the customer's saved calculator is untouched
-// no matter what an agent changes, and remounting the view resets it.
-export function useCalculatorState(initialDebts: DebtInput[]) {
+// here writes anything back - the customer's saved calculator is untouched
+// no matter what an agent changes (unless they choose to save the debt list
+// to it - see CustomerCalculatorSection), and remounting the view resets it.
+export function useCalculatorState(initialDebts: SavedDebt[]) {
   const [debts, setDebts] = useState<CalcDebt[]>(() => initialDebts.map(withUid));
   // debtStore.ts's loadDebts(): the budget starts at the sum of active minimums.
   const [budget, setBudgetState] = useState(() => sumActiveMins(initialDebts));
@@ -32,6 +37,20 @@ export function useCalculatorState(initialDebts: DebtInput[]) {
   const [dirty, setDirty] = useState(false);
 
   const markDirty = useCallback(() => setDirty(true), []);
+
+  // The customer changed their debts while this view was open: take their
+  // list, keeping everything else here. Not an edit by the agent. The budget
+  // moves the way the customer's own does (debtStore.ts's applyRemoteDebts):
+  // one still at the sum of minimums follows it, a raised one is kept.
+  const replaceDebts = useCallback(
+    (next: SavedDebt[]) => {
+      const minSum = sumActiveMins(next);
+      const followsMinimums = budget === sumActiveMins(debts);
+      setDebts(next.map(withUid));
+      setBudgetState((b) => (followsMinimums ? minSum : Math.max(b, minSum)));
+    },
+    [budget, debts],
+  );
 
   const addDebt = useCallback(() => {
     setDebts((ds) => [...ds, withUid({ name: "", balance: 0, apr: 0, min: 0, active: true })]);
@@ -97,6 +116,7 @@ export function useCalculatorState(initialDebts: DebtInput[]) {
     assumptions,
     dirty,
     markDirty,
+    replaceDebts,
     addDebt,
     removeDebt,
     updateDebt,

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   BUDGET_FIELD_LABELS,
   BUDGET_SECTIONS,
@@ -8,7 +8,9 @@ import {
   type BudgetHardship,
   type BudgetIncome,
   type LeadBudgetDetail,
+  type LeadBudgetPatch,
 } from "../../api/leadBudget";
+import { changedKeys, mergeDraft, sameAmount, sameText, useLatest, useLiveReload } from "./liveLead";
 import { Section, INPUT_CLASS } from "./formFields";
 import { IconChevronLeft, IconChevronDown } from "../layout/icons";
 import { Select } from "../../components/controls";
@@ -64,14 +66,36 @@ function StatRow({ summary }: { summary: LeadBudgetDetail["summary"] }) {
   );
 }
 
-function HardshipCard({ id, initial, onSaved }: { id: string; initial: BudgetHardship | null; onSaved: (h: BudgetHardship) => void }) {
-  const [draft, setDraft] = useState<BudgetHardship>(initial ?? {});
-  const [saving, setSaving] = useState(false);
+const NO_HARDSHIP: BudgetHardship = {};
 
-  useEffect(() => setDraft(initial ?? {}), [initial]);
+function HardshipCard({
+  id,
+  initial,
+  onSaveStart,
+  onSaved,
+}: {
+  id: string;
+  initial: BudgetHardship | null;
+  onSaveStart: () => void;
+  onSaved: (h: BudgetHardship) => void;
+}) {
+  const [draft, setDraft] = useState<BudgetHardship>(initial ?? NO_HARDSHIP);
+  const [saving, setSaving] = useState(false);
+  // What the draft was last brought up to date with.
+  const loaded = useRef(initial);
+
+  // Fresh data from a live reload (see liveLead.ts): what's being typed here
+  // stays, the rest follows.
+  useEffect(() => {
+    const before = loaded.current;
+    if (initial === before) return;
+    loaded.current = initial;
+    setDraft((d) => mergeDraft(d, before ?? NO_HARDSHIP, initial ?? NO_HARDSHIP));
+  }, [initial]);
 
   async function handleSave() {
     setSaving(true);
+    onSaveStart();
     try {
       const res = await updateLeadBudgetDetail(id, { hardship: draft });
       onSaved(res.hardship ?? draft);
@@ -117,7 +141,7 @@ function HardshipCard({ id, initial, onSaved }: { id: string; initial: BudgetHar
           <textarea className={INPUT_CLASS} rows={2} value={draft.ultimateGoal ?? ""} onChange={(e) => setDraft((p) => ({ ...p, ultimateGoal: e.target.value }))} />
         </div>
         <div className="flex justify-end gap-3">
-          <button onClick={() => setDraft(initial ?? {})} className="rounded-md border border-border bg-white px-5 py-2 text-sm font-medium text-ink hover:bg-bg">
+          <button onClick={() => setDraft(initial ?? NO_HARDSHIP)} className="rounded-md border border-border bg-white px-5 py-2 text-sm font-medium text-ink hover:bg-bg">
             Cancel
           </button>
           <button
@@ -147,37 +171,78 @@ const INCOME_FIELDS: { key: keyof BudgetIncome; label: string }[] = [
   { key: "otherIncome", label: "Other Income" },
 ];
 
+type IncomeExpenses = Pick<LeadBudgetDetail, "expenses" | "housingType" | "income">;
+
+const NO_EXPENSES: BudgetExpenses = {};
+const NO_INCOME: BudgetIncome = {};
+
+// Income amounts compare as amounts; its frequency and comments as text.
+const sameIncome = (a: unknown, b: unknown) => (typeof a === "string" || typeof b === "string" ? sameText(a, b) : sameAmount(a, b));
+
 function IncomeExpensesCard({
   id,
   data,
+  onSaveStart,
   onSaved,
 }: {
   id: string;
-  data: Pick<LeadBudgetDetail, "expenses" | "housingType" | "income">;
+  data: IncomeExpenses;
+  onSaveStart: () => void;
   onSaved: (d: Pick<LeadBudgetDetail, "expenses" | "housingType" | "income" | "summary">) => void;
 }) {
   const [subTab, setSubTab] = useState<"income" | "expenses">("income");
-  const [expenses, setExpenses] = useState<BudgetExpenses>(data.expenses ?? {});
+  const [expenses, setExpenses] = useState<BudgetExpenses>(data.expenses ?? NO_EXPENSES);
   const [housingType, setHousingType] = useState<"RENT" | "OWN" | "">(data.housingType ?? "");
-  const [income, setIncome] = useState<BudgetIncome>(data.income ?? {});
+  const [income, setIncome] = useState<BudgetIncome>(data.income ?? NO_INCOME);
   const [saving, setSaving] = useState(false);
+  // What the drafts were last brought up to date with.
+  const loaded = useRef(data);
+  // Set by a save: its result replaces the drafts outright, as it always has.
+  const justSaved = useRef(false);
 
-  useEffect(() => {
-    setExpenses(data.expenses ?? {});
-    setHousingType(data.housingType ?? "");
-    setIncome(data.income ?? {});
-  }, [data]);
-
-  function resetDrafts() {
-    setExpenses(data.expenses ?? {});
-    setHousingType(data.housingType ?? "");
-    setIncome(data.income ?? {});
+  function resetDrafts(to: IncomeExpenses = data) {
+    setExpenses(to.expenses ?? NO_EXPENSES);
+    setHousingType(to.housingType ?? "");
+    setIncome(to.income ?? NO_INCOME);
   }
 
+  // Fresh data - from a save here, or a live reload because the customer
+  // changed their budget in their app (see liveLead.ts). After a reload,
+  // amounts the agent hasn't touched take the new values and the ones being
+  // edited stay as typed.
+  useEffect(() => {
+    const before = loaded.current;
+    if (data === before) return;
+    loaded.current = data;
+    if (justSaved.current) {
+      justSaved.current = false;
+      resetDrafts(data);
+      return;
+    }
+    setExpenses((d) => mergeDraft(d, before.expenses ?? NO_EXPENSES, data.expenses ?? NO_EXPENSES, sameAmount));
+    setHousingType((d) => (d === (before.housingType ?? "") ? (data.housingType ?? "") : d));
+    setIncome((d) => mergeDraft(d, before.income ?? NO_INCOME, data.income ?? NO_INCOME, sameIncome));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [data]);
+
   async function handleSave() {
+    // Only what was changed here is sent. The customer edits these same
+    // expenses (and their income) in their app: sending the whole form would
+    // write back the old value of anything they changed meanwhile - and an
+    // income section nobody filled in would save their income as zero.
+    const patch: LeadBudgetPatch = {};
+    const changedExpenses = changedKeys(expenses, data.expenses ?? NO_EXPENSES, sameAmount);
+    // A cleared amount is saved as 0.
+    if (changedExpenses.length > 0) patch.expenses = Object.fromEntries(changedExpenses.map((key) => [key, Number(expenses[key]) || 0]));
+    if (housingType !== (data.housingType ?? "")) patch.housingType = housingType || null;
+    if (changedKeys(income, data.income ?? NO_INCOME, sameIncome).length > 0) patch.income = income;
+    if (Object.keys(patch).length === 0) return;
+
     setSaving(true);
+    onSaveStart();
     try {
-      const res = await updateLeadBudgetDetail(id, { expenses, housingType: housingType || null, income });
+      const res = await updateLeadBudgetDetail(id, patch);
+      justSaved.current = true;
       onSaved({ expenses: res.expenses, housingType: res.housingType, income: res.income, summary: res.summary });
     } finally {
       setSaving(false);
@@ -265,7 +330,7 @@ function IncomeExpensesCard({
       )}
 
       <div className="sticky bottom-0 -mx-1 flex justify-end gap-3 border-t border-border bg-bg/95 px-1 py-3 backdrop-blur">
-        <button onClick={resetDrafts} className="rounded-md border border-border bg-white px-5 py-2 text-sm font-medium text-ink hover:bg-white">
+        <button onClick={() => resetDrafts()} className="rounded-md border border-border bg-white px-5 py-2 text-sm font-medium text-ink hover:bg-white">
           Cancel
         </button>
         <button onClick={handleSave} disabled={saving} className="rounded-md bg-teal px-5 py-2 text-sm font-medium text-white hover:bg-teal-hover disabled:opacity-60">
@@ -279,12 +344,37 @@ function IncomeExpensesCard({
 export function BudgetTab({ leadId }: { leadId: string }) {
   const [detail, setDetail] = useState<LeadBudgetDetail | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const latest = useLatest();
+
+  const load = useCallback(
+    async (quiet = false) => {
+      const ticket = latest.begin();
+      try {
+        const fresh = await fetchLeadBudgetDetail(leadId);
+        if (latest.isCurrent(ticket)) setDetail(fresh);
+      } catch (err) {
+        // A live refresh that fails leaves what's on screen for the next one.
+        if (!quiet) setError(err instanceof Error ? err.message : "Failed to load budget");
+      }
+    },
+    [leadId, latest],
+  );
 
   useEffect(() => {
-    fetchLeadBudgetDetail(leadId)
-      .then(setDetail)
-      .catch((err) => setError(err instanceof Error ? err.message : "Failed to load budget"));
-  }, [leadId]);
+    load();
+  }, [load]);
+
+  // The customer edits these same expenses and their income in their app,
+  // and the figures above also draw on their debts: show changes as they
+  // happen (see liveLead.ts).
+  useLiveReload(["budget", "lead", "debts"], () => load(true));
+
+  // The same object until its contents change, so the form below only takes
+  // new data when there is some - not on every render.
+  const expenses = detail?.expenses ?? null;
+  const housingType = detail?.housingType ?? null;
+  const income = detail?.income ?? null;
+  const incomeExpenses = useMemo(() => ({ expenses, housingType, income }), [expenses, housingType, income]);
 
   if (error) return <p className="text-sm text-error">{error}</p>;
   if (!detail) return <p className="text-sm text-muted">Loading…</p>;
@@ -298,18 +388,28 @@ export function BudgetTab({ leadId }: { leadId: string }) {
 
       <StatRow summary={detail.summary} />
 
-      <HardshipCard id={leadId} initial={detail.hardship} onSaved={(hardship) => setDetail((d) => (d ? { ...d, hardship } : d))} />
+      <HardshipCard
+        id={leadId}
+        initial={detail.hardship}
+        onSaveStart={latest.invalidate}
+        onSaved={(hardship) => {
+          latest.invalidate();
+          setDetail((d) => (d ? { ...d, hardship } : d));
+        }}
+      />
 
       <IncomeExpensesCard
         id={leadId}
-        data={{ expenses: detail.expenses, housingType: detail.housingType, income: detail.income }}
-        onSaved={(patch) =>
+        data={incomeExpenses}
+        onSaveStart={latest.invalidate}
+        onSaved={(patch) => {
+          latest.invalidate();
           setDetail((d) => {
             if (!d) return d;
             const next = { ...d, ...patch };
             return next;
-          })
-        }
+          });
+        }}
       />
     </div>
   );

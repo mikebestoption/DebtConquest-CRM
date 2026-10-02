@@ -10,6 +10,7 @@ import { BudgetTab } from "./BudgetTab";
 import { CreditorTab } from "./CreditorTab";
 import { BankInfoTab } from "./BankInfoTab";
 import { AdditionalInfoTab } from "./AdditionalInfoTab";
+import { LiveLeadProvider, useLatest, useLeadRevisions, useLiveReload } from "./liveLead";
 import { IconChevronLeft } from "../layout/icons";
 
 const TABS = ["Profile", "Budget", "Creditor", "Bank Info", "Additional Info", "Docs", "History"] as const;
@@ -31,25 +32,57 @@ export function LeadDetailPage() {
   const [activeTab, setActiveTab] = useState<Tab>("Profile");
   const [error, setError] = useState<string | null>(null);
 
+  // Live sync with the customer's app: what changed on the server since this
+  // page loaded it - see liveLead.ts.
+  const rev = useLeadRevisions(id);
+  const latest = useLatest();
+
   const load = useCallback(async () => {
     if (!id) return;
+    const ticket = latest.begin();
     try {
       const [leadRes, staffRes] = await Promise.all([fetchLeadDetail(id), fetchStaff()]);
-      setLead(leadRes.lead);
       setStaff(staffRes.staff);
+      if (latest.isCurrent(ticket)) setLead(leadRes.lead);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to load lead");
     }
-  }, [id]);
+  }, [id, latest]);
 
   useEffect(() => {
     load();
   }, [load]);
 
+  // The customer changed something in their app (or a colleague did, in
+  // another window): show it. Quietly - a refresh that fails just leaves
+  // what's on screen until the next one.
+  const refreshLead = useCallback(async () => {
+    if (!id) return;
+    const ticket = latest.begin();
+    try {
+      const { lead: fresh } = await fetchLeadDetail(id);
+      if (latest.isCurrent(ticket)) setLead(fresh);
+    } catch {
+      // Still showing the last known lead.
+    }
+  }, [id, latest]);
+  // The header summary draws on the debts, creditors and bank details too.
+  useLiveReload(["lead", "debts", "creditors", "creditReports", "bankInfo"], refreshLead, false, rev);
+
+  // A save from this page: nothing loaded before it may replace its result.
+  const applySaved = useCallback(
+    (saved: LeadDetail) => {
+      latest.invalidate();
+      setLead(saved);
+    },
+    [latest],
+  );
+
   async function patchHeader(patch: Parameters<typeof updateLeadDetail>[1]) {
     if (!id) return;
+    latest.invalidate();
     const { lead: updated } = await updateLeadDetail(id, patch);
-    setLead(updated);
+    applySaved(updated);
   }
 
   async function handleSubmitToCompliance() {
@@ -181,14 +214,16 @@ export function LeadDetailPage() {
         </div>
       </div>
 
-      {activeTab === "Profile" && <ProfileTab lead={lead} onSaved={setLead} />}
-      {activeTab === "Budget" && <BudgetTab leadId={lead.id} />}
-      {activeTab === "Creditor" && <CreditorTab leadId={lead.id} onOpenAdditionalInfo={() => setActiveTab("Additional Info")} />}
-      {activeTab === "Bank Info" && <BankInfoTab lead={lead} />}
-      {activeTab === "Additional Info" && <AdditionalInfoTab leadId={lead.id} />}
-      {activeTab !== "Profile" && activeTab !== "Budget" && activeTab !== "Creditor" && activeTab !== "Bank Info" && activeTab !== "Additional Info" && (
-        <div className="rounded-card border border-dashed border-border bg-white p-10 text-center text-sm text-muted">{activeTab} - coming soon</div>
-      )}
+      <LiveLeadProvider value={rev}>
+        {activeTab === "Profile" && <ProfileTab lead={lead} onSaveStart={latest.invalidate} onSaved={applySaved} />}
+        {activeTab === "Budget" && <BudgetTab leadId={lead.id} />}
+        {activeTab === "Creditor" && <CreditorTab leadId={lead.id} onOpenAdditionalInfo={() => setActiveTab("Additional Info")} />}
+        {activeTab === "Bank Info" && <BankInfoTab lead={lead} />}
+        {activeTab === "Additional Info" && <AdditionalInfoTab leadId={lead.id} />}
+        {activeTab !== "Profile" && activeTab !== "Budget" && activeTab !== "Creditor" && activeTab !== "Bank Info" && activeTab !== "Additional Info" && (
+          <div className="rounded-card border border-dashed border-border bg-white p-10 text-center text-sm text-muted">{activeTab} - coming soon</div>
+        )}
+      </LiveLeadProvider>
     </div>
   );
 }

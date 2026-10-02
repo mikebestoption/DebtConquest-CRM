@@ -9,6 +9,7 @@ import {
 import { Select } from "../../components/controls";
 import { IconChevronDown, IconInfo, IconUpload } from "../layout/icons";
 import { UploadCreditReportModal } from "./UploadCreditReportModal";
+import { useLiveReload } from "./liveLead";
 
 const CURRENCY = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 });
 const PERIOD_LABELS: Record<ComparePeriod, string> = { "30": "30 Days", "60": "60 Days", "90": "90 Days", all: "All History" };
@@ -148,20 +149,29 @@ export function AdditionalInfoTab({ leadId }: { leadId: string }) {
   const [closedSections, setClosedSections] = useState<Set<string>>(DEFAULT_OPEN);
   const [showUpload, setShowUpload] = useState(false);
 
-  const load = useCallback(async () => {
-    try {
-      const snapRes = await fetchCreditProfileSnapshots(leadId);
-      setSnapshots(snapRes.snapshots);
-      const profileRes = await fetchCreditProfile(leadId, { snapshotId: selectedSnapshotId, comparePeriod });
-      setProfile(profileRes.profile);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to load credit profile");
-    }
-  }, [leadId, selectedSnapshotId, comparePeriod]);
+  // `live`: a refresh because a report arrived on the server (see below) - a
+  // failure then just leaves what's on screen for the next one.
+  const load = useCallback(
+    async (live = false) => {
+      try {
+        const snapRes = await fetchCreditProfileSnapshots(leadId);
+        setSnapshots(snapRes.snapshots);
+        const profileRes = await fetchCreditProfile(leadId, { snapshotId: selectedSnapshotId, comparePeriod });
+        setProfile(profileRes.profile);
+      } catch (err) {
+        if (!live) setError(err instanceof Error ? err.message : "Failed to load credit profile");
+      }
+    },
+    [leadId, selectedSnapshotId, comparePeriod],
+  );
 
   useEffect(() => {
     load();
   }, [load]);
+
+  // A credit report the customer uploads from their app shows up here as
+  // soon as it's been read (see liveLead.ts). Not under the upload dialog.
+  useLiveReload(["creditReports"], () => load(true), showUpload);
 
   function toggleSection(id: string) {
     setClosedSections((prev) => {

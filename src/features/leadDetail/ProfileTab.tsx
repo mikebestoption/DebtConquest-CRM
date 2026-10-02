@@ -1,13 +1,17 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
+  fetchLeadDetail,
   updateLeadDetail,
   updateProfileDetail,
   type CoApplicantDetail,
   type LeadApplicant,
   type LeadDetail,
+  type LeadDetailPatch,
   type LeadPersonal,
   type LeadPhone,
+  type ProfileDetailPatch,
 } from "../../api/leadDetail";
+import { changedKeys, mergeDraft, pick } from "./liveLead";
 import { CheckboxLabel, FieldGrid, Section, StateSelect, TextInput, type FieldDef } from "./formFields";
 import { SummarySection } from "./SummarySection";
 import { Radio, Switch } from "../../components/controls";
@@ -125,73 +129,124 @@ interface JsonBucket {
   [key: string]: string | number | boolean | null | undefined;
 }
 
-export function ProfileTab({ lead, onSaved }: { lead: LeadDetail; onSaved: (lead: LeadDetail) => void }) {
+const NO_CO_APPLICANT: CoApplicantDetail = { hasCoApplicant: false };
+const bucket = (value: object | null): JsonBucket => (value ?? {}) as JsonBucket;
+
+// The Lead-row fields this form edits, as the PATCH takes them. (Not the
+// applicant's SSN: that's write-only, sent when typed.)
+function leadFields(applicant: LeadApplicant, phone: LeadPhone, personal: LeadPersonal): LeadDetailPatch {
+  return {
+    firstName: applicant.firstName,
+    middleInitial: applicant.middleInitial,
+    lastName: applicant.lastName,
+    streetAddress: applicant.streetAddress,
+    address2: applicant.address2,
+    country: applicant.country,
+    addressState: applicant.addressState,
+    city: applicant.city,
+    zip: applicant.zip,
+    yearsAtAddress: applicant.yearsAtAddress,
+    monthsAtAddress: applicant.monthsAtAddress,
+    homePhone: phone.homePhone,
+    homePhoneOptOut: phone.homePhoneOptOut,
+    cellPhone: phone.cellPhone,
+    cellPhoneOptOut: phone.cellPhoneOptOut,
+    workPhone: phone.workPhone,
+    workPhoneExt: phone.workPhoneExt,
+    workPhoneOptOut: phone.workPhoneOptOut,
+    bestTimeToCall: phone.bestTimeToCall,
+    preferredContact: phone.preferredContact,
+    email: personal.email,
+    dob: personal.dob,
+    dependents: personal.dependents,
+    speaksSpanish: personal.speaksSpanish,
+    residencyStatus: personal.residencyStatus,
+  };
+}
+
+export function ProfileTab({ lead, onSaved, onSaveStart }: { lead: LeadDetail; onSaved: (lead: LeadDetail) => void; onSaveStart?: () => void }) {
   const [applicant, setApplicant] = useState<LeadApplicant>(lead.applicant);
   const [phone, setPhone] = useState<LeadPhone>(lead.phone);
   const [personal, setPersonal] = useState<LeadPersonal>(lead.personal);
   const [ssnInput, setSsnInput] = useState("");
-  const [thirdPartyAuth, setThirdPartyAuth] = useState<JsonBucket>((lead.thirdPartyAuth ?? {}) as JsonBucket);
-  const [employment, setEmployment] = useState<JsonBucket>((lead.employment ?? {}) as JsonBucket);
-  const [accountUsage, setAccountUsage] = useState<JsonBucket>((lead.accountUsage ?? {}) as JsonBucket);
-  const [otherDetails, setOtherDetails] = useState<JsonBucket>((lead.otherDetails ?? {}) as JsonBucket);
-  const [coApplicant, setCoApplicant] = useState<CoApplicantDetail>(lead.coApplicant ?? { hasCoApplicant: false });
+  const [thirdPartyAuth, setThirdPartyAuth] = useState<JsonBucket>(bucket(lead.thirdPartyAuth));
+  const [employment, setEmployment] = useState<JsonBucket>(bucket(lead.employment));
+  const [accountUsage, setAccountUsage] = useState<JsonBucket>(bucket(lead.accountUsage));
+  const [otherDetails, setOtherDetails] = useState<JsonBucket>(bucket(lead.otherDetails));
+  const [coApplicant, setCoApplicant] = useState<CoApplicantDetail>(lead.coApplicant ?? NO_CO_APPLICANT);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // The lead the drafts above were last brought up to date with.
+  const loaded = useRef(lead);
 
-  function resetDrafts() {
-    setApplicant(lead.applicant);
-    setPhone(lead.phone);
-    setPersonal(lead.personal);
+  function resetDrafts(to: LeadDetail = lead) {
+    loaded.current = to;
+    setApplicant(to.applicant);
+    setPhone(to.phone);
+    setPersonal(to.personal);
     setSsnInput("");
-    setThirdPartyAuth((lead.thirdPartyAuth ?? {}) as JsonBucket);
-    setEmployment((lead.employment ?? {}) as JsonBucket);
-    setAccountUsage((lead.accountUsage ?? {}) as JsonBucket);
-    setOtherDetails((lead.otherDetails ?? {}) as JsonBucket);
-    setCoApplicant(lead.coApplicant ?? { hasCoApplicant: false });
+    setThirdPartyAuth(bucket(to.thirdPartyAuth));
+    setEmployment(bucket(to.employment));
+    setAccountUsage(bucket(to.accountUsage));
+    setOtherDetails(bucket(to.otherDetails));
+    setCoApplicant(to.coApplicant ?? NO_CO_APPLICANT);
     setError(null);
   }
 
-  // Re-sync drafts whenever a fresh lead comes in from the parent (e.g. a
-  // header dropdown save reloaded it) rather than only on first mount.
-  useEffect(resetDrafts, [lead]);
+  // A fresh lead came in from the parent - a header dropdown saved, or the
+  // customer changed something in their app (see liveLead.ts). Fields the
+  // agent hasn't touched take the new values; anything they're in the middle
+  // of editing stays as typed.
+  useEffect(() => {
+    const before = loaded.current;
+    if (lead === before) return;
+    loaded.current = lead;
+    setApplicant((d) => mergeDraft(d, before.applicant, lead.applicant));
+    setPhone((d) => mergeDraft(d, before.phone, lead.phone));
+    setPersonal((d) => mergeDraft(d, before.personal, lead.personal));
+    setThirdPartyAuth((d) => mergeDraft(d, bucket(before.thirdPartyAuth), bucket(lead.thirdPartyAuth)));
+    setEmployment((d) => mergeDraft(d, bucket(before.employment), bucket(lead.employment)));
+    setAccountUsage((d) => mergeDraft(d, bucket(before.accountUsage), bucket(lead.accountUsage)));
+    setOtherDetails((d) => mergeDraft(d, bucket(before.otherDetails), bucket(lead.otherDetails)));
+    setCoApplicant((d) => mergeDraft(d, before.coApplicant ?? NO_CO_APPLICANT, lead.coApplicant ?? NO_CO_APPLICANT));
+  }, [lead]);
 
   async function handleSave() {
     setSaving(true);
     setError(null);
     try {
-      const [updated] = await Promise.all([
-        updateLeadDetail(lead.id, {
-          firstName: applicant.firstName,
-          middleInitial: applicant.middleInitial,
-          lastName: applicant.lastName,
-          streetAddress: applicant.streetAddress,
-          address2: applicant.address2,
-          country: applicant.country,
-          addressState: applicant.addressState,
-          city: applicant.city,
-          zip: applicant.zip,
-          yearsAtAddress: applicant.yearsAtAddress,
-          monthsAtAddress: applicant.monthsAtAddress,
-          homePhone: phone.homePhone,
-          homePhoneOptOut: phone.homePhoneOptOut,
-          cellPhone: phone.cellPhone,
-          cellPhoneOptOut: phone.cellPhoneOptOut,
-          workPhone: phone.workPhone,
-          workPhoneExt: phone.workPhoneExt,
-          workPhoneOptOut: phone.workPhoneOptOut,
-          bestTimeToCall: phone.bestTimeToCall,
-          preferredContact: phone.preferredContact,
-          email: personal.email,
-          dob: personal.dob,
-          dependents: personal.dependents,
-          speaksSpanish: personal.speaksSpanish,
-          residencyStatus: personal.residencyStatus,
-          ...(ssnInput ? { ssn: ssnInput } : {}),
-        }),
-        updateProfileDetail(lead.id, { thirdPartyAuth, employment, accountUsage, otherDetails, coApplicant }),
-      ]);
-      onSaved(updated.lead);
-      setSsnInput("");
+      // Only what was changed here is sent, so this can't write back the old
+      // value of a field the customer changed in their app meanwhile.
+      const draftFields = leadFields(applicant, phone, personal);
+      const leadPatch: LeadDetailPatch = {
+        ...pick(draftFields, changedKeys(draftFields, leadFields(lead.applicant, lead.phone, lead.personal))),
+        ...(ssnInput ? { ssn: ssnInput } : {}),
+      };
+      const changed = (draft: object, before: object | null) => changedKeys(draft, before ?? {}).length > 0;
+      const detailPatch: ProfileDetailPatch = {
+        ...(changed(thirdPartyAuth, lead.thirdPartyAuth) ? { thirdPartyAuth } : {}),
+        ...(changed(employment, lead.employment) ? { employment } : {}),
+        ...(changed(accountUsage, lead.accountUsage) ? { accountUsage } : {}),
+        ...(changed(otherDetails, lead.otherDetails) ? { otherDetails } : {}),
+        ...(changed(coApplicant, lead.coApplicant ?? NO_CO_APPLICANT) ? { coApplicant } : {}),
+      };
+
+      const saveLead = Object.keys(leadPatch).length > 0;
+      const saveDetail = Object.keys(detailPatch).length > 0;
+      if (!saveLead && !saveDetail) return;
+
+      onSaveStart?.();
+      const [patched] = await Promise.all([saveLead ? updateLeadDetail(lead.id, leadPatch) : null, saveDetail ? updateProfileDetail(lead.id, detailPatch) : null]);
+      // The lead as it now stands - both saves in, and anything the customer
+      // changed meanwhile. Failing that, the lead save's own answer; failing
+      // that too, the form stays as typed (it is saved) and the next live
+      // refresh brings the rest.
+      const saved = await fetchLeadDetail(lead.id)
+        .then((res) => res.lead)
+        .catch(() => patched?.lead ?? null);
+      if (!saved) return;
+      resetDrafts(saved);
+      onSaved(saved);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to save");
     } finally {
@@ -405,7 +460,7 @@ export function ProfileTab({ lead, onSaved }: { lead: LeadDetail; onSaved: (lead
       {error && <p className="text-sm text-error">{error}</p>}
 
       <div className="sticky bottom-0 -mx-1 flex justify-end gap-3 border-t border-border bg-bg/95 px-1 py-3 backdrop-blur">
-        <button type="button" onClick={resetDrafts} className="rounded-md border border-border bg-white px-5 py-2 text-sm font-medium text-ink hover:bg-white">
+        <button type="button" onClick={() => resetDrafts()} className="rounded-md border border-border bg-white px-5 py-2 text-sm font-medium text-ink hover:bg-white">
           Cancel
         </button>
         <button

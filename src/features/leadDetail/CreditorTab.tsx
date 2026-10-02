@@ -19,6 +19,7 @@ import { Checkbox, Radio, Select } from "../../components/controls";
 import { IconAlertTriangle, IconChevronLeft, IconChevronUpDown, IconCloud, IconInfo, IconPencil, IconPlus, IconTrash, IconX } from "../layout/icons";
 import { CreditorModal } from "./CreditorModal";
 import { CustomerCalculatorSection } from "./customerCalculator/CustomerCalculatorSection";
+import { useLatest, useLiveReload } from "./liveLead";
 
 const CURRENCY = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", minimumFractionDigits: 2 });
 const PERCENT = new Intl.NumberFormat("en-US", { style: "percent", minimumFractionDigits: 0, maximumFractionDigits: 1 });
@@ -73,19 +74,33 @@ export function CreditorTab({ leadId, onOpenAdditionalInfo }: { leadId: string; 
   const [sortBy, setSortBy] = useState<SortKey | null>(null);
   const [sortDir, setSortDir] = useState<"asc" | "desc">("asc");
 
-  const load = useCallback(async () => {
-    try {
-      const res = await fetchCreditors(leadId);
-      setData(res);
-      setSelected(new Set());
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to load creditors");
-    }
-  }, [leadId]);
+  const latest = useLatest();
+
+  // `live`: a refresh because the list changed on the server (see below),
+  // not something the agent did - it keeps their selection, and a failure
+  // just leaves what's on screen for the next one.
+  const load = useCallback(
+    async (live = false) => {
+      const ticket = latest.begin();
+      try {
+        const res = await fetchCreditors(leadId);
+        if (!latest.isCurrent(ticket)) return;
+        setData(res);
+        setSelected((prev) => (live ? new Set(res.creditors.filter((c) => prev.has(c.id)).map((c) => c.id)) : new Set()));
+      } catch (err) {
+        if (!live) setError(err instanceof Error ? err.message : "Failed to load creditors");
+      }
+    },
+    [leadId, latest],
+  );
 
   useEffect(() => {
     load();
   }, [load]);
+
+  // A credit report the customer uploads from their app adds creditors here:
+  // show them as they arrive (see liveLead.ts). Not under an open dialog.
+  useLiveReload(["creditors"], () => load(true), modalOpen || bulkOpen);
 
   async function handleAgencyChange(agency: CreditPullAgency) {
     const res = await updateCreditPullSettings(leadId, { creditPullAgency: agency });
@@ -389,7 +404,7 @@ export function CreditorTab({ leadId, onOpenAdditionalInfo }: { leadId: string; 
             <IconCloud width={16} height={16} />
           </div>
           <span className="font-semibold text-ink">Customer's Calculator View</span>
-          <span className="text-xs text-muted">This customer's debt calculator, exactly as they see it - try other values without changing their data</span>
+          <span className="text-xs text-muted">This customer's debt calculator, exactly as they see it and updated as they change it - try other values without changing their data</span>
         </div>
         <div className="p-5">
           <CustomerCalculatorSection leadId={leadId} />

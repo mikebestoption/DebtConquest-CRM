@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { confirmAction } from "../../state/confirmStore";
 import {
   fetchWorklist,
@@ -21,6 +21,7 @@ import { IconPlus, IconTrash } from "../layout/icons";
 import { Select } from "../../components/controls";
 
 const PAGE_SIZE = 25;
+const QUIET_REFRESH_MS = 20_000;
 
 export function WorklistPage() {
   const [staff, setStaff] = useState<StaffOption[]>([]);
@@ -59,6 +60,39 @@ export function WorklistPage() {
   useEffect(() => {
     load();
   }, [load]);
+
+  // Leads change while this list is open - customers working in their app,
+  // colleagues in the CRM. Refresh it quietly while it's being looked at: no
+  // loading state, and the selection is kept (less any rows that are gone).
+  // Not while something here is already loading or being changed.
+  const refreshSeq = useRef(0);
+  const busy = loading || deleting || showAddLead;
+  useEffect(() => {
+    if (busy) return;
+    let cancelled = false;
+    const timer = setInterval(() => {
+      if (document.visibilityState !== "visible") return;
+      const mine = ++refreshSeq.current;
+      fetchWorklist({ ...filters, assignedStaffId: assignedStaffId || undefined, sortBy, sortDir, page, pageSize: PAGE_SIZE })
+        .then((res) => {
+          // Dropped if the list was reloaded or a row changed here meanwhile:
+          // this answer may be older than that.
+          if (cancelled || mine !== refreshSeq.current) return;
+          setItems(res.items);
+          setTotal(res.total);
+          setSelectedIds((prev) => {
+            const present = new Set(res.items.map((it) => it.id));
+            const kept = [...prev].filter((id) => present.has(id));
+            return kept.length === prev.size ? prev : new Set(kept);
+          });
+        })
+        .catch(() => undefined);
+    }, QUIET_REFRESH_MS);
+    return () => {
+      cancelled = true;
+      clearInterval(timer);
+    };
+  }, [busy, filters, assignedStaffId, sortBy, sortDir, page]);
 
   function handleSort(col: SortBy) {
     if (col === sortBy) {
@@ -111,6 +145,7 @@ export function WorklistPage() {
   async function handleStatusChange(id: string, status: WorklistStatus) {
     // Optimistic update - the row's status badge flips immediately instead
     // of waiting on the round trip, then reconciles from the server.
+    refreshSeq.current++;
     setItems((prev) => prev.map((it) => (it.id === id ? { ...it, crmStatus: status } : it)));
     try {
       await updateLeadStatus(id, status);

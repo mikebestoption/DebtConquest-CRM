@@ -23,6 +23,7 @@ import { SourcesListPage } from "./features/sources/SourcesListPage";
 import { SourceFormPage } from "./features/sources/SourceFormPage";
 import { HuddleRoomPage, MeetingPage, SupportSessionPage } from "./features/collab/SessionsPage";
 import { RoomPage } from "./features/collab/RoomPage";
+import { GuestRoomPage } from "./features/collab/GuestRoomPage";
 import { RecordingsPage } from "./features/collab/RecordingsPage";
 import { ConfirmDialog } from "./components/ConfirmDialog";
 import { ALL_NAV_ITEMS } from "./features/layout/navConfig";
@@ -60,6 +61,9 @@ export default function App() {
         <Route path="/forgot-password" element={<ForgotPasswordPage />} />
         <Route path="/set-password" element={<SetPasswordPage />} />
         <Route path="/reset-password" element={<SetPasswordPage />} />
+        {/* A Teams session opened by an external visitor from its guest link -
+            deliberately outside RequireAuth: they have no CRM login. */}
+        <Route path="/meet/:token" element={<GuestRoomPage />} />
         <Route
           element={
             <RequireAuth>

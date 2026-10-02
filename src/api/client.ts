@@ -6,7 +6,7 @@ import { useAuthStore } from "../state/authStore";
 // the live backend's real domain rather than a relative path, since a bare
 // path would silently resolve against whatever origin this app happens to
 // be served from. See .env.example.
-const API_BASE = (import.meta.env.VITE_API_BASE_URL as string | undefined)?.trim() || "https://app.debtconquest.com/api/v1/crm";
+export const API_BASE = (import.meta.env.VITE_API_BASE_URL as string | undefined)?.trim() || "https://app.debtconquest.com/api/v1/crm";
 
 export class ApiError extends Error {
   status: number;

@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { confirmAction } from "../../state/confirmStore";
 import { Link, useNavigate } from "react-router-dom";
-import { endCollabSession, fetchCollabSessions, type CollabSession, type CollabSessionType } from "../../api/collab";
+import { createGuestLink, endCollabSession, fetchCollabSessions, guestLinkUrl, type CollabSession, type CollabSessionType } from "../../api/collab";
 import { ApiError } from "../../api/client";
 import { useAuthStore } from "../../state/authStore";
 import { IconPlayCircle, IconPlus, IconSearch } from "../layout/icons";
@@ -63,6 +63,7 @@ function SessionsPage({ type }: { type: CollabSessionType }) {
   const [error, setError] = useState<string | null>(null);
   const [modal, setModal] = useState<{ session: CollabSession | null; startNow?: boolean } | null>(null);
   const [busyId, setBusyId] = useState<string | null>(null);
+  const [copiedGuestId, setCopiedGuestId] = useState<string | null>(null);
 
   const load = useCallback(
     (silent = false) => {
@@ -118,6 +119,24 @@ function SessionsPage({ type }: { type: CollabSessionType }) {
       await load(true);
     } catch (err) {
       setError(err instanceof ApiError ? err.message : `Failed to ${verb.toLowerCase()} session`);
+    } finally {
+      setBusyId(null);
+    }
+  }
+
+  // A link for someone outside the CRM (no sign-in) - created the first time
+  // it's asked for, so it can go out with the invitation before the session
+  // starts.
+  async function handleGuestLink(s: CollabSession) {
+    setBusyId(s.id);
+    try {
+      const token = s.guestToken ?? (await createGuestLink(s.id)).guestToken;
+      await navigator.clipboard?.writeText(guestLinkUrl(token));
+      setCopiedGuestId(s.id);
+      window.setTimeout(() => setCopiedGuestId((id) => (id === s.id ? null : id)), 2000);
+      await load(true);
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : "Couldn't create a guest link");
     } finally {
       setBusyId(null);
     }
@@ -195,7 +214,8 @@ function SessionsPage({ type }: { type: CollabSessionType }) {
           sessions.map((s) => {
             const status = STATUS_STYLES[s.status];
             const inRoom = inRoomNames(s);
-            const attendees = s.participants.filter((p) => p.role === "INVITEE");
+            // Invited staff - a visitor who came in through the guest link isn't "invited".
+            const attendees = s.participants.filter((p) => p.role === "INVITEE" && !p.guest);
             return (
               <div key={s.id} className="flex flex-wrap items-center justify-between gap-3 rounded-card border border-border bg-white px-4 py-4 sm:gap-4 sm:px-5">
                 <div className="min-w-0 basis-full sm:flex-1 sm:basis-0">
@@ -241,6 +261,14 @@ function SessionsPage({ type }: { type: CollabSessionType }) {
                   <div className="flex w-full shrink-0 items-center gap-2 sm:w-auto">
                     {s.canManage && (
                       <>
+                        <button
+                          onClick={() => void handleGuestLink(s)}
+                          disabled={busyId === s.id}
+                          title="Copy a link for someone outside the CRM - no sign-in needed"
+                          className="rounded-md border border-border px-3 py-2 text-xs font-medium text-ink hover:bg-bg disabled:opacity-60"
+                        >
+                          {copiedGuestId === s.id ? "Copied!" : "Guest link"}
+                        </button>
                         {type !== "SUPPORT" && (
                           <button onClick={() => setModal({ session: s })} className="rounded-md border border-border px-3 py-2 text-xs font-medium text-ink hover:bg-bg">
                             Edit

@@ -12,6 +12,7 @@ import {
 import type { LeadDetail } from "../../api/leadDetail";
 import { Radio, Select } from "../../components/controls";
 import { Section, INPUT_CLASS } from "./formFields";
+import { useLiveReload } from "./liveLead";
 import { IconBuilding, IconChevronLeft, IconInfo, IconPencil, IconShield } from "../layout/icons";
 
 const FIELD_CLASS = `${INPUT_CLASS} disabled:cursor-not-allowed disabled:bg-bg disabled:text-muted`;
@@ -195,6 +196,23 @@ export function BankInfoTab({ lead }: { lead: LeadDetail }) {
     // Only refetch when switching leads, not on every header edit.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [lead.id]);
+
+  // Bank details saved or verified from another window show here as they
+  // change (see liveLead.ts) - held back while this form is being edited,
+  // so nothing typed is replaced.
+  useLiveReload(
+    ["bankInfo"],
+    () => {
+      fetchBankInfo(lead.id)
+        .then(({ bankInfo }) => {
+          setInfo(bankInfo);
+          setDraft(toDraft(bankInfo, lead));
+          setEditing(bankInfo === null);
+        })
+        .catch(() => undefined);
+    },
+    editing || saving || verifying,
+  );
 
   function set<K extends keyof Draft>(key: K, value: Draft[K]) {
     setDraft((d) => ({ ...d, [key]: value }));
